@@ -1,0 +1,72 @@
+# === General ===
+*.iml
+*.hprof
+*.log
+.DS_Store
+*.swp
+
+# === Mac & Linux system files ===
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# === Gradle ===
+.gradle/
+**/build/
+build/
+!gradle-wrapper.jar
+
+# === Local configuration ===
+local.properties
+.idea/
+*.iws
+*.ipr
+*.iml
+
+# === Android Studio ===
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/gradle.xml
+.idea/sonarlint/
+
+# === Kotlin/Java build output ===
+*.class
+/out/
+
+# === IntelliJ ===
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# === Packaging ===
+*.apk
+*.ap_
+*.dex
+*.aar
+*.jar
+*.so
+
+# === Generated code ===
+captures/
+output.json
+.navigation/
+*.pb
+*.pb.meta
+*.json
+*.lock
+*.bin
+
+# === Dependency Accessors & Gradle Metadata ===
+.gradle/**/dependencies-accessors/
+.gradle/**/buildOutputCleanup/
+.gradle/**/checksums/
+
+# === OS Metadata ===
+.DS_Store
+*.tmp
