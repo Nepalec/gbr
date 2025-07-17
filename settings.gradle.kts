@@ -1,3 +1,4 @@
+//settings.gradle.kts (Project Settings)
 pluginManagement {
 
     includeBuild("build-logic")
@@ -6,6 +7,9 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal() // External plugins can be resolved in dependencies section
+    }
+    plugins {
+        id("org.jlleitschuh.gradle.ktlint") version "11.6.1"
     }
 }
 

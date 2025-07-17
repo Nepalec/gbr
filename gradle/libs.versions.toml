@@ -21,6 +21,8 @@ junit = "1.2.1"
 espressoCore = "3.6.1"
 material = "1.12.0"
 constraintlayoutCompose = "1.0.1"
+spotless="7.1.0"
+ktlintGradle = "11.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
@@ -62,3 +64,4 @@ gbr-android-library = { id = "com.gbr.convention.library", version = "unspecifie
 gbr-android-library-compose = { id = "com.gbr.convention.library.compose", version = "unspecified" }
 gbr-android-hilt = { id = "com.gbr.convention.hilt", version = "unspecified" }
 gbr-jvm-library = { id = "com.gbr.convention.jvm.library", version = "unspecified" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradle" }

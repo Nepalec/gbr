@@ -23,16 +23,19 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 
-
 @Composable
-fun DroidTheme(isDarkTheme: Boolean = true, content: @Composable () -> Unit) {
+fun DroidTheme(
+    isDarkTheme: Boolean = true,
+    content: @Composable () -> Unit,
+) {
     val sizeCategory = getSizeCategory(LocalWindowSize.current)
 
-    val dimens = when (sizeCategory) {
-        SizeClass.Compact -> CompactDimen
-        SizeClass.Medium -> MediumDimens
-        SizeClass.Big -> BigDimens
-    }
+    val dimens =
+        when (sizeCategory) {
+            SizeClass.Compact -> CompactDimen
+            SizeClass.Medium -> MediumDimens
+            SizeClass.Big -> BigDimens
+        }
 
     val typography = AppTypography(dimens)
 
@@ -42,7 +45,7 @@ fun DroidTheme(isDarkTheme: Boolean = true, content: @Composable () -> Unit) {
         LocalAppColors provides AppColors(colorScheme),
         LocalAppDimens provides dimens,
         LocalAppTypography provides typography,
-        LocalAppShapes provides DefaultShapes
+        LocalAppShapes provides DefaultShapes,
     ) {
         MaterialTheme(
             colorScheme = LocalAppColors.current.colorScheme,
@@ -51,11 +54,12 @@ fun DroidTheme(isDarkTheme: Boolean = true, content: @Composable () -> Unit) {
             content = content,
         )
     }
-
 }
 
 private enum class SizeClass {
-    Compact, Medium, Big
+    Compact,
+    Medium,
+    Big,
 }
 
 private fun getSizeCategory(windowSizeClass: WindowSizeClass): SizeClass {
@@ -93,15 +97,18 @@ private fun getSizeCategory(windowSizeClass: WindowSizeClass): SizeClass {
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun DroidActivityTheme(
-    activity: Activity, isDarkTheme: Boolean = true, content: @Composable () -> Unit
+    activity: Activity,
+    isDarkTheme: Boolean = true,
+    content: @Composable () -> Unit,
 ) {
     val windowSize = calculateWindowSizeClass(activity = activity)
 
     Surface(
-        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
     ) {
         CompositionLocalProvider(
-            LocalWindowSize provides windowSize
+            LocalWindowSize provides windowSize,
         ) {
             DroidTheme(isDarkTheme = isDarkTheme) {
                 val bgColor = MaterialTheme.colorScheme.background.toArgb()
@@ -115,7 +122,9 @@ fun DroidActivityTheme(
                 }
 
                 Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background, content = content
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background,
+                    content = content,
                 )
             }
         }
@@ -131,15 +140,20 @@ val LocalAppShapes = compositionLocalOf { DefaultShapes }
 val LocalWindowSize = compositionLocalOf<WindowSizeClass> { WindowSizeClass.calculateFromSize(DpSize.Zero) }
 
 val MaterialTheme.appDimens: AppDimen
-    @Composable @ReadOnlyComposable get() = LocalAppDimens.current
+    @Composable @ReadOnlyComposable
+    get() = LocalAppDimens.current
 
 val MaterialTheme.appShapes: AppShape
-    @Composable @ReadOnlyComposable get() = LocalAppShapes.current
+    @Composable @ReadOnlyComposable
+    get() = LocalAppShapes.current
 
 val MaterialTheme.windowSize: WindowSizeClass
-    @Composable @ReadOnlyComposable get() = LocalWindowSize.current
+    @Composable @ReadOnlyComposable
+    get() = LocalWindowSize.current
 
-val MaterialTheme.appColors: AppColors @Composable @ReadOnlyComposable get() = LocalAppColors.current
+val MaterialTheme.appColors: AppColors
+    @Composable @ReadOnlyComposable
+    get() = LocalAppColors.current
 
 @Composable
 fun CardDefaults.elevatedCard(): CardElevation {

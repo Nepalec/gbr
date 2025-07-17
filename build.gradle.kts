@@ -1,4 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 plugins {
     alias(libs.plugins.com.android.application) apply false
     alias(libs.plugins.org.jetbrains.kotlin.android) apply false
@@ -6,4 +7,18 @@ plugins {
     alias(libs.plugins.com.android.library) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.dagger.hilt) apply false
+    alias(libs.plugins.ktlint) apply false
+}
+
+subprojects {
+    plugins.apply("org.jlleitschuh.gradle.ktlint")
+
+    extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+        version.set("1.1.1")
+        enableExperimentalRules.set(true)
+        reporters {
+            reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+            reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+        }
+    }
 }

@@ -6,7 +6,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 interface AppDimen {
-
     val displayLarge: TextUnit
     val headlineLarge: TextUnit
     val titleLarge: TextUnit
@@ -28,7 +27,6 @@ interface AppDimen {
 }
 
 class ScalableDimen(private val scaleFactor: Float = 1f) : AppDimen {
-
     override val displayLarge: TextUnit get() = 57.sp * scaleFactor
     override val headlineLarge: TextUnit get() = 32.sp * scaleFactor
     override val titleLarge: TextUnit get() = 22.sp * scaleFactor
