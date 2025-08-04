@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(projects.core.designsystem)
+    implementation(libs.androidx.tracing.ktx)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     testImplementation(libs.junit4)

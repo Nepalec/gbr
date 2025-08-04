@@ -14,7 +14,6 @@ subprojects {
     plugins.apply("org.jlleitschuh.gradle.ktlint")
 
     extensions.configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-        version.set("1.1.1")
         enableExperimentalRules.set(true)
         reporters {
             reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)

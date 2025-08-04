@@ -10,28 +10,28 @@ import com.gbr.designsystem.R
 private val fontFamily =
     FontFamily(
         fonts =
-            listOf(
-                Font(
-                    resId = R.font.poppins_regular,
-                    weight = FontWeight.Normal,
-                    style = FontStyle.Normal,
-                ),
-                Font(
-                    resId = R.font.poppins_medium,
-                    weight = FontWeight.SemiBold,
-                    style = FontStyle.Normal,
-                ),
-                Font(
-                    resId = R.font.poppins_bold,
-                    weight = FontWeight.Bold,
-                    style = FontStyle.Normal,
-                ),
-                Font(
-                    resId = R.font.poppins_italic,
-                    weight = FontWeight.Normal,
-                    style = FontStyle.Italic,
-                ),
+        listOf(
+            Font(
+                resId = R.font.poppins_regular,
+                weight = FontWeight.Normal,
+                style = FontStyle.Normal
             ),
+            Font(
+                resId = R.font.poppins_medium,
+                weight = FontWeight.SemiBold,
+                style = FontStyle.Normal
+            ),
+            Font(
+                resId = R.font.poppins_bold,
+                weight = FontWeight.Bold,
+                style = FontStyle.Normal
+            ),
+            Font(
+                resId = R.font.poppins_italic,
+                weight = FontWeight.Normal,
+                style = FontStyle.Italic
+            )
+        )
     )
 
 class AppTypography(dimen: AppDimen) {
@@ -49,81 +49,81 @@ class AppTypography(dimen: AppDimen) {
     val typography =
         Typography(
             displayLarge =
-                defaultTypography.displayLarge.copy(
-                    fontFamily = fontFamily,
-                    fontSize = displayLarge,
-                ),
+            defaultTypography.displayLarge.copy(
+                fontFamily = fontFamily,
+                fontSize = displayLarge
+            ),
             displayMedium =
-                defaultTypography.displayMedium.copy(
-                    fontFamily = fontFamily,
-                    fontSize = displayLarge / mediumFontSizeScaleFactor,
-                ),
+            defaultTypography.displayMedium.copy(
+                fontFamily = fontFamily,
+                fontSize = displayLarge / mediumFontSizeScaleFactor
+            ),
             displaySmall =
-                defaultTypography.displaySmall.copy(
-                    fontFamily = fontFamily,
-                    fontSize = displayLarge / smallFontSizeScaleFactor,
-                ),
+            defaultTypography.displaySmall.copy(
+                fontFamily = fontFamily,
+                fontSize = displayLarge / smallFontSizeScaleFactor
+            ),
             headlineLarge =
-                defaultTypography.headlineLarge.copy(
-                    fontFamily = fontFamily,
-                    fontSize = headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                ),
+            defaultTypography.headlineLarge.copy(
+                fontFamily = fontFamily,
+                fontSize = headlineLarge,
+                fontWeight = FontWeight.Bold
+            ),
             headlineMedium =
-                defaultTypography.headlineMedium.copy(
-                    fontFamily = fontFamily,
-                    fontSize = headlineLarge / mediumFontSizeScaleFactor,
-                    fontWeight = FontWeight.Bold,
-                ),
+            defaultTypography.headlineMedium.copy(
+                fontFamily = fontFamily,
+                fontSize = headlineLarge / mediumFontSizeScaleFactor,
+                fontWeight = FontWeight.Bold
+            ),
             headlineSmall =
-                defaultTypography.headlineSmall.copy(
-                    fontFamily = fontFamily,
-                    fontSize = headlineLarge / smallFontSizeScaleFactor,
-                ),
+            defaultTypography.headlineSmall.copy(
+                fontFamily = fontFamily,
+                fontSize = headlineLarge / smallFontSizeScaleFactor
+            ),
             titleLarge =
-                defaultTypography.titleLarge.copy(
-                    fontFamily = fontFamily,
-                    fontSize = titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                ),
+            defaultTypography.titleLarge.copy(
+                fontFamily = fontFamily,
+                fontSize = titleLarge,
+                fontWeight = FontWeight.SemiBold
+            ),
             titleMedium =
-                defaultTypography.titleMedium.copy(
-                    fontFamily = fontFamily,
-                    fontSize = titleLarge / mediumFontSizeScaleFactor,
-                ),
+            defaultTypography.titleMedium.copy(
+                fontFamily = fontFamily,
+                fontSize = titleLarge / mediumFontSizeScaleFactor
+            ),
             titleSmall =
-                defaultTypography.titleSmall.copy(
-                    fontFamily = fontFamily,
-                    fontSize = titleLarge / smallFontSizeScaleFactor,
-                ),
+            defaultTypography.titleSmall.copy(
+                fontFamily = fontFamily,
+                fontSize = titleLarge / smallFontSizeScaleFactor
+            ),
             bodyLarge = defaultTypography.bodyLarge.copy(fontFamily = fontFamily, fontSize = bodyLarge),
             bodyMedium =
-                defaultTypography.bodyMedium.copy(
-                    fontFamily = fontFamily,
-                    fontSize = bodyLarge / mediumFontSizeScaleFactor,
-                    fontWeight = FontWeight.Normal,
-                ),
+            defaultTypography.bodyMedium.copy(
+                fontFamily = fontFamily,
+                fontSize = bodyLarge / mediumFontSizeScaleFactor,
+                fontWeight = FontWeight.Normal
+            ),
             bodySmall =
-                defaultTypography.bodySmall.copy(
-                    fontFamily = fontFamily,
-                    fontSize = bodyLarge / smallFontSizeScaleFactor,
-                    fontWeight = FontWeight.Normal,
-                ),
+            defaultTypography.bodySmall.copy(
+                fontFamily = fontFamily,
+                fontSize = bodyLarge / smallFontSizeScaleFactor,
+                fontWeight = FontWeight.Normal
+            ),
             labelLarge =
-                defaultTypography.labelLarge.copy(
-                    fontFamily = fontFamily,
-                    fontSize = labelLarge,
-                    fontWeight = FontWeight.Normal,
-                ),
+            defaultTypography.labelLarge.copy(
+                fontFamily = fontFamily,
+                fontSize = labelLarge,
+                fontWeight = FontWeight.Normal
+            ),
             labelMedium =
-                defaultTypography.labelMedium.copy(
-                    fontFamily = fontFamily,
-                    fontSize = labelLarge / mediumFontSizeScaleFactor,
-                ),
+            defaultTypography.labelMedium.copy(
+                fontFamily = fontFamily,
+                fontSize = labelLarge / mediumFontSizeScaleFactor
+            ),
             labelSmall =
-                defaultTypography.labelSmall.copy(
-                    fontFamily = fontFamily,
-                    fontSize = labelLarge / smallFontSizeScaleFactor,
-                ),
+            defaultTypography.labelSmall.copy(
+                fontFamily = fontFamily,
+                fontSize = labelLarge / smallFontSizeScaleFactor
+            )
         )
 }
