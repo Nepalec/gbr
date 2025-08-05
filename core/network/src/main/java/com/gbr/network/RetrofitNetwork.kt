@@ -53,7 +53,7 @@ private data class NetworkResponse<T>(
 internal class RetrofitNiaNetwork @Inject constructor(
     networkJson: Json,
     okhttpCallFactory: dagger.Lazy<Call.Factory>,
-) : NiaNetworkDataSource {
+) : ShopNetworkDataSource {
 
     private val networkApi = trace("RetrofitShopNetwork") {
         Retrofit.Builder()
