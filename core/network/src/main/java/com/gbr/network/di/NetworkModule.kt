@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.tracing.trace
 import coil.ImageLoader
 import coil.util.DebugLogger
+import com.gbr.network.IShopDataSource
+import com.gbr.network.ShopRetrofitDataSource
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,7 +15,6 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import javax.inject.Singleton
 
 @Module
@@ -30,12 +32,12 @@ internal object NetworkModule {
     @Singleton
     fun okHttpCallFactory(): Call.Factory {
         return OkHttpClient.Builder()
-            .addInterceptor(
-                HttpLoggingInterceptor()
-                    .apply {
-                        setLevel(HttpLoggingInterceptor.Level.BODY)
-                    },
-            )
+//            .addInterceptor(
+//                HttpLoggingInterceptor()
+//                    .apply {
+//                        setLevel(HttpLoggingInterceptor.Level.BODY)
+//                    },
+//            )
             .build()
     }
 
@@ -56,4 +58,13 @@ internal object NetworkModule {
             }
             .build()
     }
+
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal abstract class NetworkBindingsModule {
+    @Binds
+    @Singleton
+    abstract fun bindShopDataSource(shopRetrofitDataSource: ShopRetrofitDataSource): IShopDataSource
 }

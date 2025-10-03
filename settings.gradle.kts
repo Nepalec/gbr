@@ -27,6 +27,7 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS") // Enable usage like implemen
 
 include(":app")
 include(":core:designsystem")
+include(":core:common")
 include(":core:data")
 include(":core:network")
 include(":core:model")
