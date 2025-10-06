@@ -1,4 +1,4 @@
-package com.gbr.model
+package com.gbr.model.shop
 
 data class Chapter(
     val number: Int,

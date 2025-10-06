@@ -1,6 +1,6 @@
-package com.gbr.data
+package com.gbr.data.repository
 
-import com.gbr.model.Book
+import com.gbr.model.shop.Book
 import kotlinx.coroutines.flow.Flow
 
 interface ShopBooksRepository {
