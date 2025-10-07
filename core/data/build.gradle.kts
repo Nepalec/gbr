@@ -26,26 +26,26 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    
+
     // Hilt dependencies
     implementation(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
-    
+
     // Room dependencies
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
 }
 
-//// Fix for KAPT with Java 17+
-//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-//    kotlinOptions {
-//        jvmTarget = "17"
-//    }
-//}
+// Fix for KAPT with Java 17+
+// tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+//     kotlinOptions {
+//         jvmTarget = "17"
+//     }
+// }
 //
-//kapt {
-//    javacOptions {
-//        option("-Xmaxerrs", 500)
-//    }
-//}
+// kapt {
+//     javacOptions {
+//         option("-Xmaxerrs", 500)
+//     }
+// }

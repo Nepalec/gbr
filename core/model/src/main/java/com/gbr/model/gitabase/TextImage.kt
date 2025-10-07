@@ -12,7 +12,7 @@ data class TextImage(
     val content: String = "",
     val type: ImageType,
     val format: ImageFormat,
-    val fullPath: String = "",
+    val filePath: String = "",
     val sortIndex: Int = 0,
     val randomIndex: Int = 0
 ) {
@@ -33,7 +33,7 @@ data class TextImage(
      * Get full file path with protocol
      */
     fun getFullPath(): String {
-        return if (fullPath.startsWith("/")) "file://$fullPath" else "file:///$fullPath"
+        return if (filePath.startsWith("/")) "file://$filePath" else "file:///$filePath"
     }
 
     /**
@@ -110,7 +110,7 @@ data class TextImage(
                 description = description,
                 type = ImageType.BOOK_COVER,
                 format = ImageFormat.JPEG,
-                fullPath = fullPath
+                filePath = fullPath
             )
         }
     }
@@ -136,7 +136,7 @@ enum class ImageType(
     /**
      * Check if this image type is structural (affects layout)
      */
-    fun isStructural(): Boolean = isStructural
+    fun isStructuralType(): Boolean = isStructural
 }
 
 /**
@@ -155,5 +155,5 @@ enum class ImageFormat(
     /**
      * Get file extension for this format
      */
-    fun getFileExtension(): String = fileExtension
+    fun getExtension(): String = fileExtension
 }
