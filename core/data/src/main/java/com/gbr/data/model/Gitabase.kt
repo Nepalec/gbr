@@ -1,8 +1,6 @@
 package com.gbr.data.model
 
 import com.gbr.model.gitabase.GitabaseID
-import com.gbr.model.gitabase.GitabaseLang
-import com.gbr.model.gitabase.GitabaseType
 
 data class Gitabase(
     val id: GitabaseID,

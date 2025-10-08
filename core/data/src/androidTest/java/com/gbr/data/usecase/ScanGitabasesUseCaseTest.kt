@@ -4,14 +4,16 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.gbr.data.repository.GitabaseFilesRepo
-import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +32,6 @@ class ScanGitabasesUseCaseTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
-
 
     @Inject
     lateinit var scanGitabasesUseCase: ScanGitabasesUseCase
@@ -88,7 +89,6 @@ class ScanGitabasesUseCaseTest {
             "Should find all Gitabases",
             helpEng != null && helpRus != null && songsRus != null
         )
-
     }
 
     @Test
@@ -150,7 +150,6 @@ class ScanGitabasesUseCaseTest {
         )
     }
 
-
     @Test
     fun test_should_access_emulator_file_system() {
         // Verify we can access emulator file system
@@ -209,11 +208,10 @@ class ScanGitabasesUseCaseTest {
             val gitabases = result.getOrThrow()
             assertEquals(
                 "Concurrent scans should return same results",
-                firstResult.size, gitabases.size
+                firstResult.size,
+                gitabases.size
             )
         }
-
-
     }
 
     /**

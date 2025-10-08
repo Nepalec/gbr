@@ -34,16 +34,15 @@ dependencies {
     // DataStore dependencies
     implementation(libs.androidx.datastore.preferences)
 }
+// Fix for KAPT with Java 17+
+// tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+//     kotlinOptions {
+//         jvmTarget = "17"
+//     }
+// }
 //
-//// Fix for KAPT with Java 17+
-//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-//    kotlinOptions {
-//        jvmTarget = "17"
-//    }
-//}
-//
-//kapt {
-//    javacOptions {
-//        option("-Xmaxerrs", 500)
-//    }
-//}
+// kapt {
+//     javacOptions {
+//         option("-Xmaxerrs", 500)
+//     }
+// }

@@ -37,7 +37,6 @@ class GitabaseFilesRepoImpl @Inject constructor() : GitabaseFilesRepo {
         }
     }
 
-
     override fun setFolderPath(folderPath: String) {
         _folderPath.value = folderPath
     }

@@ -89,10 +89,10 @@ class ScanGitabasesUseCase @Inject constructor(
                         "SELECT name FROM sqlite_master WHERE type='table' AND name='books'",
                         null
                     )
-                    
+
                     val hasBooksTable = cursor.count > 0
                     cursor.close()
-                    
+
                     hasBooksTable
                 } finally {
                     database.close()

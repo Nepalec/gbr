@@ -1,6 +1,5 @@
 package com.gbr.data.repository
 
-import com.gbr.data.model.Gitabase
 import com.gbr.model.gitabase.GitabaseID
 
 interface GitabaseFilesRepo {
