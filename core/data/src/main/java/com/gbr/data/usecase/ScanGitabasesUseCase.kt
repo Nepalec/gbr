@@ -41,7 +41,7 @@ class ScanGitabasesUseCase @Inject constructor(
                 if (validateGitabaseFile(file)) {
                     val gitabase = createGitabaseFromFile(file)
                     validGitabases.add(gitabase)
-                    gitabaseFilesRepo.addGitabase(gitabase)
+                    gitabaseFilesRepo.addGitabase(gitabase.id)
                 }
             }
 
@@ -65,16 +65,40 @@ class ScanGitabasesUseCase @Inject constructor(
 
     /**
      * Validates if a file is a valid Gitabase database.
-     * Performs basic checks for file existence, readability, and size.
-     * This could be extended to perform more sophisticated SQLite validation.
+     * Opens the file as a SQLite database and checks if the books table exists.
+     * This provides real database validation instead of just file checks.
      */
     private suspend fun validateGitabaseFile(file: File): Boolean {
         return withContext(Dispatchers.IO) {
             try {
-                // Basic validation - check if file is a valid SQLite database
-                // This would need more sophisticated validation
-                file.exists() && file.canRead() && file.length() > 0
+                // Basic file checks first
+                if (!file.exists() || !file.canRead() || file.length() == 0L) {
+                    return@withContext false
+                }
+
+                // Open as SQLite database and check for books table
+                val database = android.database.sqlite.SQLiteDatabase.openDatabase(
+                    file.absolutePath,
+                    null,
+                    android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+                )
+
+                try {
+                    // Check if books table exists
+                    val cursor = database.rawQuery(
+                        "SELECT name FROM sqlite_master WHERE type='table' AND name='books'",
+                        null
+                    )
+                    
+                    val hasBooksTable = cursor.count > 0
+                    cursor.close()
+                    
+                    hasBooksTable
+                } finally {
+                    database.close()
+                }
             } catch (e: Exception) {
+                // If any error occurs (file not SQLite, corrupted, etc.), consider invalid
                 false
             }
         }
@@ -86,8 +110,8 @@ class ScanGitabasesUseCase @Inject constructor(
      */
     private fun createGitabaseFromFile(file: File): Gitabase {
         val gitabaseId = GitabaseID(
-            type = determineDatabaseType(file.nameWithoutExtension),
-            lang = determineLanguage(file.nameWithoutExtension)
+            type = determineDatabaseType(file.name),
+            lang = determineLanguage(file.name)
         )
         val name = file.nameWithoutExtension
         val path = file.absolutePath
@@ -96,8 +120,6 @@ class ScanGitabasesUseCase @Inject constructor(
             id = gitabaseId,
             name = name,
             path = path,
-            type = gitabaseId.type,
-            language = gitabaseId.lang,
             isValid = true,
             lastModified = file.lastModified()
         )

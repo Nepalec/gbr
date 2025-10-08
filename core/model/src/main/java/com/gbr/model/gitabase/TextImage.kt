@@ -20,7 +20,7 @@ data class TextImage(
     /**
      * Get file extension based on format
      */
-    fun getExtension(): String {
+    fun getFileExtension(): String {
         return when (format) {
             ImageFormat.GIF -> "gif"
             ImageFormat.PNG -> "png"
@@ -32,7 +32,7 @@ data class TextImage(
     /**
      * Get full file path with protocol
      */
-    fun getFullPath(): String {
+    fun getFullPathWithProtocol(): String {
         return if (filePath.startsWith("/")) "file://$filePath" else "file:///$filePath"
     }
 
@@ -131,12 +131,7 @@ enum class ImageType(
     FRESCO(4, "Fresco"),
     PLACE(5, "Place"),
     BOOK_COVER(10, "Book Cover"),
-    SONG_COVER(11, "Song Cover");
-
-    /**
-     * Check if this image type is structural (affects layout)
-     */
-    fun isStructuralType(): Boolean = isStructural
+    SONG_COVER(11, "Song Cover")
 }
 
 /**
@@ -150,10 +145,5 @@ enum class ImageFormat(
     GIF(1, "image/gif", "gif"),
     PNG(2, "image/png", "png"),
     JPEG(3, "image/jpeg", "jpg"),
-    SVG(4, "image/svg+xml", "svg");
-
-    /**
-     * Get file extension for this format
-     */
-    fun getExtension(): String = fileExtension
+    SVG(4, "image/svg+xml", "svg")
 }

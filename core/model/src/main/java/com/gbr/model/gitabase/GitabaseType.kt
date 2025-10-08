@@ -1,6 +1,6 @@
 package com.gbr.model.gitabase
 
-class GitabaseType(val value: String) {
+data class GitabaseType(val value: String) {
     companion object {
         val TEXTS = GitabaseType("texts")
         val HELP = GitabaseType("help")
@@ -9,7 +9,7 @@ class GitabaseType(val value: String) {
     }
 }
 
-class GitabaseLang(val value: String) {
+data class GitabaseLang(val value: String) {
     companion object {
         val ENG = GitabaseLang("eng")
         val RUS = GitabaseLang("rus")

@@ -19,6 +19,19 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
+    testOptions {
+        // Grant permissions automatically for tests
+        // execution 'ANDROIDX_TEST_ORCHESTRATOR'
+
+        // Test-specific configurations
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+
+        // Grant permissions for tests
+        animationsDisabled = true
+    }
 }
 
 dependencies {
@@ -35,6 +48,22 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
+
+    // Test dependencies
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.truth)
+
+    // Android test dependencies
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+
+    // Hilt test dependencies
+    kaptAndroidTest(libs.hilt.compiler)
 }
 
 // Fix for KAPT with Java 17+

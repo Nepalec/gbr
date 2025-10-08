@@ -8,8 +8,6 @@ data class Gitabase(
     val id: GitabaseID,
     val name: String,
     val path: String,
-    val type: GitabaseType,
-    val language: GitabaseLang,
     val isValid: Boolean = true,
     val lastModified: Long = System.currentTimeMillis()
 )
