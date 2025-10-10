@@ -16,6 +16,7 @@ junit4 = "4.13.2"
 androidxComposeUiTooling = "1.6.2"
 daggerHilt = "2.48.1"
 androidxHiltNavigationCompose = "1.2.0"
+androidxNavigationCompose = "2.7.7"
 timber = "5.0.1"
 androidDesugarJdkLibs = "2.0.4"
 androidxJunit = "1.2.1"
@@ -57,6 +58,7 @@ androidx-compose-material3-windowSizeClass = { group = "androidx.compose.materia
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "daggerHilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigationCompose" }
 dagger-hilt-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "daggerHilt" }
 
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
