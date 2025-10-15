@@ -1,5 +1,6 @@
 package com.gbr.settings.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,10 @@ fun SettingsScreen(
     onNavigateBack: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
+    BackHandler {
+        onNavigateBack()
+    }
+    
     Scaffold(
         topBar = {
             SettingsAppBar(

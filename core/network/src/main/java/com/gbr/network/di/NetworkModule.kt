@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.tracing.trace
 import coil.ImageLoader
 import coil.util.DebugLogger
+import com.gbr.network.IGitabasesDescDataSource
+import com.gbr.network.GitabasesDescRetrofitDataSource
 import com.gbr.network.IShopDataSource
 import com.gbr.network.ShopRetrofitDataSource
 import dagger.Binds
@@ -68,4 +70,8 @@ internal abstract class NetworkBindingsModule {
     @Binds
     @Singleton
     abstract fun bindShopDataSource(shopRetrofitDataSource: ShopRetrofitDataSource): IShopDataSource
+    
+    @Binds
+    @Singleton
+    abstract fun bindGitabasesDescDataSource(gitabasesDescRetrofitDataSource: GitabasesDescRetrofitDataSource): IGitabasesDescDataSource
 }

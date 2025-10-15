@@ -1,38 +1,33 @@
-
 package com.gbr.network
 
 import androidx.tracing.trace
-import com.gbr.network.model.NetworkShopContentResp
+import com.gbr.network.model.NetworkGitabasesDescResp
 import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.Query
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Retrofit API declaration for NIA Network API
+ * Retrofit API declaration for GitabasesDesc Network API
  */
-private interface RetrofitShopNetworkApi {
-    @GET(value = "get_shop_root.php")
-    suspend fun getShopRoot(
-        @Query("lang") lang: String,
-    ): NetworkShopContentResp
-
+private interface RetrofitGitabasesDescNetworkApi {
+    @GET(value = "get_gitabases_desc.php")
+    suspend fun getGitabasesDesc(): NetworkGitabasesDescResp
 }
 
-private const val BASE_URL = BuildConfig.SHOP_BASE_URL
+private const val BASE_URL = BuildConfig.BASE_URL
 
 @Singleton
-internal class ShopRetrofitDataSource @Inject constructor(
+internal class GitabasesDescRetrofitDataSource @Inject constructor(
     networkJson: Json,
     okhttpCallFactory: dagger.Lazy<Call.Factory>,
-) : IShopDataSource {
+) : IGitabasesDescDataSource {
 
-    private val networkApi = trace("RetrofitShopNetwork") {
+    private val networkApi = trace("RetrofitGitabasesDescNetwork") {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             // We use callFactory lambda here with dagger.Lazy<Call.Factory>
@@ -42,9 +37,8 @@ internal class ShopRetrofitDataSource @Inject constructor(
                 networkJson.asConverterFactory("application/json".toMediaType()),
             )
             .build()
-            .create(RetrofitShopNetworkApi::class.java)
+            .create(RetrofitGitabasesDescNetworkApi::class.java)
     }
 
-    override suspend fun getShopContents(lang:String): NetworkShopContentResp = networkApi.getShopRoot(lang)
-
+    override suspend fun getGitabasesDesc(): NetworkGitabasesDescResp = networkApi.getGitabasesDesc()
 }
