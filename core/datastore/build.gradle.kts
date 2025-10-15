@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.gbr.android.hilt)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
     alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.org.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -33,6 +34,9 @@ dependencies {
 
     // DataStore dependencies
     implementation(libs.androidx.datastore.preferences)
+    
+    // Serialization dependencies
+    implementation(libs.kotlinx.serialization.json)
 }
 // Fix for KAPT with Java 17+
 // tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
