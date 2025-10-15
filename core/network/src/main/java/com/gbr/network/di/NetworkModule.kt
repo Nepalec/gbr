@@ -22,7 +22,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal object NetworkModule {
+public object NetworkModule {
 
     @Provides
     @Singleton
@@ -66,7 +66,7 @@ internal object NetworkModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal abstract class NetworkBindingsModule {
+public abstract class NetworkBindingsModule {
     @Binds
     @Singleton
     abstract fun bindShopDataSource(shopRetrofitDataSource: ShopRetrofitDataSource): IShopDataSource

@@ -27,7 +27,7 @@ private interface RetrofitShopNetworkApi {
 private const val BASE_URL = BuildConfig.SHOP_BASE_URL
 
 @Singleton
-internal class ShopRetrofitDataSource @Inject constructor(
+public class ShopRetrofitDataSource @Inject constructor(
     networkJson: Json,
     okhttpCallFactory: dagger.Lazy<Call.Factory>,
 ) : IShopDataSource {

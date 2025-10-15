@@ -4,6 +4,8 @@ import com.gbr.data.repository.GitabaseFilesRepo
 import com.gbr.data.repository.GitabaseFilesRepoImpl
 import com.gbr.data.repository.GitabaseTextsRepo
 import com.gbr.data.repository.GitabaseTextsRepoImpl
+import com.gbr.data.repository.GitabasesDescRepository
+import com.gbr.data.repository.GitabasesDescRepositoryImpl
 import com.gbr.data.repository.UserDataRepository
 import com.gbr.data.repository.UserDataRepositoryImpl
 import dagger.Binds
@@ -27,4 +29,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindUserDataRepository(userDataRepositoryImpl: UserDataRepositoryImpl): UserDataRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindGitabasesDescRepository(gitabasesDescRepositoryImpl: GitabasesDescRepositoryImpl): GitabasesDescRepository
 }

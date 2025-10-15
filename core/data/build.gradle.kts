@@ -36,6 +36,7 @@ android {
 
 dependencies {
     api(projects.core.model)
+    implementation(projects.core.network)
     implementation(projects.core.datastore)
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
@@ -55,6 +56,8 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.truth)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.hilt.android.testing)
 
     // Android test dependencies
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -65,6 +68,7 @@ dependencies {
 
     // Hilt test dependencies
     kaptAndroidTest(libs.hilt.compiler)
+    kaptTest(libs.hilt.compiler)
 }
 
 // Fix for KAPT with Java 17+

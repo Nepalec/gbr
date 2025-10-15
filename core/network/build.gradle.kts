@@ -9,6 +9,10 @@ plugins {
 android {
     namespace = "com.gbr.network"
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -16,7 +20,7 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "BASE_URL", "\"https://gitabase.com/api/v2/\"")
+            buildConfigField("String", "BASE_URL", "\"https://gitabase.com/\"")
             buildConfigField("String", "SHOP_BASE_URL", "\"https://gitabase.com/shop/api/v2/\"")
         }
         release {
