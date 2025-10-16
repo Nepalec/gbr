@@ -15,14 +15,15 @@ class ExtractGitabasesUseCase @Inject constructor(
 
     /**
      * Extracts Gitabase database files from app resources to the specified destination folder.
-     * 
+     * Extracts 4 files: 2 help gitabases and 2 test gitabases.
+     *
      * @param destinationFolder The folder where the Gitabase files should be extracted
-     * @param resourceFiles List of resource file names to extract (defaults to common Gitabase files)
+     * @param resourceFiles List of resource file names to extract (defaults to all 4 files)
      * @return Result containing the list of extracted file paths or an error
      */
     suspend fun execute(
         destinationFolder: File,
-        resourceFiles: List<String> = DEFAULT_GITABASE_FILES
+        resourceFiles: List<String> = HELP_GITABASE_FILES
     ): Result<List<String>> {
         return try {
             // Ensure destination folder exists
@@ -49,7 +50,8 @@ class ExtractGitabasesUseCase @Inject constructor(
 
     /**
      * Extracts a single Gitabase file from resources to the destination folder.
-     * 
+     * Handles both help gitabases (from gitabases/ folder) and test gitabases (from test_gitabases/ folder).
+     *
      * @param fileName The name of the file in resources
      * @param destinationFolder The destination folder
      * @return The extracted file
@@ -57,12 +59,19 @@ class ExtractGitabasesUseCase @Inject constructor(
      */
     private fun extractSingleFile(fileName: String, destinationFolder: File): File {
         try {
+            // Determine the resource path based on file type
+            val resourcePath = when {
+                fileName in HELP_GITABASE_FILES -> "gitabases/$fileName"
+                fileName in TEST_GITABASE_FILES -> "test_gitabases/$fileName"
+                else -> "gitabases/$fileName" // Default fallback
+            }
+
             // Read from resources
-            val resourceStream = context.resources.assets.open("gitabases/$fileName")
-            
+            val resourceStream = context.resources.assets.open(resourcePath)
+
             // Create destination file
             val destinationFile = File(destinationFolder, fileName)
-            
+
             // Copy to device storage
             destinationFile.outputStream().use { output ->
                 resourceStream.use { input ->
@@ -78,12 +87,15 @@ class ExtractGitabasesUseCase @Inject constructor(
 
     /**
      * Gets the list of available Gitabase files in the app resources.
-     * 
+     * Returns files from both gitabases/ and test_gitabases/ folders.
+     *
      * @return List of available Gitabase file names
      */
     fun getAvailableGitabaseFiles(): List<String> {
         return try {
-            context.resources.assets.list("gitabases")?.toList() ?: emptyList()
+            val helpFiles = context.resources.assets.list("gitabases")?.toList() ?: emptyList()
+            val testFiles = context.resources.assets.list("test_gitabases")?.toList() ?: emptyList()
+            helpFiles + testFiles
         } catch (e: Exception) {
             emptyList()
         }
@@ -91,13 +103,33 @@ class ExtractGitabasesUseCase @Inject constructor(
 
     /**
      * Checks if a specific Gitabase file exists in resources.
-     * 
+     * Checks both gitabases/ and test_gitabases/ folders.
+     *
      * @param fileName The name of the file to check
      * @return True if the file exists in resources, false otherwise
      */
     fun isGitabaseFileAvailable(fileName: String): Boolean {
         return try {
-            context.resources.assets.open("gitabases/$fileName").use { true }
+            when {
+                fileName in HELP_GITABASE_FILES -> {
+                    context.resources.assets.open("gitabases/$fileName").use { true }
+                }
+                fileName in TEST_GITABASE_FILES -> {
+                    context.resources.assets.open("test_gitabases/$fileName").use { true }
+                }
+                else -> {
+                    // Try both locations
+                    try {
+                        context.resources.assets.open("gitabases/$fileName").use { true }
+                    } catch (e: Exception) {
+                        try {
+                            context.resources.assets.open("test_gitabases/$fileName").use { true }
+                        } catch (e: Exception) {
+                            false
+                        }
+                    }
+                }
+            }
         } catch (e: Exception) {
             false
         }
@@ -105,12 +137,24 @@ class ExtractGitabasesUseCase @Inject constructor(
 
     companion object {
         /**
-         * Default list of Gitabase files to extract.
+         * Help Gitabase files (2 files) - located in gitabases/ folder
          */
-        val DEFAULT_GITABASE_FILES = listOf(
+        val HELP_GITABASE_FILES = listOf(
             "gitabase_help_eng.db",
-            "gitabase_help_rus.db",
-            "gitabase_songs_rus.db"
+            "gitabase_help_rus.db"
         )
+
+        /**
+         * Test Gitabase files (2 files) - located in test_gitabases/ folder
+         */
+        val TEST_GITABASE_FILES = listOf(
+            "gitabase_songs_rus.db",
+            "gitabase_invaliddb_eng.db"
+        )
+
+        /**
+         * All Gitabase files (4 files total: 2 help + 2 test)
+         */
+        val ALL_GITABASE_FILES = HELP_GITABASE_FILES + TEST_GITABASE_FILES
     }
 }

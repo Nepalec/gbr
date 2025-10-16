@@ -1,9 +1,9 @@
 package com.gbr.data.usecase
 
 import android.content.Context
+import com.gbr.data.usecase.ExtractGitabasesUseCase.Companion.ALL_GITABASE_FILES
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import java.io.ByteArrayInputStream
 import java.io.File
 import kotlinx.coroutines.test.runTest
@@ -23,7 +23,7 @@ class ExtractGitabasesUseCaseTest {
     fun setUp() {
         context = mockk()
         extractGitabasesUseCase = ExtractGitabasesUseCase(context)
-        
+
         // Create a temporary test folder
         testFolder = File.createTempFile("test_gitabases", "")
         testFolder.delete()
@@ -35,30 +35,34 @@ class ExtractGitabasesUseCaseTest {
         // Mock context resources
         val mockResources = mockk<android.content.res.Resources>()
         val mockAssets = mockk<android.content.res.AssetManager>()
-        
+
         every { context.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
-        
-        // Mock asset files
+
+        // Mock asset files for both directories
         every { mockAssets.list("gitabases") } returns arrayOf(
             "gitabase_help_eng.db",
-            "gitabase_help_rus.db",
-            "gitabase_songs_rus.db"
+            "gitabase_help_rus.db"
         )
-        
-        // Mock asset input streams
+        every { mockAssets.list("test_gitabases") } returns arrayOf(
+            "gitabase_songs_rus.db",
+            "gitabase_invaliddb_eng.db"
+        )
+
+        // Mock asset input streams for all 4 files
         every { mockAssets.open("gitabases/gitabase_help_eng.db") } returns ByteArrayInputStream("test data".toByteArray())
         every { mockAssets.open("gitabases/gitabase_help_rus.db") } returns ByteArrayInputStream("test data".toByteArray())
-        every { mockAssets.open("gitabases/gitabase_songs_rus.db") } returns ByteArrayInputStream("test data".toByteArray())
+        every { mockAssets.open("test_gitabases/gitabase_songs_rus.db") } returns ByteArrayInputStream("test data".toByteArray())
+        every { mockAssets.open("test_gitabases/gitabase_invaliddb_eng.db") } returns ByteArrayInputStream("test data".toByteArray())
 
         // Execute
-        val result = extractGitabasesUseCase.execute(testFolder)
+        val result = extractGitabasesUseCase.execute(testFolder, ALL_GITABASE_FILES)
 
         // Verify
         assertTrue("Should succeed", result.isSuccess)
         val extractedFiles = result.getOrThrow()
-        assertEquals("Should extract 3 files", 3, extractedFiles.size)
-        
+        assertEquals("Should extract 4 files (2 help + 2 test)", 4, extractedFiles.size)
+
         // Verify files were created
         extractedFiles.forEach { filePath ->
             val file = File(filePath)
@@ -71,13 +75,13 @@ class ExtractGitabasesUseCaseTest {
         // Mock context resources
         val mockResources = mockk<android.content.res.Resources>()
         val mockAssets = mockk<android.content.res.AssetManager>()
-        
+
         every { context.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
-        
+
         // Mock asset files (empty list)
         every { mockAssets.list("gitabases") } returns emptyArray()
-        
+
         // Mock asset input streams to throw exception
         every { mockAssets.open("gitabases/gitabase_help_eng.db") } throws Exception("File not found")
 
@@ -94,21 +98,29 @@ class ExtractGitabasesUseCaseTest {
         // Mock context resources
         val mockResources = mockk<android.content.res.Resources>()
         val mockAssets = mockk<android.content.res.AssetManager>()
-        
+
         every { context.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
+
+        // Mock both directories
         every { mockAssets.list("gitabases") } returns arrayOf(
             "gitabase_help_eng.db",
             "gitabase_help_rus.db"
+        )
+        every { mockAssets.list("test_gitabases") } returns arrayOf(
+            "gitabase_songs_rus.db",
+            "gitabase_invaliddb_eng.db"
         )
 
         // Execute
         val availableFiles = extractGitabasesUseCase.getAvailableGitabaseFiles()
 
         // Verify
-        assertEquals("Should return 2 files", 2, availableFiles.size)
+        assertEquals("Should return 4 files (2 help + 2 test)", 4, availableFiles.size)
         assertTrue("Should contain help_eng", availableFiles.contains("gitabase_help_eng.db"))
         assertTrue("Should contain help_rus", availableFiles.contains("gitabase_help_rus.db"))
+        assertTrue("Should contain songs_rus", availableFiles.contains("gitabase_songs_rus.db"))
+        assertTrue("Should contain invaliddb_eng", availableFiles.contains("gitabase_invaliddb_eng.db"))
     }
 
     @Test
@@ -116,7 +128,7 @@ class ExtractGitabasesUseCaseTest {
         // Mock context resources
         val mockResources = mockk<android.content.res.Resources>()
         val mockAssets = mockk<android.content.res.AssetManager>()
-        
+
         every { context.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
         every { mockAssets.open("gitabases/gitabase_help_eng.db") } returns ByteArrayInputStream("test data".toByteArray())
@@ -133,7 +145,7 @@ class ExtractGitabasesUseCaseTest {
         // Mock context resources
         val mockResources = mockk<android.content.res.Resources>()
         val mockAssets = mockk<android.content.res.AssetManager>()
-        
+
         every { context.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
         every { mockAssets.open("gitabases/nonexistent.db") } throws Exception("File not found")

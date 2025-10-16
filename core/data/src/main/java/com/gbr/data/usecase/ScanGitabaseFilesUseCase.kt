@@ -2,6 +2,8 @@ package com.gbr.data.usecase
 
 import com.gbr.model.gitabase.Gitabase
 import com.gbr.data.repository.GitabasesRepository
+import com.gbr.data.repository.GitabasesDescRepository
+import com.gbr.data.model.GitabaseDesc
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType
@@ -15,7 +17,8 @@ import javax.inject.Inject
  * Handles file system operations, database validation, and type/language detection.
  */
 class ScanGitabaseFilesUseCase @Inject constructor(
-    private val gitabasesRepository: GitabasesRepository
+    private val gitabasesRepository: GitabasesRepository,
+    private val gitabasesDescRepository: GitabasesDescRepository
 ) {
 
     /**
@@ -45,7 +48,10 @@ class ScanGitabaseFilesUseCase @Inject constructor(
                 }
             }
 
-            Result.success(validGitabases)
+            // Enrich Gitabase objects with data from GitabasesDescRepository
+            val enrichedGitabases = enrichGitabasesWithDescData(validGitabases)
+
+            Result.success(enrichedGitabases)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -170,5 +176,47 @@ class ScanGitabaseFilesUseCase @Inject constructor(
             }
         }
         return GitabaseLang.ENG
+    }
+
+    /**
+     * Enriches Gitabase objects with title and lastModified data from GitabasesDescRepository.
+     * Links Gitabase objects to GitabaseDesc objects based on GitabaseID (type + lang) matching
+     * GitabaseDesc (gbalias + gblang).
+     */
+    private suspend fun enrichGitabasesWithDescData(gitabases: List<Gitabase>): List<Gitabase> {
+        return try {
+            // Fetch GitabaseDesc data
+            val descResponse = gitabasesDescRepository.getGitabasesDesc()
+            
+            if (descResponse.success != 1) {
+                // If we can't get desc data, return original gitabases
+                return gitabases
+            }
+
+            // Create a mapping from (gbalias, gblang) to GitabaseDesc
+            val descMap = descResponse.gitabases.associateBy { desc ->
+                Pair(desc.gbalias, desc.gblang)
+            }
+
+            // Enrich each Gitabase with matching GitabaseDesc data
+            gitabases.map { gitabase ->
+                val descKey = Pair(gitabase.id.type.value, gitabase.id.lang.value)
+                val matchingDesc = descMap[descKey]
+                
+                if (matchingDesc != null) {
+                    // Update the Gitabase with enriched data
+                    gitabase.copy(
+                        title = matchingDesc.gbname,
+                        lastModified = matchingDesc.lastModified
+                    )
+                } else {
+                    // No matching desc found, return original gitabase
+                    gitabase
+                }
+            }
+        } catch (e: Exception) {
+            // If enrichment fails, return original gitabases
+            gitabases
+        }
     }
 }
