@@ -187,7 +187,7 @@ class ScanGitabaseFilesUseCase @Inject constructor(
         return try {
             // Fetch GitabaseDesc data
             val descResponse = gitabasesDescRepository.getGitabasesDesc()
-            
+
             if (descResponse.success != 1) {
                 // If we can't get desc data, return original gitabases
                 return gitabases
@@ -202,7 +202,7 @@ class ScanGitabaseFilesUseCase @Inject constructor(
             gitabases.map { gitabase ->
                 val descKey = Pair(gitabase.id.type.value, gitabase.id.lang.value)
                 val matchingDesc = descMap[descKey]
-                
+
                 if (matchingDesc != null) {
                     // Update the Gitabase with enriched data
                     gitabase.copy(

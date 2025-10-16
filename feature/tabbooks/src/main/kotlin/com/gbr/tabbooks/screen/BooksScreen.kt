@@ -1,9 +1,21 @@
 package com.gbr.tabbooks.screen
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.gbr.designsystem.R
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -13,9 +25,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,6 +41,7 @@ fun BooksScreen(
     onNavigateToSettings: () -> Unit = {},
     viewModel: BooksViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -36,31 +49,78 @@ fun BooksScreen(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                Text(
-                    text = "Menu",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(16.dp)
-                )
-                NavigationDrawerItem(
-                    label = { Text("Item 1") },
-                    selected = false,
-                    onClick = {
-                        scope.launch {
-                            drawerState.close()
+                // Header with title and action buttons
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Gitabase Files",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Download from internet button
+                        OutlinedIconButton(
+                            onClick = {
+                                // TODO: Implement download from internet functionality
+                            }
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.download_24px),
+                                contentDescription = "Download from internet",
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
-                        // Handle item 1 click
-                    }
-                )
-                NavigationDrawerItem(
-                    label = { Text("Item 2") },
-                    selected = false,
-                    onClick = {
-                        scope.launch {
-                            drawerState.close()
+                        
+                        // Add from local storage button
+                        OutlinedIconButton(
+                            onClick = {
+                                // TODO: Implement add from local storage functionality
+                            }
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.folder_24px),
+                                contentDescription = "Add from local storage",
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
-                        // Handle item 2 click
                     }
-                )
+                }
+                
+                // Display gitabase titles as drawer items
+                uiState.gitabases.forEach { gitabase ->
+                    NavigationDrawerItem(
+                        label = { 
+                            Text(
+                                text = gitabase.title,
+                                maxLines = 2
+                            ) 
+                        },
+                        selected = uiState.selectedGitabase?.id == gitabase.id,
+                        onClick = {
+                            scope.launch {
+                                drawerState.close()
+                            }
+                            viewModel.selectGitabase(gitabase)
+                        }
+                    )
+                }
+                
+                // Show message if no gitabases found
+                if (uiState.gitabases.isEmpty()) {
+                    Text(
+                        text = "No Gitabase files found",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     ) {
@@ -82,14 +142,58 @@ fun BooksScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentAlignment = Alignment.Center
+                contentAlignment = androidx.compose.ui.Alignment.Center
             ) {
-                Text(
-                    text = "Books Content",
-                    style = MaterialTheme.typography.headlineLarge,
-                    textAlign = TextAlign.Center,
-                    fontSize = 24.sp
-                )
+                if (uiState.error != null) {
+                    Text(
+                        text = "Error: ${uiState.error}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                } else if (uiState.selectedGitabase != null) {
+                    val selectedGitabase = uiState.selectedGitabase
+                    Column(
+                        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Selected Gitabase",
+                            style = MaterialTheme.typography.headlineMedium,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = selectedGitabase?.title ?: "Unknown",
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Type: ${selectedGitabase?.id?.type?.value ?: "Unknown"} | Language: ${selectedGitabase?.id?.lang?.value ?: "Unknown"}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    Column(
+                        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Found ${uiState.gitabases.size} Gitabase files",
+                            style = MaterialTheme.typography.headlineLarge,
+                            textAlign = TextAlign.Center,
+                            fontSize = 24.sp
+                        )
+                        Text(
+                            text = "Select a Gitabase from the menu to view its books",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
         }
     }

@@ -5,6 +5,7 @@ import com.gbr.data.repository.GitabasesRepository
 import com.gbr.data.repository.GitabasesDescRepository
 import com.gbr.data.usecase.ExtractGitabasesUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
+import com.gbr.data.usecase.InitializeGitabasesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,5 +30,16 @@ object UseCaseModule {
     @Singleton
     fun provideExtractGitabasesUseCase(@ApplicationContext context: Context): ExtractGitabasesUseCase {
         return ExtractGitabasesUseCase(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideInitializeGitabasesUseCase(
+        @ApplicationContext context: Context,
+        scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase,
+        extractGitabasesUseCase: ExtractGitabasesUseCase,
+        gitabasesRepository: GitabasesRepository
+    ): InitializeGitabasesUseCase {
+        return InitializeGitabasesUseCase(context, scanGitabaseFilesUseCase, extractGitabasesUseCase, gitabasesRepository)
     }
 }
