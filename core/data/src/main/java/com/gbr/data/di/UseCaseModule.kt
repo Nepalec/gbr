@@ -1,9 +1,9 @@
 package com.gbr.data.di
 
 import android.content.Context
-import com.gbr.data.repository.GitabaseFilesRepo
+import com.gbr.data.repository.GitabasesRepository
 import com.gbr.data.usecase.ExtractGitabasesUseCase
-import com.gbr.data.usecase.ScanGitabasesUseCase
+import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,8 +17,8 @@ object UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideScanGitabasesUseCase(gitabaseFilesRepo: GitabaseFilesRepo): ScanGitabasesUseCase {
-        return ScanGitabasesUseCase(gitabaseFilesRepo)
+    fun provideScanGitabasesUseCase(gitabasesRepository: GitabasesRepository): ScanGitabaseFilesUseCase {
+        return ScanGitabaseFilesUseCase(gitabasesRepository)
     }
 
     @Provides

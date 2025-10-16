@@ -1,7 +1,7 @@
 package com.gbr.data.di
 
-import com.gbr.data.repository.GitabaseFilesRepo
-import com.gbr.data.repository.GitabaseFilesRepoImpl
+import com.gbr.data.repository.GitabasesRepository
+import com.gbr.data.repository.GitabasesRepositoryImpl
 import com.gbr.data.repository.GitabaseTextsRepo
 import com.gbr.data.repository.GitabaseTextsRepoImpl
 import com.gbr.data.repository.GitabasesDescRepository
@@ -20,7 +20,7 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindGitabaseFilesRepo(gitabaseFilesRepoImpl: GitabaseFilesRepoImpl): GitabaseFilesRepo
+    abstract fun bindGitabasesRepository(gitabasesRepositoryImpl: GitabasesRepositoryImpl): GitabasesRepository
 
     @Binds
     @Singleton

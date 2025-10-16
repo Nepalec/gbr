@@ -3,7 +3,7 @@ package com.gbr.data.usecase
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.gbr.data.repository.GitabaseFilesRepo
+import com.gbr.data.repository.GitabasesRepository
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -28,16 +28,16 @@ import javax.inject.Inject
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class ScanGitabasesUseCaseTest {
+class ScanGitabaseFilesUseCaseTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var scanGitabasesUseCase: ScanGitabasesUseCase
+    lateinit var scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase
 
     @Inject
-    lateinit var gitabaseFilesRepo: GitabaseFilesRepo
+    lateinit var gitabasesRepository: GitabasesRepository
 
     private lateinit var testFolder: File
     private lateinit var context: Context
@@ -64,7 +64,7 @@ class ScanGitabasesUseCaseTest {
     @Test
     fun execute_should_scan_folder_and_find_valid_Gitabase_files() = runTest {
         // Execute the use case
-        val result = scanGitabasesUseCase.execute(testFolder.absolutePath)
+        val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
 
         // Verify success
         assertTrue("Scan should succeed", result.isSuccess)
@@ -95,7 +95,7 @@ class ScanGitabasesUseCaseTest {
     fun execute_should_handle_invalid_folder_path() = runTest {
         val invalidPath = "/non/existent/path"
 
-        val result = scanGitabasesUseCase.execute(invalidPath)
+        val result = scanGitabaseFilesUseCase.execute(invalidPath)
 
         assertTrue("Should fail for invalid path", result.isFailure)
         assertTrue(
@@ -109,7 +109,7 @@ class ScanGitabasesUseCaseTest {
         val emptyFolder = File(context.getExternalFilesDir(null), "empty_test")
         emptyFolder.mkdirs()
 
-        val result = scanGitabasesUseCase.execute(emptyFolder.absolutePath)
+        val result = scanGitabaseFilesUseCase.execute(emptyFolder.absolutePath)
 
         assertTrue("Should succeed for empty folder", result.isSuccess)
         assertTrue("Should return empty list", result.getOrThrow().isEmpty())
@@ -123,7 +123,7 @@ class ScanGitabasesUseCaseTest {
         val invalidDb = File(testFolder, "gitabase_invalid_eng.db")
         invalidDb.writeText("This is not a valid SQLite database")
 
-        val result = scanGitabasesUseCase.execute(testFolder.absolutePath)
+        val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
 
         assertTrue("Should succeed", result.isSuccess)
         val gitabases = result.getOrThrow()
@@ -136,14 +136,14 @@ class ScanGitabasesUseCaseTest {
     @Test
     fun execute_should_add_Gitabases_to_repository() = runTest {
         // Clear repository first by getting initial state
-        val initialGitabases = gitabaseFilesRepo.getAllGitabases()
+        val initialGitabases = gitabasesRepository.getAllGitabases()
 
-        val result = scanGitabasesUseCase.execute(testFolder.absolutePath)
+        val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
 
         assertTrue("Should succeed", result.isSuccess)
 
         // Verify Gitabases were added to repository
-        val availableGitabases = gitabaseFilesRepo.getAllGitabases()
+        val availableGitabases = gitabasesRepository.getAllGitabases()
         assertTrue(
             "Repository should contain discovered Gitabases",
             availableGitabases.size >= initialGitabases.size
@@ -189,11 +189,11 @@ class ScanGitabasesUseCaseTest {
     @Test
     fun test_should_handle_concurrent_scanning() = runTest {
         // Test multiple concurrent scans
-        val results = mutableListOf<Result<List<com.gbr.data.model.Gitabase>>>()
+        val results = mutableListOf<Result<List<com.gbr.model.gitabase.Gitabase>>>()
 
         // Launch multiple concurrent scans
         repeat(3) {
-            val result = scanGitabasesUseCase.execute(testFolder.absolutePath)
+            val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
             results.add(result)
         }
 

@@ -1,7 +1,7 @@
 package com.gbr.data.repository
 
 import com.gbr.data.database.GitabaseDatabase
-import com.gbr.data.model.BookItem
+import com.gbr.model.gitabase.BookItem
 import com.gbr.model.gitabase.GitabaseID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -22,14 +22,14 @@ class GitabaseTextsRepoImpl @Inject constructor() : GitabaseTextsRepo {
             books.map { book ->
                 BookItem(
                     id = book._id,
+                    uid = book._id.toString(),
                     title = book.title ?: "",
-                    author = book.author,
-                    description = book.desc,
-                    type = book.type,
-                    levels = book.levels,
-                    hasSanskrit = book.hasSanskrit == 1,
-                    hasPurport = book.hasPurport == 1,
-                    compareCode = book.compare_code
+                    author = book.author ?: "",
+                    abbreviation = "",
+                    code = book.type ?: "",
+                    compareCode = book.compare_code ?: "",
+                    levels = (book.levels ?: 0).toInt(),
+                    hasSanskrit = book.hasSanskrit == 1
                 )
             }
         }

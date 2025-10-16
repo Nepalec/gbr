@@ -1,7 +1,7 @@
 package com.gbr.data.usecase
 
-import com.gbr.data.model.Gitabase
-import com.gbr.data.repository.GitabaseFilesRepo
+import com.gbr.model.gitabase.Gitabase
+import com.gbr.data.repository.GitabasesRepository
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType
@@ -14,8 +14,8 @@ import javax.inject.Inject
  * Use case for scanning folders and discovering Gitabase database files.
  * Handles file system operations, database validation, and type/language detection.
  */
-class ScanGitabasesUseCase @Inject constructor(
-    private val gitabaseFilesRepo: GitabaseFilesRepo
+class ScanGitabaseFilesUseCase @Inject constructor(
+    private val gitabasesRepository: GitabasesRepository
 ) {
 
     /**
@@ -41,7 +41,7 @@ class ScanGitabasesUseCase @Inject constructor(
                 if (validateGitabaseFile(file)) {
                     val gitabase = createGitabaseFromFile(file)
                     validGitabases.add(gitabase)
-                    gitabaseFilesRepo.addGitabase(gitabase.id)
+                    gitabasesRepository.addGitabase(gitabase)
                 }
             }
 
@@ -113,15 +113,17 @@ class ScanGitabasesUseCase @Inject constructor(
             type = determineDatabaseType(file.name),
             lang = determineLanguage(file.name)
         )
-        val name = file.nameWithoutExtension
-        val path = file.absolutePath
+        val title = file.nameWithoutExtension
+        val filePath = file.absolutePath
 
         return Gitabase(
             id = gitabaseId,
-            name = name,
-            path = path,
-            isValid = true,
-            lastModified = file.lastModified()
+            title = title,
+            version = 1, // Default version
+            filePath = filePath,
+            isShopDatabase = gitabaseId.type == GitabaseType.SHOP,
+            hasTranslation = false, // Default to false, can be determined later
+            lastModified = file.lastModified().toString()
         )
     }
 
