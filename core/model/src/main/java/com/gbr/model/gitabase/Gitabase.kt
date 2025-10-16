@@ -8,4 +8,14 @@ data class Gitabase(
     val isShopDatabase: Boolean = false,
     val hasTranslation: Boolean = false,
     val lastModified: String
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Gitabase) return false
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+}

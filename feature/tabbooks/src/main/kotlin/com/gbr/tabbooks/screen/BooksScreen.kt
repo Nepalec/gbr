@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -28,11 +29,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.tabbooks.components.CustomAppBar
 import com.gbr.tabbooks.viewmodel.BooksViewModel
+import com.gbr.model.gitabase.GitabaseType
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,6 +49,9 @@ fun BooksScreen(
     val uiState by viewModel.uiState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    
+    // State for file picker
+    var showFilePicker by remember { mutableStateOf(false) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -81,7 +89,7 @@ fun BooksScreen(
                         // Add from local storage button
                         OutlinedIconButton(
                             onClick = {
-                                // TODO: Implement add from local storage functionality
+                                showFilePicker = true
                             }
                         ) {
                             Icon(
@@ -93,24 +101,48 @@ fun BooksScreen(
                     }
                 }
                 
-                // Display gitabase titles as drawer items
-                uiState.gitabases.forEach { gitabase ->
-                    NavigationDrawerItem(
-                        label = { 
-                            Text(
-                                text = gitabase.title,
-                                maxLines = 2
-                            ) 
-                        },
-                        selected = uiState.selectedGitabase?.id == gitabase.id,
-                        onClick = {
-                            scope.launch {
-                                drawerState.close()
+                    // Display gitabase titles as drawer items
+                    uiState.gitabases.forEach { gitabase ->
+                        val canDelete = gitabase.id.type != GitabaseType.HELP && gitabase.id.type != GitabaseType.MY_BOOKS
+                        
+                        NavigationDrawerItem(
+                            label = { 
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = gitabase.title,
+                                        maxLines = 2,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    
+                                    if (canDelete) {
+                                        IconButton(
+                                            onClick = {
+                                                viewModel.removeGitabase(gitabase)
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = ImageVector.vectorResource(R.drawable.delete_24px),
+                                                contentDescription = "Delete ${gitabase.title}",
+                                                modifier = Modifier.size(20.dp),
+                                                tint = MaterialTheme.colorScheme.error
+                                            )
+                                        }
+                                    }
+                                }
+                            },
+                            selected = uiState.selectedGitabase?.id == gitabase.id,
+                            onClick = {
+                                scope.launch {
+                                    drawerState.close()
+                                }
+                                viewModel.selectGitabase(gitabase)
                             }
-                            viewModel.selectGitabase(gitabase)
-                        }
-                    )
-                }
+                        )
+                    }
                 
                 // Show message if no gitabases found
                 if (uiState.gitabases.isEmpty()) {
@@ -196,5 +228,15 @@ fun BooksScreen(
                 }
             }
         }
+    }
+    
+    // Handle file picker
+    if (showFilePicker) {
+        FilePickerHandler(
+            onFileSelected = { filePath ->
+                viewModel.copyGitabaseFromLocal(filePath)
+                showFilePicker = false
+            }
+        )
     }
 }

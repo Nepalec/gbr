@@ -8,6 +8,7 @@ interface GitabasesRepository {
     fun setCurrentGitabase(gitabase: Gitabase)
     fun addGitabase(gitabase: Gitabase)
     fun removeGitabase(gitabase: Gitabase)
+    fun setAllGitabases(gitabases: List<Gitabase>)
     fun setFolderPath(folderPath: String)
     fun getFolderPath(): String?
 }
