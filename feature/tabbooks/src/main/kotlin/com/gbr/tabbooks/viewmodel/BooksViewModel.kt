@@ -9,21 +9,24 @@ import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import com.gbr.data.usecase.SetCurrentGitabaseUseCase
 import com.gbr.data.repository.GitabasesRepository
+import com.gbr.data.repository.TextsRepository
 import com.gbr.model.gitabase.Gitabase
+import com.gbr.model.gitabase.GitabaseID
+import com.gbr.model.gitabase.GitabaseType
+import com.gbr.model.gitabase.GitabaseLang
+import java.io.File
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.io.File
 import java.util.LinkedHashSet
 import javax.inject.Inject
 
 @HiltViewModel
 class BooksViewModel @Inject constructor(
     private val gitabasesRepository: GitabasesRepository,
+    private val textsRepository: TextsRepository,
     private val copyGitabaseUseCase: CopyGitabaseUseCase,
     private val removeGitabaseUseCase: RemoveGitabaseUseCase,
     private val scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase,
@@ -59,6 +62,37 @@ class BooksViewModel @Inject constructor(
         viewModelScope.launch {
             gitabasesRepository.getCurrentGitabaseFlow().collect { currentGitabase ->
                 _uiState.value = _uiState.value.copy(selectedGitabase = currentGitabase)
+
+                // Load books when gitabase changes
+                if (currentGitabase != null) {
+                    loadBooks(currentGitabase.id)
+                } else {
+                    _uiState.value = _uiState.value.copy(books = emptyList())
+                }
+            }
+        }
+    }
+
+    private fun loadBooks(gitabaseId: GitabaseID) {
+        viewModelScope.launch {
+            try {
+                val result = textsRepository.getAllBooks(gitabaseId)
+                result.fold(
+                    onSuccess = { books ->
+                        _uiState.value = _uiState.value.copy(books = books)
+                    },
+                    onFailure = { error ->
+                        _uiState.value = _uiState.value.copy(
+                            books = emptyList(),
+                            error = "Failed to load books: ${error.message}"
+                        )
+                    }
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    books = emptyList(),
+                    error = "Error loading books: ${e.message}"
+                )
             }
         }
     }
@@ -83,9 +117,13 @@ class BooksViewModel @Inject constructor(
      */
     fun copyGitabaseFromLocal(sourceFilePath: String) {
         viewModelScope.launch {
+            // Create a temporary gitabase for immediate display with shimmering
+            val tempGitabase = createTempGitabaseFromPath(sourceFilePath)
+
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
-                message = "Copying Gitabase file..."
+                message = "Copying Gitabase file...",
+                copyingGitabases = setOf(tempGitabase)
             )
 
             try {
@@ -95,26 +133,49 @@ class BooksViewModel @Inject constructor(
                 if (copyResult.isSuccess) {
                     // File copied successfully, now scan and add the new gitabase
                     val destinationFilePath = copyResult.getOrThrow()
-                    addCopiedGitabaseToRepository(destinationFilePath)
+                    addCopiedGitabaseToRepository(destinationFilePath, tempGitabase)
                 } else {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = "Failed to copy file: ${copyResult.exceptionOrNull()?.message}"
+                        error = "Failed to copy file: ${copyResult.exceptionOrNull()?.message}",
+                        copyingGitabases = emptySet()
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Error copying file: ${e.message}"
+                    error = "Error copying file: ${e.message}",
+                    copyingGitabases = emptySet()
                 )
             }
         }
     }
 
     /**
+     * Creates a temporary gitabase from file path for immediate display.
+     */
+    private fun createTempGitabaseFromPath(filePath: String): Gitabase {
+        val fileName = File(filePath).nameWithoutExtension
+        val parts = fileName.split("_")
+        val type = if (parts.size >= 2) parts[1] else "unknown"
+        val lang = if (parts.size >= 3) parts[2] else "unknown"
+
+        return Gitabase(
+            id = GitabaseID(
+                type = GitabaseType(type),
+                lang = GitabaseLang(lang)
+            ),
+            title = fileName,
+            version = 1,
+            filePath = filePath,
+            lastModified = "Copying..."
+        )
+    }
+
+    /**
      * Scans the copied gitabase file and adds it to the repository.
      */
-    private fun addCopiedGitabaseToRepository(filePath: String) {
+    private fun addCopiedGitabaseToRepository(filePath: String, tempGitabase: Gitabase) {
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(
@@ -137,28 +198,36 @@ class BooksViewModel @Inject constructor(
                         // Add the new gitabase to the repository (Set will prevent duplicates)
                         gitabasesRepository.addGitabase(newGitabase)
 
-                        // Update UI state
+                        // Set the new gitabase as current
+                        setCurrentGitabaseUseCase.execute(newGitabase.id)
+
+                        // Update UI state - remove from copying set and set as selected
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             message = null,
-                            gitabases = linkedSetOf(*gitabasesRepository.getAllGitabases().toTypedArray())
+                            gitabases = linkedSetOf(*gitabasesRepository.getAllGitabases().toTypedArray()),
+                            copyingGitabases = emptySet(),
+                            selectedGitabase = newGitabase
                         )
                     } else {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            error = "Copied file was not recognized as a valid Gitabase"
+                            error = "Copied file was not recognized as a valid Gitabase",
+                            copyingGitabases = emptySet()
                         )
                     }
                 } else {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = "Failed to validate copied file: ${scanResult.exceptionOrNull()?.message}"
+                        error = "Failed to validate copied file: ${scanResult.exceptionOrNull()?.message}",
+                        copyingGitabases = emptySet()
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Error validating copied file: ${e.message}"
+                    error = "Error validating copied file: ${e.message}",
+                    copyingGitabases = emptySet()
                 )
             }
         }
@@ -207,7 +276,9 @@ data class BooksUiState(
     val isInitialized: Boolean = false,
     val gitabases: LinkedHashSet<Gitabase> = linkedSetOf(),
     val selectedGitabase: Gitabase? = null,
+    val books: List<com.gbr.model.book.Book> = emptyList(),
     val message: String? = null,
-    val error: String? = null
+    val error: String? = null,
+    val copyingGitabases: Set<Gitabase> = emptySet()
 )
 

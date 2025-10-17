@@ -2,7 +2,6 @@ package com.gbr.data.repository
 
 import android.content.Context
 import com.gbr.data.database.GitabaseDatabaseManager
-import com.gbr.data.mapper.toDomainModels
 import com.gbr.model.book.Book
 import com.gbr.model.gitabase.GitabaseID
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -29,7 +28,7 @@ class TextsRepositoryImpl @Inject constructor(
                 // Verify gitabase exists in repository
                 val gitabaseExists = gitabasesRepository.getAllGitabases()
                     .any { it.id == gitabaseId }
-                
+
                 if (!gitabaseExists) {
                     return@withContext Result.failure(
                         IllegalArgumentException("Gitabase not found: $gitabaseId")
@@ -38,13 +37,10 @@ class TextsRepositoryImpl @Inject constructor(
 
                 // Get database from manager (uses cache for optimal performance)
                 val database = databaseManager.getDatabase(gitabaseId)
-                
-                // Query books using DAO
-                val bookEntities = database.bookDao().getAllBooks().first()
-                
-                // Convert entities to domain models
-                val books = bookEntities.toDomainModels()
-                
+
+                // Query books using DAO (already returns domain models)
+                val books = database.bookDao().getAllBooks().first()
+
                 Result.success(books)
             } catch (e: Exception) {
                 Result.failure(e)

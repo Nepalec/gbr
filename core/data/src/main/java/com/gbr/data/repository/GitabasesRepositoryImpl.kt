@@ -2,6 +2,7 @@ package com.gbr.data.repository
 
 import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseID
+import com.gbr.model.gitabase.GitabaseType
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,7 +14,10 @@ class GitabasesRepositoryImpl @Inject constructor() : GitabasesRepository {
     private val _currentGitabase = MutableStateFlow<Gitabase?>(null)
     private val _folderPath = MutableStateFlow<String?>(null)
 
-    override fun getAllGitabases(): Set<Gitabase> = _availableGitabases.value
+    override fun getAllGitabases(): Set<Gitabase> {
+        val gitabases = _availableGitabases.value
+        return gitabases.sortedWith(compareBy<Gitabase> { it.id.type == GitabaseType.HELP }.thenBy { it.title }).toSet()
+    }
 
     override fun getCurrentGitabase(): Gitabase? = _currentGitabase.value
 

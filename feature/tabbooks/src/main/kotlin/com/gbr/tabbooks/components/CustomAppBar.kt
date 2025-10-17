@@ -21,11 +21,21 @@ fun CustomAppBar(
     navigationIcon: Int = R.drawable.menu_24px,
     actionIcon: Int = R.drawable.settings_24px
 ) {
+    val isShortTitle = title.length <= 30  // adjust threshold as you like
+    val textStyle = if (isShortTitle) {
+        MaterialTheme.typography.titleLarge
+    } else {
+        MaterialTheme.typography.titleSmall
+    }
+
     TopAppBar(
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge
+                maxLines = if (isShortTitle) 1 else 3,
+                style = textStyle.copy(
+                    lineHeight = textStyle.fontSize * 1.1
+                )
             )
         },
         navigationIcon = {

@@ -48,5 +48,6 @@ dependencies {
     implementation(libs.androidx.tracing.ktx)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.tooling.preview)
     testImplementation(libs.junit4)
 }

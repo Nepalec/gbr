@@ -2,16 +2,15 @@ package com.gbr.data.database
 
 import android.content.Context
 import android.util.Log
-import androidx.room.Room
+import com.gbr.data.database.sql.GitabaseSqlDatabase
 import com.gbr.model.gitabase.GitabaseID
-import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Manages a cache of GitabaseDatabase instances to optimize performance
+ * Manages a cache of GitabaseSqlDatabase instances to optimize performance
  * when switching between multiple gitabase files.
- * 
+ *
  * Uses LRU (Least Recently Used) eviction strategy to limit memory usage
  * while keeping frequently accessed databases open.
  */
@@ -28,7 +27,7 @@ class GitabaseDatabaseManager @Inject constructor(
     // LinkedHashMap with access-order mode (true) for LRU behavior
     // When accessed, entries move to the end of the map
     // The first entry is always the least recently used
-    private val databaseCache = LinkedHashMap<GitabaseID, GitabaseDatabase>(
+    private val databaseCache = LinkedHashMap<GitabaseID, GitabaseSqlDatabase>(
         maxCacheSize,
         0.75f,  // load factor
         true     // access-order mode (vs insertion-order)
@@ -38,14 +37,14 @@ class GitabaseDatabaseManager @Inject constructor(
      * Gets a database instance for the specified gitabase.
      * Returns cached instance if available, otherwise opens the database
      * and adds it to the cache.
-     * 
+     *
      * Thread-safe: synchronized to prevent concurrent modifications
-     * 
+     *
      * @param gitabaseId The ID of the gitabase
-     * @return GitabaseDatabase instance (cached or newly opened)
+     * @return GitabaseSqlDatabase instance (cached or newly opened)
      */
     @Synchronized
-    fun getDatabase(gitabaseId: GitabaseID): GitabaseDatabase {
+    fun getDatabase(gitabaseId: GitabaseID): GitabaseSqlDatabase {
         // Check if database is already in cache
         val cachedDb = databaseCache[gitabaseId]
         if (cachedDb != null) {
@@ -63,7 +62,7 @@ class GitabaseDatabaseManager @Inject constructor(
         // Construct file path and open the database
         val filePath = gitabaseId.getFilePath(gitabaseFolderPath)
         val database = openDatabase(filePath)
-        
+
         // Add to cache
         databaseCache[gitabaseId] = database
         Log.d(TAG, "Database cached for gitabase: ${gitabaseId.key} (cache size: ${databaseCache.size})")
@@ -72,57 +71,44 @@ class GitabaseDatabaseManager @Inject constructor(
     }
 
     /**
-     * Opens a Room database from a specific file path.
-     * 
+     * Opens a SQLite database from a specific file path.
+     *
      * @param filePath The absolute path to the .db file
-     * @return GitabaseDatabase instance
+     * @return GitabaseSqlDatabase instance
      * @throws IllegalArgumentException if file doesn't exist
      */
-    private fun openDatabase(filePath: String): GitabaseDatabase {
-        val dbFile = File(filePath)
-        
-        if (!dbFile.exists()) {
-            throw IllegalArgumentException("Database file does not exist: $filePath")
+    private fun openDatabase(filePath: String): GitabaseSqlDatabase {
+        try {
+            return GitabaseSqlDatabase.open(filePath).also {
+                Log.d("Gitabase", "Opened database successfully: $filePath")
+            }
+        } catch (e: Exception) {
+            Log.e("Gitabase", "Failed to open database: $filePath", e)
+            throw e
         }
-
-        if (!dbFile.canRead()) {
-            throw IllegalArgumentException("Cannot read database file: $filePath")
-        }
-
-        // Create a unique database name based on the file path
-        // This prevents Room from using the same instance for different files
-        val dbName = "gitabase_${dbFile.nameWithoutExtension}_${dbFile.hashCode()}"
-
-        return Room.databaseBuilder(
-            context.applicationContext,
-            GitabaseDatabase::class.java,
-            dbName
-        )
-        .createFromFile(dbFile)  // Use existing .db file
-        .fallbackToDestructiveMigration()
-        .build()
     }
+
 
     /**
      * Evicts the least recently used database from the cache.
      * The first entry in LinkedHashMap (access-order mode) is the LRU.
-     * 
+     *
      * Closes the database before removing it from cache to free resources.
      */
     private fun evictLRU() {
         // In access-order mode, the first entry is the least recently used
         val lruEntry = databaseCache.entries.firstOrNull()
-        
+
         if (lruEntry != null) {
             Log.d(TAG, "Evicting LRU database: ${lruEntry.key.key}")
-            
+
             try {
                 // Close the database to free resources
                 lruEntry.value.close()
             } catch (e: Exception) {
                 Log.e(TAG, "Error closing database during eviction: ${lruEntry.key.key}", e)
             }
-            
+
             // Remove from cache
             databaseCache.remove(lruEntry.key)
             Log.d(TAG, "Database evicted. New cache size: ${databaseCache.size}")
@@ -132,13 +118,13 @@ class GitabaseDatabaseManager @Inject constructor(
     /**
      * Manually closes and removes a specific database from the cache.
      * Useful when a gitabase is deleted or needs to be refreshed.
-     * 
+     *
      * @param gitabaseId The ID of the gitabase to close
      */
     @Synchronized
     fun closeDatabase(gitabaseId: GitabaseID) {
         val database = databaseCache.remove(gitabaseId)
-        
+
         if (database != null) {
             try {
                 database.close()
@@ -159,7 +145,7 @@ class GitabaseDatabaseManager @Inject constructor(
     @Synchronized
     fun closeAll() {
         Log.d(TAG, "Closing all cached databases (count: ${databaseCache.size})")
-        
+
         databaseCache.forEach { (gitabaseId, database) ->
             try {
                 database.close()
@@ -168,7 +154,7 @@ class GitabaseDatabaseManager @Inject constructor(
                 Log.e(TAG, "Error closing database: ${gitabaseId.key}", e)
             }
         }
-        
+
         databaseCache.clear()
         Log.d(TAG, "All databases closed, cache cleared")
     }
