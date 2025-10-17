@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import java.io.File
 import com.gbr.data.database.dao.BookDao
 import com.gbr.data.database.dao.ChapterDao
 import com.gbr.data.database.dao.ImageDao
@@ -70,6 +71,42 @@ abstract class GitabaseDatabase : RoomDatabase() {
                 INSTANCE = instance
                 instance
             }
+        }
+
+        /**
+         * Creates a database instance from an existing .db file.
+         * This is used for opening gitabase files that already exist.
+         * 
+         * @param context The application context
+         * @param filePath The absolute path to the .db file
+         * @return GitabaseDatabase instance
+         */
+        fun createDatabaseFromFile(
+            context: Context,
+            filePath: String
+        ): GitabaseDatabase {
+            val dbFile = File(filePath)
+            
+            if (!dbFile.exists()) {
+                throw IllegalArgumentException("Database file does not exist: $filePath")
+            }
+
+            if (!dbFile.canRead()) {
+                throw IllegalArgumentException("Cannot read database file: $filePath")
+            }
+
+            // Create a unique database name based on the file path
+            // This prevents Room from using the same instance for different files
+            val dbName = "gitabase_${dbFile.nameWithoutExtension}_${dbFile.hashCode()}"
+
+            return Room.databaseBuilder(
+                context.applicationContext,
+                GitabaseDatabase::class.java,
+                dbName
+            )
+            .createFromFile(dbFile)  // Use existing .db file
+            .fallbackToDestructiveMigration()
+            .build()
         }
     }
 }

@@ -3,6 +3,10 @@ package com.gbr.model.gitabase
 data class GitabaseID(val type: GitabaseType, val lang:GitabaseLang) {
     val key: String
         get() = "${type.value}_${lang.value}"
+
+    fun getFilePath(gitabaseFolderPath: String): String {
+        return "$gitabaseFolderPath/gitabase_${key}.db"
+    }
 }
 data class GitabaseType(val value: String) {
     companion object {
@@ -18,4 +22,5 @@ data class GitabaseLang(val value: String) {
         val ENG = GitabaseLang("eng")
         val RUS = GitabaseLang("rus")
     }
+
 }
