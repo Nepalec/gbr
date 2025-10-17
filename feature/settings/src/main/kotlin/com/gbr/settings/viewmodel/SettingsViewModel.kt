@@ -2,6 +2,8 @@ package com.gbr.settings.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gbr.data.repository.UserPreferencesRepository
+import com.gbr.model.theme.DarkThemeConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +12,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor() : ViewModel() {
+class SettingsViewModel @Inject constructor(
+    private val userPreferencesRepository: UserPreferencesRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
@@ -21,11 +25,25 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
 
     private fun loadSettings() {
         viewModelScope.launch {
-            // TODO: Load settings from repository
-            _uiState.value = _uiState.value.copy(
-                isLoading = false,
-                selectedTheme = ThemeOption.SYSTEM
-            )
+            try {
+                val currentTheme = userPreferencesRepository.getAppTheme()
+                val themeOption = when (currentTheme) {
+                    DarkThemeConfig.LIGHT -> ThemeOption.LIGHT
+                    DarkThemeConfig.DARK -> ThemeOption.DARK
+                    DarkThemeConfig.FOLLOW_SYSTEM -> ThemeOption.SYSTEM
+                }
+                
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    selectedTheme = themeOption
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Failed to load settings: ${e.message}",
+                    selectedTheme = ThemeOption.SYSTEM
+                )
+            }
         }
     }
 
@@ -35,7 +53,25 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun selectTheme(theme: ThemeOption) {
-        _uiState.value = _uiState.value.copy(selectedTheme = theme)
+        viewModelScope.launch {
+            try {
+                val darkThemeConfig = when (theme) {
+                    ThemeOption.LIGHT -> DarkThemeConfig.LIGHT
+                    ThemeOption.DARK -> DarkThemeConfig.DARK
+                    ThemeOption.SYSTEM -> DarkThemeConfig.FOLLOW_SYSTEM
+                }
+                
+                // Save the theme preference
+                userPreferencesRepository.setAppTheme(darkThemeConfig)
+                
+                // Update UI state
+                _uiState.value = _uiState.value.copy(selectedTheme = theme)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to save theme: ${e.message}"
+                )
+            }
+        }
     }
 }
 

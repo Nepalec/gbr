@@ -4,6 +4,7 @@ import android.util.Log
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
 import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.model.gitabase.GitabaseID
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -58,6 +59,12 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "Failed to get app theme", e)
             DarkThemeConfig.FOLLOW_SYSTEM // Return default on error
+        }
+    }
+
+    override fun getAppThemeFlow(): Flow<DarkThemeConfig> {
+        return gbrPreferencesDataSource.userData.map { userData ->
+            userData.darkThemeConfig
         }
     }
 }

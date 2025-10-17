@@ -2,6 +2,7 @@ package com.gbr.data.repository
 
 import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.model.gitabase.GitabaseID
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository interface for managing user preferences.
@@ -35,4 +36,11 @@ interface UserPreferencesRepository {
      * @return The current theme configuration, or FOLLOW_SYSTEM if none was saved
      */
     suspend fun getAppTheme(): DarkThemeConfig
+    
+    /**
+     * Gets the current app theme preference as a Flow.
+     *
+     * @return Flow of theme configuration that emits whenever the theme changes
+     */
+    fun getAppThemeFlow(): Flow<DarkThemeConfig>
 }

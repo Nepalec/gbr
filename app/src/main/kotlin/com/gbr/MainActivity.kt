@@ -20,15 +20,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            var isDarkTheme by remember {
-                mutableStateOf(true)
-            }
-            
             val mainViewModel: MainViewModel = hiltViewModel()
             val isLoading by mainViewModel.isLoading.collectAsState()
             val message by mainViewModel.message.collectAsState()
+            val shouldUseDarkTheme by mainViewModel.shouldUseDarkTheme.collectAsState()
             
-            SemestaUIKitTheme(darkTheme = isDarkTheme) {
+            // Set the activity reference for theme monitoring
+            mainViewModel.setActivity(this)
+            
+            SemestaUIKitTheme(darkTheme = shouldUseDarkTheme) {
                 if (isLoading) {
                     SplashScreen(
                         message = message ?: "Loading..."
