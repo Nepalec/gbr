@@ -16,37 +16,37 @@ class RemoveGitabaseUseCase @Inject constructor(
 
     /**
      * Removes a Gitabase file from the gitabase folder.
-     * 
+     *
      * @param gitabaseId The ID of the gitabase to remove
      * @return Result indicating success or failure
      */
     suspend fun execute(gitabaseId: GitabaseID): Result<Unit> {
         return try {
             val gitabasesFolder = File(context.getExternalFilesDir(null), "gitabases")
-            
+
             if (!gitabasesFolder.exists()) {
                 return Result.failure(IllegalArgumentException("Gitabases folder does not exist"))
             }
-            
+
             // Construct the expected filename based on gitabase ID
-            val fileName = "${gitabaseId.type.value}_${gitabaseId.lang.value}.db"
+            val fileName = "gitabase_${gitabaseId.key}.db"
             val fileToDelete = File(gitabasesFolder, fileName)
-            
+
             if (!fileToDelete.exists()) {
                 return Result.failure(IllegalArgumentException("Gitabase file does not exist: $fileName"))
             }
-            
+
             if (!fileToDelete.isFile) {
                 return Result.failure(IllegalArgumentException("Path is not a file: $fileName"))
             }
-            
+
             if (!fileToDelete.canWrite()) {
                 return Result.failure(IllegalArgumentException("Cannot delete file: $fileName"))
             }
-            
+
             // Delete the file
             val deleted = fileToDelete.delete()
-            
+
             if (deleted) {
                 Result.success(Unit)
             } else {

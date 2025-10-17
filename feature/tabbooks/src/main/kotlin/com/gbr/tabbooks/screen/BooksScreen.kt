@@ -32,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,6 +40,13 @@ import com.gbr.tabbooks.components.CustomAppBar
 import com.gbr.tabbooks.viewmodel.BooksViewModel
 import com.gbr.model.gitabase.GitabaseType
 import kotlinx.coroutines.launch
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun BooksScreen(
@@ -49,7 +57,7 @@ fun BooksScreen(
     val uiState by viewModel.uiState.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    
+
     // State for file picker
     var showFilePicker by remember { mutableStateOf(false) }
 
@@ -69,7 +77,7 @@ fun BooksScreen(
                         text = "Gitabase Files",
                         style = MaterialTheme.typography.headlineSmall
                     )
-                    
+
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -85,7 +93,7 @@ fun BooksScreen(
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-                        
+
                         // Add from local storage button
                         OutlinedIconButton(
                             onClick = {
@@ -100,29 +108,50 @@ fun BooksScreen(
                         }
                     }
                 }
-                
-                    // Display gitabase titles as drawer items
-                    uiState.gitabases.forEach { gitabase ->
-                        val canDelete = gitabase.id.type != GitabaseType.HELP && gitabase.id.type != GitabaseType.MY_BOOKS
-                        
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(uiState.gitabases.size) { index ->
+                        val gitabase = uiState.gitabases.elementAt(index)
                         NavigationDrawerItem(
-                            label = { 
+                            label = {
                                 Row(
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                        .padding(start = 8.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                    verticalAlignment = Alignment.Top
                                 ) {
-                                    Text(
-                                        text = gitabase.title,
-                                        maxLines = 2,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    
-                                    if (canDelete) {
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
+                                        Text(
+                                            text = gitabase.title,
+                                            maxLines = 1,
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                            ),
+                                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                        )
+                                        Text(
+                                            text = "${gitabase.id.type.value}_${gitabase.id.lang.value}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 1,
+                                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                        )
+                                    }
+
+                                    if (gitabase.id.type != GitabaseType.HELP && gitabase.id.type != GitabaseType.MY_BOOKS) {
                                         IconButton(
                                             onClick = {
                                                 viewModel.removeGitabase(gitabase)
-                                            }
+                                            },
+                                            modifier = Modifier.size(40.dp)
                                         ) {
                                             Icon(
                                                 imageVector = ImageVector.vectorResource(R.drawable.delete_24px),
@@ -143,7 +172,8 @@ fun BooksScreen(
                             }
                         )
                     }
-                
+                }
+
                 // Show message if no gitabases found
                 if (uiState.gitabases.isEmpty()) {
                     Text(
@@ -229,14 +259,66 @@ fun BooksScreen(
             }
         }
     }
-    
-    // Handle file picker
     if (showFilePicker) {
         FilePickerHandler(
+            showPicker = showFilePicker,
+            hidePicker = { showFilePicker = false },
             onFileSelected = { filePath ->
                 viewModel.copyGitabaseFromLocal(filePath)
                 showFilePicker = false
             }
         )
+    }
+}
+
+/**
+ * Gets the file path from a URI.
+ * Preserves the original filename when possible.
+ */
+private fun getFilePathFromUri(context: android.content.Context, uri: Uri): String? {
+    return try {
+        // For file:// URIs, we can get the path directly
+        if (uri.scheme == "file") {
+            uri.path
+        } else {
+            // For content:// URIs, we need to copy the file to a temporary location
+            // Try to get the original filename from the URI
+            val originalFileName = getOriginalFileName(context, uri)
+            val tempFile = if (originalFileName != null) {
+                java.io.File(context.cacheDir, originalFileName)
+            } else {
+                java.io.File.createTempFile("gitabase_", ".db", context.cacheDir)
+            }
+
+            val inputStream = context.contentResolver.openInputStream(uri)
+            inputStream?.use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            tempFile.absolutePath
+        }
+    } catch (e: Exception) {
+        null
+    }
+}
+
+/**
+ * Attempts to get the original filename from a content URI.
+ */
+private fun getOriginalFileName(context: android.content.Context, uri: Uri): String? {
+    return try {
+        // Try to get filename from content resolver
+        val cursor = context.contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val nameIndex = it.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                if (nameIndex >= 0) {
+                    it.getString(nameIndex)
+                } else null
+            } else null
+        }
+    } catch (e: Exception) {
+        null
     }
 }

@@ -22,54 +22,56 @@ class InitializeGitabasesUseCase @Inject constructor(
     /**
      * Initializes Gitabase files by scanning and extracting if necessary.
      * Uses the default gitabases folder in external files directory.
-     * 
-     * @return Result containing the list of available Gitabases
+     *
+     * @return Result containing the set of available Gitabases
      */
-    suspend fun execute(): Result<List<com.gbr.model.gitabase.Gitabase>> {
+    suspend fun execute(): Result<Set<com.gbr.model.gitabase.Gitabase>> {
         val defaultFolder = File(context.getExternalFilesDir(null), "gitabases")
         return execute(defaultFolder.absolutePath)
     }
 
     /**
      * Initializes Gitabase files by scanning and extracting if necessary.
-     * 
+     *
      * @param folderPath The folder to scan for gitabases
-     * @return Result containing the list of available Gitabases
+     * @return Result containing the set of available Gitabases
      */
-    suspend fun execute(folderPath: String): Result<List<com.gbr.model.gitabase.Gitabase>> {
+    suspend fun execute(folderPath: String): Result<Set<com.gbr.model.gitabase.Gitabase>> {
         return withContext(Dispatchers.IO) {
             try {
                 // First, scan for existing gitabases
                 val scanResult = scanGitabaseFilesUseCase.execute(folderPath)
-                
+
                 if (scanResult.isSuccess) {
                     val gitabases = scanResult.getOrThrow()
                     if (gitabases.isNotEmpty()) {
                         // Found gitabases, return them
+                        gitabasesRepository.setAllGitabases(gitabases)
                         return@withContext Result.success(gitabases)
                     }
                 }
-                
+
                 // No gitabases found, extract help gitabases from resources
                 val extractResult = extractHelpGitabases(folderPath)
                 if (extractResult.isFailure) {
                     return@withContext Result.failure(extractResult.exceptionOrNull() ?: Exception("Failed to extract help gitabases"))
                 }
-                
+
                 // Scan again after extraction
                 val rescanResult = scanGitabaseFilesUseCase.execute(folderPath)
                 if (rescanResult.isSuccess) {
+                    gitabasesRepository.setAllGitabases(rescanResult.getOrThrow())
                     Result.success(rescanResult.getOrThrow())
                 } else {
                     Result.failure(rescanResult.exceptionOrNull() ?: Exception("Failed to scan after extraction"))
                 }
-                
+
             } catch (e: Exception) {
                 Result.failure(e)
             }
         }
     }
-    
+
     /**
      * Extracts help gitabases (English and Russian) from resources.
      */
@@ -79,7 +81,7 @@ class InitializeGitabasesUseCase @Inject constructor(
             if (!destinationFolder.exists()) {
                 destinationFolder.mkdirs()
             }
-            
+
             extractGitabasesUseCase.execute(
                 destinationFolder = destinationFolder,
                 resourceFiles = ExtractGitabasesUseCase.HELP_GITABASE_FILES

@@ -24,7 +24,7 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
             // TODO: Load settings from repository
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
-                settings = emptyList()
+                selectedTheme = ThemeOption.SYSTEM
             )
         }
     }
@@ -33,11 +33,21 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
         _uiState.value = _uiState.value.copy(isLoading = true)
         loadSettings()
     }
+
+    fun selectTheme(theme: ThemeOption) {
+        _uiState.value = _uiState.value.copy(selectedTheme = theme)
+    }
+}
+
+enum class ThemeOption(val displayName: String) {
+    LIGHT("Light"),
+    DARK("Dark"),
+    SYSTEM("System")
 }
 
 data class SettingsUiState(
     val isLoading: Boolean = true,
-    val settings: List<String> = emptyList(),
+    val selectedTheme: ThemeOption = ThemeOption.SYSTEM,
     val error: String? = null
 )
 

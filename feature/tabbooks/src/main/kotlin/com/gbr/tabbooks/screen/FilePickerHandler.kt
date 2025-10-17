@@ -15,10 +15,12 @@ import androidx.compose.ui.platform.LocalContext
  */
 @Composable
 fun FilePickerHandler(
+    showPicker: Boolean = true,
+    hidePicker: () -> Unit,
     onFileSelected: (String) -> Unit
 ) {
     val context = LocalContext.current
-    
+
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -32,16 +34,19 @@ fun FilePickerHandler(
                 }
             }
         }
+        hidePicker()
     }
-    
-    // Launch file picker when this composable is first composed
-    LaunchedEffect(Unit) {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "*/*"
-            addCategory(Intent.CATEGORY_OPENABLE)
-            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/x-sqlite3", "application/octet-stream"))
+
+    // Launch file picker only when key is true
+    LaunchedEffect(showPicker) {
+        if (showPicker) {
+            val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                type = "*/*"
+                addCategory(Intent.CATEGORY_OPENABLE)
+                putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/x-sqlite3", "application/octet-stream"))
+            }
+            filePickerLauncher.launch(intent)
         }
-        filePickerLauncher.launch(intent)
     }
 }
 
@@ -63,7 +68,7 @@ private fun getFilePathFromUri(context: android.content.Context, uri: Uri): Stri
             } else {
                 java.io.File.createTempFile("gitabase_", ".db", context.cacheDir)
             }
-            
+
             val inputStream = context.contentResolver.openInputStream(uri)
             inputStream?.use { input ->
                 tempFile.outputStream().use { output ->

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.LinkedHashSet
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,11 +38,10 @@ class BooksViewModel @Inject constructor(
     private fun loadGitabases() {
         viewModelScope.launch {
             try {
-                // Get gitabases from repository (no need to rescan)
                 val gitabases = gitabasesRepository.getAllGitabases()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    gitabases = gitabases
+                    gitabases = linkedSetOf(*gitabases.toTypedArray())
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -68,7 +68,7 @@ class BooksViewModel @Inject constructor(
 
     /**
      * Copies a Gitabase file from local storage and adds it to the repository.
-     * 
+     *
      * @param sourceFilePath The path to the source .db file
      */
     fun copyGitabaseFromLocal(sourceFilePath: String) {
@@ -77,11 +77,11 @@ class BooksViewModel @Inject constructor(
                 isLoading = true,
                 message = "Copying Gitabase file..."
             )
-            
+
             try {
                 // Copy the file to the gitabase folder
                 val copyResult = copyGitabaseUseCase.execute(sourceFilePath)
-                
+
                 if (copyResult.isSuccess) {
                     // File copied successfully, now scan and add the new gitabase
                     val destinationFilePath = copyResult.getOrThrow()
@@ -110,28 +110,28 @@ class BooksViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     message = "Validating copied Gitabase..."
                 )
-                
+
                 // Get the gitabase folder path
                 val gitabasesFolder = File(filePath).parent ?: return@launch
-                
+
                 // Scan only the specific file to create a Gitabase object
                 val scanResult = scanGitabaseFilesUseCase.execute(gitabasesFolder)
-                
+
                 if (scanResult.isSuccess) {
                     val allGitabases = scanResult.getOrThrow()
-                    
+
                     // Find the newly copied gitabase by matching the file path
                     val newGitabase = allGitabases.find { it.filePath == filePath }
-                    
+
                     if (newGitabase != null) {
                         // Add the new gitabase to the repository (Set will prevent duplicates)
                         gitabasesRepository.addGitabase(newGitabase)
-                        
+
                         // Update UI state
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
                             message = null,
-                            gitabases = gitabasesRepository.getAllGitabases()
+                            gitabases = linkedSetOf(*gitabasesRepository.getAllGitabases().toTypedArray())
                         )
                     } else {
                         _uiState.value = _uiState.value.copy(
@@ -156,7 +156,7 @@ class BooksViewModel @Inject constructor(
 
     /**
      * Removes a Gitabase file and updates the repository.
-     * 
+     *
      * @param gitabase The gitabase to remove
      */
     fun removeGitabase(gitabase: Gitabase) {
@@ -165,15 +165,15 @@ class BooksViewModel @Inject constructor(
                 isLoading = true,
                 message = "Removing Gitabase..."
             )
-            
+
             try {
                 // Remove the file from storage
                 val removeResult = removeGitabaseUseCase.execute(gitabase.id)
-                
+
                 if (removeResult.isSuccess) {
                     // Remove from repository
                     gitabasesRepository.removeGitabase(gitabase)
-                    
+
                     // Refresh the list
                     refreshGitabases()
                 } else {
@@ -195,7 +195,7 @@ class BooksViewModel @Inject constructor(
 data class BooksUiState(
     val isLoading: Boolean = true,
     val isInitialized: Boolean = false,
-    val gitabases: List<Gitabase> = emptyList(),
+    val gitabases: LinkedHashSet<Gitabase> = linkedSetOf(),
     val selectedGitabase: Gitabase? = null,
     val message: String? = null,
     val error: String? = null

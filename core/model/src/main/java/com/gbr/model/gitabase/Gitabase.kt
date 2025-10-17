@@ -9,6 +9,9 @@ data class Gitabase(
     val hasTranslation: Boolean = false,
     val lastModified: String
 ) {
+    val canDelete: Boolean
+        get() = id.type != GitabaseType.HELP && id.type != GitabaseType.MY_BOOKS
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Gitabase) return false

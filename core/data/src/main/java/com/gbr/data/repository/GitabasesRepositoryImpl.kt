@@ -8,11 +8,11 @@ import javax.inject.Singleton
 @Singleton
 class GitabasesRepositoryImpl @Inject constructor() : GitabasesRepository {
 
-    private val _availableGitabases = MutableStateFlow<Set<Gitabase>>(emptySet())
+    private val _availableGitabases = MutableStateFlow<LinkedHashSet<Gitabase>>(linkedSetOf())
     private val _currentGitabase = MutableStateFlow<Gitabase?>(null)
     private val _folderPath = MutableStateFlow<String?>(null)
 
-    override fun getAllGitabases(): List<Gitabase> = _availableGitabases.value.toList()
+    override fun getAllGitabases(): Set<Gitabase> = _availableGitabases.value
 
     override fun getCurrentGitabase(): Gitabase? = _currentGitabase.value
 
@@ -21,13 +21,13 @@ class GitabasesRepositoryImpl @Inject constructor() : GitabasesRepository {
     }
 
     override fun addGitabase(gitabase: Gitabase) {
-        val currentSet = _availableGitabases.value.toMutableSet()
+        val currentSet = _availableGitabases.value
         currentSet.add(gitabase)
         _availableGitabases.value = currentSet
     }
 
     override fun removeGitabase(gitabase: Gitabase) {
-        val currentSet = _availableGitabases.value.toMutableSet()
+        val currentSet = _availableGitabases.value
         currentSet.remove(gitabase)
         _availableGitabases.value = currentSet
 
@@ -37,8 +37,8 @@ class GitabasesRepositoryImpl @Inject constructor() : GitabasesRepository {
         }
     }
 
-    override fun setAllGitabases(gitabases: List<Gitabase>) {
-        _availableGitabases.value = gitabases.toSet()
+    override fun setAllGitabases(gitabases: Set<Gitabase>) {
+        _availableGitabases.value = LinkedHashSet(gitabases)
     }
 
     override fun setFolderPath(folderPath: String) {

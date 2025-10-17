@@ -28,7 +28,7 @@ class ScanGitabaseFilesUseCase @Inject constructor(
      * @param folderPath The path to the folder to scan
      * @return Result containing the list of discovered Gitabases or an error
      */
-    suspend fun execute(folderPath: String): Result<List<Gitabase>> {
+    suspend fun execute(folderPath: String): Result<Set<Gitabase>> {
         return try {
             val folder = File(folderPath)
             if (!folder.exists() || !folder.isDirectory) {
@@ -37,20 +37,19 @@ class ScanGitabaseFilesUseCase @Inject constructor(
 
             // Find all .db files in the folder
             val gitabaseFiles = findGitabaseFiles(folder)
-            val validGitabases = mutableListOf<Gitabase>()
+            val validGitabases = mutableSetOf<Gitabase>()
 
             // Process each file: validate and create Gitabase objects
             for (file in gitabaseFiles) {
                 if (validateGitabaseFile(file)) {
                     val gitabase = createGitabaseFromFile(file)
                     validGitabases.add(gitabase)
-                    gitabasesRepository.addGitabase(gitabase)
                 }
             }
 
             // Enrich Gitabase objects with data from GitabasesDescRepository
             val enrichedGitabases = enrichGitabasesWithDescData(validGitabases)
-
+            gitabasesRepository.setAllGitabases(enrichedGitabases)
             Result.success(enrichedGitabases)
         } catch (e: Exception) {
             Result.failure(e)
@@ -183,7 +182,7 @@ class ScanGitabaseFilesUseCase @Inject constructor(
      * Links Gitabase objects to GitabaseDesc objects based on GitabaseID (type + lang) matching
      * GitabaseDesc (gbalias + gblang).
      */
-    private suspend fun enrichGitabasesWithDescData(gitabases: List<Gitabase>): List<Gitabase> {
+    private suspend fun enrichGitabasesWithDescData(gitabases: Set<Gitabase>): Set<Gitabase> {
         return try {
             // Fetch GitabaseDesc data
             val descResponse = gitabasesDescRepository.getGitabasesDesc()
@@ -213,7 +212,7 @@ class ScanGitabaseFilesUseCase @Inject constructor(
                     // No matching desc found, return original gitabase
                     gitabase
                 }
-            }
+            }.toSet()
         } catch (e: Exception) {
             // If enrichment fails, return original gitabases
             gitabases
