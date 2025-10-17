@@ -5,7 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import com.gbr.data.database.dao.BookDao
 import com.gbr.data.database.dao.ChapterDao
 import com.gbr.data.database.dao.ImageDao
@@ -106,6 +111,9 @@ abstract class GitabaseDatabase : RoomDatabase() {
             )
             .createFromFile(dbFile)  // Use existing .db file
             .fallbackToDestructiveMigration()
+            .enableMultiInstanceInvalidation()
+            .allowMainThreadQueries()  // Allow main thread queries for flexibility
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)  // Use truncate journal mode for better compatibility
             .build()
         }
     }

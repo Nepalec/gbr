@@ -15,25 +15,25 @@ import com.gbr.model.book.Book as BookDomain
  */
 fun BookEntity.toDomainModel(): BookDomain {
     return BookDomain(
-        id = _id,
+        id = _id ?: 0,
         sort = sort,
         author = author,
         title = title,
         desc = desc,
         type = type,
         levels = levels,
-        hasSanskrit = hasSanskrit,
-        hasPurport = hasPurport,
+        hasSanskrit = hasSanskrit ?: 0,
+        hasPurport = hasPurport ?: 1,
         hasColorStructure = hasColorStructure,
-        isSongBook = isSongBook,
+        isSongBook = isSongBook ?: 0,
         textSize = text_size,
         purportSize = purport_size,
-        textBeginRaw = text_begin_raw,
-        textEndRaw = text_end_raw,
+        textBeginRaw = text_begin_raw ?: 0,
+        textEndRaw = text_end_raw ?: 0,
         webAbbrev = web_abbrev,
         compareCode = compare_code,
         issue = issue,
-        isSimple = isSimple
+        isSimple = isSimple ?: 0
     )
 }
 

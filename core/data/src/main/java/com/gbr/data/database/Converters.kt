@@ -13,4 +13,14 @@ class Converters {
     fun dateToTimestamp(date: Date?): Long? {
         return date?.time
     }
+
+    @TypeConverter
+    fun fromNumeric(value: String?): Double? {
+        return value?.toDoubleOrNull()
+    }
+
+    @TypeConverter
+    fun toNumeric(double: Double?): String? {
+        return double?.toString()
+    }
 }

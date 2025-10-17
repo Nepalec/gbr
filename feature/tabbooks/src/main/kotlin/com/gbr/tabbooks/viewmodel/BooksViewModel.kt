@@ -9,7 +9,9 @@ import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import com.gbr.data.usecase.SetCurrentGitabaseUseCase
 import com.gbr.data.repository.GitabasesRepository
+import com.gbr.data.repository.TextsRepository
 import com.gbr.model.gitabase.Gitabase
+import com.gbr.model.gitabase.GitabaseID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BooksViewModel @Inject constructor(
     private val gitabasesRepository: GitabasesRepository,
+    private val textsRepository: TextsRepository,
     private val copyGitabaseUseCase: CopyGitabaseUseCase,
     private val removeGitabaseUseCase: RemoveGitabaseUseCase,
     private val scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase,
@@ -59,6 +62,37 @@ class BooksViewModel @Inject constructor(
         viewModelScope.launch {
             gitabasesRepository.getCurrentGitabaseFlow().collect { currentGitabase ->
                 _uiState.value = _uiState.value.copy(selectedGitabase = currentGitabase)
+                
+                // Load books when gitabase changes
+                if (currentGitabase != null) {
+                    loadBooks(currentGitabase.id)
+                } else {
+                    _uiState.value = _uiState.value.copy(books = emptyList())
+                }
+            }
+        }
+    }
+
+    private fun loadBooks(gitabaseId: GitabaseID) {
+        viewModelScope.launch {
+            try {
+                val result = textsRepository.getAllBooks(gitabaseId)
+                result.fold(
+                    onSuccess = { books ->
+                        _uiState.value = _uiState.value.copy(books = books)
+                    },
+                    onFailure = { error ->
+                        _uiState.value = _uiState.value.copy(
+                            books = emptyList(),
+                            error = "Failed to load books: ${error.message}"
+                        )
+                    }
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    books = emptyList(),
+                    error = "Error loading books: ${e.message}"
+                )
             }
         }
     }
@@ -207,6 +241,7 @@ data class BooksUiState(
     val isInitialized: Boolean = false,
     val gitabases: LinkedHashSet<Gitabase> = linkedSetOf(),
     val selectedGitabase: Gitabase? = null,
+    val books: List<com.gbr.model.book.Book> = emptyList(),
     val message: String? = null,
     val error: String? = null
 )

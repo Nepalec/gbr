@@ -1,5 +1,6 @@
 package com.gbr.tabbooks.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
@@ -214,28 +216,26 @@ fun BooksScreen(
                         color = MaterialTheme.colorScheme.error
                     )
                 } else if (uiState.selectedGitabase != null) {
-                    val selectedGitabase = uiState.selectedGitabase
-                    Column(
-                        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
+                    if (uiState.books.isEmpty()) {
+                        // No books in selected gitabase
                         Text(
-                            text = "Selected Gitabase",
-                            style = MaterialTheme.typography.headlineMedium,
+                            text = "No books found in ${uiState.selectedGitabase?.title}",
+                            style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center
                         )
-                        Text(
-                            text = selectedGitabase?.title ?: "Unknown",
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "Type: ${selectedGitabase?.id?.type?.value ?: "Unknown"} | Language: ${selectedGitabase?.id?.lang?.value ?: "Unknown"}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                    } else {
+                        // Display books list
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(0.dp)
+                        ) {
+                            items(uiState.books.size) { index ->
+                                val book = uiState.books[index]
+                                BookItem(book = book, onClick = { /* TODO */ })
+                            }
+                        }
                     }
                 } else {
                     Column(
@@ -320,5 +320,43 @@ private fun getOriginalFileName(context: android.content.Context, uri: Uri): Str
         }
     } catch (e: Exception) {
         null
+    }
+}
+
+@Composable
+private fun BookItem(
+    book: com.gbr.model.book.Book,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedCard(
+        onClick = onClick,
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = book.title ?: "Untitled",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                book.author?.let { author ->
+                    Text(
+                        text = author,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+        }
     }
 }
