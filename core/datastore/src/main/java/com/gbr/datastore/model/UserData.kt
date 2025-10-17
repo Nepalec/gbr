@@ -1,5 +1,7 @@
 package com.gbr.datastore.model
 
+import com.gbr.model.theme.DarkThemeConfig
+
 /**
  * Represents the user's app preferences and settings.
  */

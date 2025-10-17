@@ -1,6 +1,6 @@
 package com.gbr.data.model
 
-import com.gbr.datastore.model.DarkThemeConfig
+import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.model.gitabase.GitabaseID
 
 /**

@@ -1,7 +1,7 @@
 package com.gbr.data.repository
 
 import com.gbr.data.model.UserData
-import com.gbr.datastore.model.DarkThemeConfig
+import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.model.gitabase.GitabaseID
 import kotlinx.coroutines.flow.Flow
 

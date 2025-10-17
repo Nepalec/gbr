@@ -1,4 +1,4 @@
-package com.gbr.datastore.model
+package com.gbr.model.theme
 
 /**
  * Represents the dark theme configuration options for the app.

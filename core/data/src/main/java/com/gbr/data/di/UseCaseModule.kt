@@ -3,11 +3,15 @@ package com.gbr.data.di
 import android.content.Context
 import com.gbr.data.repository.GitabasesRepository
 import com.gbr.data.repository.GitabasesDescRepository
+import com.gbr.data.repository.UserPreferencesRepository
+import com.gbr.data.repository.UserPreferencesRepositoryImpl
 import com.gbr.data.usecase.CopyGitabaseUseCase
 import com.gbr.data.usecase.ExtractGitabasesUseCase
 import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import com.gbr.data.usecase.InitializeGitabasesUseCase
+import com.gbr.data.usecase.SetCurrentGitabaseUseCase
+import com.gbr.datastore.datasource.GbrPreferencesDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,8 +59,26 @@ object UseCaseModule {
         @ApplicationContext context: Context,
         scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase,
         extractGitabasesUseCase: ExtractGitabasesUseCase,
-        gitabasesRepository: GitabasesRepository
+        gitabasesRepository: GitabasesRepository,
+        gbrPreferencesDataSource: GbrPreferencesDataSource
     ): InitializeGitabasesUseCase {
-        return InitializeGitabasesUseCase(context, scanGitabaseFilesUseCase, extractGitabasesUseCase, gitabasesRepository)
+        return InitializeGitabasesUseCase(context, scanGitabaseFilesUseCase, extractGitabasesUseCase, gitabasesRepository, gbrPreferencesDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferencesRepository(
+        gbrPreferencesDataSource: GbrPreferencesDataSource
+    ): UserPreferencesRepository {
+        return UserPreferencesRepositoryImpl(gbrPreferencesDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSetCurrentGitabaseUseCase(
+        gitabasesRepository: GitabasesRepository,
+        userPreferencesRepository: UserPreferencesRepository
+    ): SetCurrentGitabaseUseCase {
+        return SetCurrentGitabaseUseCase(gitabasesRepository, userPreferencesRepository)
     }
 }

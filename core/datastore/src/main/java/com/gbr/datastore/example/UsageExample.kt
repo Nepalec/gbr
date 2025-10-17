@@ -1,7 +1,7 @@
 package com.gbr.datastore.example
 
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
-import com.gbr.datastore.model.DarkThemeConfig
+import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType

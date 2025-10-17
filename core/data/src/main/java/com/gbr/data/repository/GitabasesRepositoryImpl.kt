@@ -1,6 +1,7 @@
 package com.gbr.data.repository
 
 import com.gbr.model.gitabase.Gitabase
+import com.gbr.model.gitabase.GitabaseID
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,7 +17,10 @@ class GitabasesRepositoryImpl @Inject constructor() : GitabasesRepository {
 
     override fun getCurrentGitabase(): Gitabase? = _currentGitabase.value
 
-    override fun setCurrentGitabase(gitabase: Gitabase) {
+    override fun getCurrentGitabaseFlow() = _currentGitabase
+
+    override fun setCurrentGitabase(gitabaseId: GitabaseID) {
+        val gitabase = _availableGitabases.value.find { it.id == gitabaseId }
         _currentGitabase.value = gitabase
     }
 

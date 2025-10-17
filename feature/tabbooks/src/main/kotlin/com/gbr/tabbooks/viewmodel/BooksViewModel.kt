@@ -7,6 +7,7 @@ import com.gbr.data.usecase.CopyGitabaseUseCase
 import com.gbr.data.usecase.InitializeGitabasesUseCase
 import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
+import com.gbr.data.usecase.SetCurrentGitabaseUseCase
 import com.gbr.data.repository.GitabasesRepository
 import com.gbr.model.gitabase.Gitabase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.LinkedHashSet
@@ -25,7 +27,7 @@ class BooksViewModel @Inject constructor(
     private val copyGitabaseUseCase: CopyGitabaseUseCase,
     private val removeGitabaseUseCase: RemoveGitabaseUseCase,
     private val scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase,
-    private val initializeGitabasesUseCase: InitializeGitabasesUseCase
+    private val setCurrentGitabaseUseCase: SetCurrentGitabaseUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BooksUiState())
@@ -33,6 +35,7 @@ class BooksViewModel @Inject constructor(
 
     init {
         loadGitabases()
+        observeCurrentGitabase()
     }
 
     private fun loadGitabases() {
@@ -52,6 +55,14 @@ class BooksViewModel @Inject constructor(
         }
     }
 
+    private fun observeCurrentGitabase() {
+        viewModelScope.launch {
+            gitabasesRepository.getCurrentGitabaseFlow().collect { currentGitabase ->
+                _uiState.value = _uiState.value.copy(selectedGitabase = currentGitabase)
+            }
+        }
+    }
+
     fun refreshGitabases() {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
         loadGitabases()
@@ -59,11 +70,10 @@ class BooksViewModel @Inject constructor(
 
     fun selectGitabase(gitabase: Gitabase) {
         _uiState.value = _uiState.value.copy(selectedGitabase = gitabase)
-        gitabasesRepository.setCurrentGitabase(gitabase)
-    }
 
-    fun getCurrentGitabase(): Gitabase? {
-        return gitabasesRepository.getCurrentGitabase()
+        viewModelScope.launch {
+            setCurrentGitabaseUseCase.execute(gitabase.id)
+        }
     }
 
     /**

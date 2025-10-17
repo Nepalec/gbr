@@ -131,7 +131,7 @@ fun BooksScreen(
                                     ) {
                                         Text(
                                             text = gitabase.title,
-                                            maxLines = 1,
+                                            maxLines = 3,
                                             style = MaterialTheme.typography.titleMedium.copy(
                                                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                                             ),
@@ -189,7 +189,7 @@ fun BooksScreen(
         Scaffold(
             topBar = {
                 CustomAppBar(
-                    title = "Books",
+                    title = uiState.selectedGitabase?.title?:"Books",
                     onNavigationClick = {
                         scope.launch {
                             drawerState.open()

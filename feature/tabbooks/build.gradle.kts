@@ -23,6 +23,7 @@ android {
 dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.model)
+    implementation(projects.core.datastore)
     api(projects.core.data)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeKtx)
