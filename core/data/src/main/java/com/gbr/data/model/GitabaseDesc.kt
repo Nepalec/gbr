@@ -1,6 +1,6 @@
 package com.gbr.data.model
 
-data class GitabaseDesc(
+data class GitabaseDescNetwork(
     val gbname: String,
     val gbalias: String,
     val gblang: String,
@@ -8,7 +8,7 @@ data class GitabaseDesc(
 )
 
 data class GitabasesDescResponse(
-    val gitabases: List<GitabaseDesc>,
+    val gitabases: List<GitabaseDescNetwork>,
     val success: Int,
     val message: String
 )

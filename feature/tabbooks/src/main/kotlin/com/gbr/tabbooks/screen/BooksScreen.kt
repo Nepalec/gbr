@@ -69,6 +69,7 @@ import com.gbr.model.gitabase.Gitabase
 fun BooksScreen(
     onNavigateBack: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToDownloader: () -> Unit = {},
     viewModel: BooksViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -101,7 +102,10 @@ fun BooksScreen(
                         // Download from internet button
                         OutlinedIconButton(
                             onClick = {
-                                // TODO: Implement download from internet functionality
+                                scope.launch {
+                                    drawerState.close()
+                                }
+                                onNavigateToDownloader()
                             }
                         ) {
                             Icon(

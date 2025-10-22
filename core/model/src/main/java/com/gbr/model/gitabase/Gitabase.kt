@@ -1,5 +1,9 @@
 package com.gbr.model.gitabase
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Gitabase(
     val id: GitabaseID,
     val title: String,
@@ -8,7 +12,7 @@ data class Gitabase(
     val isShopDatabase: Boolean = false,
     val hasTranslation: Boolean = false,
     val lastModified: String
-) {
+) : Parcelable {
     val canDelete: Boolean
         get() = id.type != GitabaseType.HELP && id.type != GitabaseType.MY_BOOKS
 

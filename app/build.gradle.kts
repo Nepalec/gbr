@@ -45,6 +45,7 @@ dependencies {
     implementation(projects.feature.tabnotes)
     implementation(projects.feature.tabprofile)
     implementation(projects.feature.settings)
+    implementation(projects.feature.scrDownloader)
     implementation(libs.androidx.tracing.ktx)
 
     debugImplementation(libs.androidx.compose.ui.tooling)

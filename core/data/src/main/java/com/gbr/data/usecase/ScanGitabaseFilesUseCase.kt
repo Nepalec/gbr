@@ -3,7 +3,7 @@ package com.gbr.data.usecase
 import com.gbr.model.gitabase.Gitabase
 import com.gbr.data.repository.GitabasesRepository
 import com.gbr.data.repository.GitabasesDescRepository
-import com.gbr.data.model.GitabaseDesc
+import com.gbr.data.model.GitabaseDescNetwork
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType
@@ -179,12 +179,12 @@ class ScanGitabaseFilesUseCase @Inject constructor(
 
     /**
      * Enriches Gitabase objects with title and lastModified data from GitabasesDescRepository.
-     * Links Gitabase objects to GitabaseDesc objects based on GitabaseID (type + lang) matching
-     * GitabaseDesc (gbalias + gblang).
+     * Links Gitabase objects to GitabaseDescNetwork objects based on GitabaseID (type + lang) matching
+     * GitabaseDescNetwork (gbalias + gblang).
      */
     private suspend fun enrichGitabasesWithDescData(gitabases: Set<Gitabase>): Set<Gitabase> {
         return try {
-            // Fetch GitabaseDesc data
+            // Fetch GitabaseDescNetwork data
             val descResponse = gitabasesDescRepository.getGitabasesDesc()
 
             if (descResponse.success != 1) {
@@ -192,12 +192,12 @@ class ScanGitabaseFilesUseCase @Inject constructor(
                 return gitabases
             }
 
-            // Create a mapping from (gbalias, gblang) to GitabaseDesc
+            // Create a mapping from (gbalias, gblang) to GitabaseDescNetwork
             val descMap = descResponse.gitabases.associateBy { desc ->
                 Pair(desc.gbalias, desc.gblang)
             }
 
-            // Enrich each Gitabase with matching GitabaseDesc data
+            // Enrich each Gitabase with matching GitabaseDescNetwork data
             gitabases.map { gitabase ->
                 val descKey = Pair(gitabase.id.type.value, gitabase.id.lang.value)
                 val matchingDesc = descMap[descKey]

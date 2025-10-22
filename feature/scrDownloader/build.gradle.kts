@@ -2,10 +2,11 @@ plugins {
     alias(libs.plugins.gbr.android.library)
     alias(libs.plugins.gbr.android.library.compose)
     alias(libs.plugins.gbr.android.hilt)
+    id("kotlin-parcelize")
 }
 
 android {
-    namespace = "com.gbr.tabbooks"
+    namespace = "com.gbr.scrDownloader"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -23,9 +24,7 @@ android {
 dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.model)
-    implementation(projects.core.datastore)
-    api(projects.core.data)
-    implementation(projects.feature.scrDownloader)
+    implementation(projects.core.data)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeKtx)
     implementation(libs.androidx.lifecycle.viewModelCompose)
@@ -38,4 +37,3 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.tooling.preview)
 }
-

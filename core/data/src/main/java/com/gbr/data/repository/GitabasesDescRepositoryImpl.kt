@@ -1,10 +1,12 @@
 package com.gbr.data.repository
 
 import android.util.Log
-import com.gbr.data.model.GitabaseDesc
+import com.gbr.data.mapper.GitabaseDescMapper
+import com.gbr.data.model.GitabaseDescNetwork
 import com.gbr.data.model.GitabasesDescResponse
 import com.gbr.datastore.datasource.GitabasesCacheDataSource
 import com.gbr.datastore.model.CachedGitabase
+import com.gbr.model.gitabase.Gitabase
 import com.gbr.network.IGitabasesDescDataSource
 import com.gbr.network.model.NetworkGitabasesDescResp
 import javax.inject.Inject
@@ -41,7 +43,7 @@ class GitabasesDescRepositoryImpl @Inject constructor(
             if (cachedGitabases != null) {
                 Log.d(TAG, "Using cached gitabases (${cachedGitabases.size} items)")
                 GitabasesDescResponse(
-                    gitabases = cachedGitabases.map { it.toGitabaseDesc() },
+                    gitabases = cachedGitabases.map { it.toGitabaseDescNetwork() },
                     success = 1,
                     message = "Data from cache"
                 )
@@ -56,16 +58,21 @@ class GitabasesDescRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAllGitabases(): List<Gitabase> {
+        val descResponse = getGitabasesDesc()
+        return GitabaseDescMapper.toGitabaseList(descResponse.gitabases)
+    }
+
     private fun NetworkGitabasesDescResp.toGitabasesDescResponse(): GitabasesDescResponse {
         return GitabasesDescResponse(
-            gitabases = gitabases.map { it.toGitabaseDesc() },
+            gitabases = gitabases.map { it.toGitabaseDescNetwork() },
             success = success,
             message = message
         )
     }
 
-    private fun NetworkGitabasesDescResp.Gitabase.toGitabaseDesc(): GitabaseDesc {
-        return GitabaseDesc(
+    private fun NetworkGitabasesDescResp.Gitabase.toGitabaseDescNetwork(): GitabaseDescNetwork {
+        return GitabaseDescNetwork(
             gbname = gbname,
             gbalias = gbalias,
             gblang = gblang,
@@ -82,8 +89,8 @@ class GitabasesDescRepositoryImpl @Inject constructor(
         )
     }
 
-    private fun CachedGitabase.toGitabaseDesc(): GitabaseDesc {
-        return GitabaseDesc(
+    private fun CachedGitabase.toGitabaseDescNetwork(): GitabaseDescNetwork {
+        return GitabaseDescNetwork(
             gbname = gbname,
             gbalias = gbalias,
             gblang = gblang,
