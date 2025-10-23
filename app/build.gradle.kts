@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(projects.core.common)
     implementation(projects.core.designsystem)
     implementation(projects.feature.tabbooks)
     implementation(projects.feature.tabreading)

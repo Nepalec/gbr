@@ -7,21 +7,20 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
+import com.gbr.common.navigation.SubGraphDest
 import com.gbr.designsystem.components.navigationbar.textandicon.NavigationBarWithTextAndIconView
-import com.gbr.tabbooks.navigation.BooksNavigation
-import com.gbr.tabreading.navigation.ReadingNavigation
-import com.gbr.tabnotes.navigation.NotesNavigation
-import com.gbr.tabprofile.navigation.ProfileNavigation
-import com.gbr.settings.navigation.SettingsNavigation
+import com.gbr.navigation.DefaultNavigator
 
 @Composable
-fun GbrNavHost() {
+fun GbrNavHost(
+    defaultNavigator: DefaultNavigator
+) {
+    val navController = rememberNavController()
     var selectedTabIndex by remember { mutableIntStateOf(0) }
-    var showSettings by remember { mutableStateOf(false) }
     
     val destinations = TopLevelDestination.values()
     val items = destinations.map { it.title }
@@ -30,43 +29,36 @@ fun GbrNavHost() {
 
     Scaffold(
         bottomBar = {
-            if (!showSettings) {
-                NavigationBarWithTextAndIconView(
-                    items = items,
-                    icons = icons,
-                    selectedIcons = selectedIcons,
-                    selectedIndex = selectedTabIndex,
-                    onItemClick = { index ->
-                        selectedTabIndex = index
+            NavigationBarWithTextAndIconView(
+                items = items,
+                icons = icons,
+                selectedIcons = selectedIcons,
+                selectedIndex = selectedTabIndex,
+                onItemClick = { index ->
+                    selectedTabIndex = index
+                    when (index) {
+                        0 -> navController.navigate(SubGraphDest.Books)
+                        1 -> navController.navigate(SubGraphDest.Reading)
+                        2 -> navController.navigate(SubGraphDest.Notes)
+                        3 -> navController.navigate(SubGraphDest.Profile)
                     }
-                )
-            }
+                }
+            )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     ) { innerPadding ->
-        if (showSettings) {
-            SettingsNavigation(
-                onNavigateBack = { showSettings = false }
-            )
-        } else {
-            when (selectedTabIndex) {
-                0 -> BooksNavigation(
-                    onNavigateBack = { /* Handle back navigation */ },
-                    onNavigateToSettings = { showSettings = true }
-                )
-                1 -> ReadingNavigation(
-                    onNavigateBack = { /* Handle back navigation */ },
-                    onNavigateToSettings = { showSettings = true }
-                )
-                2 -> NotesNavigation(
-                    onNavigateBack = { /* Handle back navigation */ },
-                    onNavigateToSettings = { showSettings = true }
-                )
-                3 -> ProfileNavigation(
-                    onNavigateBack = { /* Handle back navigation */ },
-                    onNavigateToSettings = { showSettings = true }
-                )
-            }
+        androidx.navigation.compose.NavHost(
+            navController = navController,
+            startDestination = SubGraphDest.Books,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            // Register all feature navigation graphs
+            defaultNavigator.booksFeature.registerGraph(navController, this)
+            defaultNavigator.downloaderFeature.registerGraph(navController, this)
+            defaultNavigator.readingFeature.registerGraph(navController, this)
+            defaultNavigator.notesFeature.registerGraph(navController, this)
+            defaultNavigator.profileFeature.registerGraph(navController, this)
+            defaultNavigator.settingsFeature.registerGraph(navController, this)
         }
     }
 }
