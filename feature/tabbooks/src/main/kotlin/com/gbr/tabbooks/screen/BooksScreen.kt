@@ -92,7 +92,7 @@ fun BooksScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Gitabase Files",
+                        text = "Gitabase Packages",
                         style = MaterialTheme.typography.headlineSmall
                     )
 

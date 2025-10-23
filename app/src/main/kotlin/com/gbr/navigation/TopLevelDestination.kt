@@ -19,6 +19,11 @@ enum class TopLevelDestination(
         icon = com.gbr.designsystem.R.drawable.bookmark_24px,
         selectedIcon = com.gbr.designsystem.R.drawable.bookmark_filled_24px
     ),
+    DISCUSS(
+        title = "Discuss",
+        icon = com.gbr.designsystem.R.drawable.forum_24px,
+        selectedIcon = com.gbr.designsystem.R.drawable.chat_24px
+    ),
     NOTES(
         title = "Notes",
         icon = com.gbr.designsystem.R.drawable.note_stack_24px,

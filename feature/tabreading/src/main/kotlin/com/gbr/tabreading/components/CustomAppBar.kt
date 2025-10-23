@@ -28,14 +28,7 @@ fun CustomAppBar(
                 style = MaterialTheme.typography.titleLarge
             )
         },
-        navigationIcon = {
-            IconButton(onClick = onNavigationClick) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(navigationIcon),
-                    contentDescription = "Navigation"
-                )
-            }
-        },
+        navigationIcon = { }, // Remove hamburger icon for Reading tab
         actions = {
             IconButton(onClick = onActionClick) {
                 Icon(

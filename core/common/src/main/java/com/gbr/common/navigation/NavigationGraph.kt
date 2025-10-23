@@ -18,6 +18,9 @@ sealed class SubGraphDest {
     data object Reading : SubGraphDest()
     
     @Serializable
+    data object Discuss : SubGraphDest()
+    
+    @Serializable
     data object Notes : SubGraphDest()
     
     @Serializable
@@ -49,6 +52,10 @@ sealed class Dest {
     // Reading feature destinations
     @Serializable
     data object Reading : Dest()
+    
+    // Discuss feature destinations
+    @Serializable
+    data object Discuss : Dest()
     
     // Notes feature destinations
     @Serializable

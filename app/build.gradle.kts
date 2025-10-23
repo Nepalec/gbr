@@ -43,6 +43,7 @@ dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.feature.tabbooks)
     implementation(projects.feature.tabreading)
+    implementation(projects.feature.tabdiscuss)
     implementation(projects.feature.tabnotes)
     implementation(projects.feature.tabprofile)
     implementation(projects.feature.settings)

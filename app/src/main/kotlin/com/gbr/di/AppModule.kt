@@ -4,6 +4,7 @@ import com.gbr.navigation.DefaultNavigator
 import com.gbr.scrDownloader.navigation.DownloaderFeature
 import com.gbr.tabbooks.navigation.BooksFeature
 import com.gbr.tabreading.navigation.ReadingFeature
+import com.gbr.tabdiscuss.navigation.DiscussFeature
 import com.gbr.tabnotes.navigation.NotesFeature
 import com.gbr.tabprofile.navigation.ProfileFeature
 import com.gbr.settings.navigation.SettingsFeature
@@ -23,6 +24,7 @@ object AppModule {
         booksFeature: BooksFeature,
         downloaderFeature: DownloaderFeature,
         readingFeature: ReadingFeature,
+        discussFeature: DiscussFeature,
         notesFeature: NotesFeature,
         profileFeature: ProfileFeature,
         settingsFeature: SettingsFeature
@@ -31,6 +33,7 @@ object AppModule {
             booksFeature = booksFeature,
             downloaderFeature = downloaderFeature,
             readingFeature = readingFeature,
+            discussFeature = discussFeature,
             notesFeature = notesFeature,
             profileFeature = profileFeature,
             settingsFeature = settingsFeature

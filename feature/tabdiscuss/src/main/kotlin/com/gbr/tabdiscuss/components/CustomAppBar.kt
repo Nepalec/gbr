@@ -1,4 +1,4 @@
-package com.gbr.tabnotes.components
+package com.gbr.tabdiscuss.components
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,7 +28,7 @@ fun CustomAppBar(
                 style = MaterialTheme.typography.titleLarge
             )
         },
-        navigationIcon = { }, // Remove hamburger icon for Notes tab
+        navigationIcon = { }, // Remove hamburger icon for Discuss tab
         actions = {
             IconButton(onClick = onActionClick) {
                 Icon(
@@ -46,7 +46,3 @@ fun CustomAppBar(
         ),
     )
 }
-
-
-
-
