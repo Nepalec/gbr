@@ -2,10 +2,11 @@ plugins {
     alias(libs.plugins.gbr.android.library)
     alias(libs.plugins.gbr.android.library.compose)
     alias(libs.plugins.gbr.android.hilt)
+    alias(libs.plugins.org.jetbrains.kotlin.serialization)
 }
 
 android {
-    namespace = "com.gbr.tabbooks"
+    namespace = "com.gbr.scrbook"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -24,20 +25,13 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.designsystem)
     implementation(projects.core.model)
-    implementation(projects.core.datastore)
-    api(projects.core.data)
-    implementation(projects.feature.scrDownloader)
-    implementation(projects.feature.scrBook)
+    implementation(projects.core.data)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeKtx)
     implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.dagger.hilt)
     kapt(libs.dagger.hilt.compiler)
-    
-    // Compose UI Tooling for previews
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.tooling.preview)
 }
-

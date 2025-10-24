@@ -40,7 +40,7 @@ sealed class Dest {
     data object Books : Dest()
     
     @Serializable
-    data object BookDetail : Dest()
+    data object BookPreview : Dest()
     
     // Books Download feature destinations
     @Serializable

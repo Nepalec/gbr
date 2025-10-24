@@ -2,7 +2,7 @@ package com.gbr.data.repository
 
 import android.content.Context
 import com.gbr.data.database.GitabaseDatabaseManager
-import com.gbr.model.book.Book
+import com.gbr.model.book.BookPreview
 import com.gbr.model.gitabase.GitabaseID
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,7 @@ class TextsRepositoryImpl @Inject constructor(
     private val databaseManager: GitabaseDatabaseManager
 ) : TextsRepository {
 
-    override suspend fun getAllBooks(gitabaseId: GitabaseID): Result<List<Book>> {
+    override suspend fun getAllBooks(gitabaseId: GitabaseID): Result<List<BookPreview>> {
         return withContext(Dispatchers.IO) {
             try {
                 // Verify gitabase exists in repository

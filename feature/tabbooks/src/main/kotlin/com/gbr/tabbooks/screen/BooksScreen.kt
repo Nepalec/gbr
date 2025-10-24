@@ -4,11 +4,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,9 +24,6 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -42,8 +36,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,15 +44,9 @@ import com.gbr.tabbooks.viewmodel.BooksViewModel
 import com.gbr.designsystem.components.ShimmerEffect
 import com.gbr.model.gitabase.GitabaseType
 import kotlinx.coroutines.launch
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Surface
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.gbr.model.gitabase.Gitabase
@@ -70,6 +56,7 @@ fun BooksScreen(
     onNavigateBack: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onNavigateToDownloader: () -> Unit = {},
+    onNavigateToBookDetail: (com.gbr.model.gitabase.GitabaseID, Int) -> Unit = { _, _ -> },
     viewModel: BooksViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -217,7 +204,14 @@ fun BooksScreen(
                         ) {
                             items(uiState.books.size) { index ->
                                 val book = uiState.books[index]
-                                BookItem(book = book, onClick = { /* TODO */ })
+                                BookItem(
+                                    bookPreview = book,
+                                    onClick = {
+                                        uiState.selectedGitabase?.let { gitabase ->
+                                            onNavigateToBookDetail(gitabase.id, book.id)
+                                        }
+                                    }
+                                )
                             }
                         }
                     }
@@ -309,7 +303,7 @@ private fun getOriginalFileName(context: android.content.Context, uri: Uri): Str
 
 @Composable
 private fun BookItem(
-    book: com.gbr.model.book.Book,
+    bookPreview: com.gbr.model.book.BookPreview,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -329,7 +323,7 @@ private fun BookItem(
                 .padding(top = 16.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                book.author?.let { author ->
+                bookPreview.author?.let { author ->
                     Text(
                         text = author,
                         style = MaterialTheme.typography.bodyMedium,
@@ -337,7 +331,7 @@ private fun BookItem(
                     )
                 }
                 Text(
-                    text = book.title ?: "Untitled",
+                    text = bookPreview.title ?: "Untitled",
                     style = MaterialTheme.typography.titleLarge
                 )
 

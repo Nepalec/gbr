@@ -1,10 +1,8 @@
 package com.gbr.tabbooks.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gbr.data.usecase.CopyGitabaseUseCase
-import com.gbr.data.usecase.InitializeGitabasesUseCase
 import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import com.gbr.data.usecase.SetCurrentGitabaseUseCase
@@ -276,7 +274,7 @@ data class BooksUiState(
     val isInitialized: Boolean = false,
     val gitabases: LinkedHashSet<Gitabase> = linkedSetOf(),
     val selectedGitabase: Gitabase? = null,
-    val books: List<com.gbr.model.book.Book> = emptyList(),
+    val books: List<com.gbr.model.book.BookPreview> = emptyList(),
     val message: String? = null,
     val error: String? = null,
     val copyingGitabases: Set<Gitabase> = emptySet()

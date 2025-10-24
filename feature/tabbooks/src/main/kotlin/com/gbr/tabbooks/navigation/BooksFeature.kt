@@ -24,15 +24,27 @@ class BooksFeatureImpl @Inject constructor() : BooksFeature {
                 BooksScreen(
                     onNavigateBack = { navHostController.popBackStack() },
                     onNavigateToSettings = { navHostController.navigate(Dest.Settings) },
-                    onNavigateToDownloader = { navHostController.navigate(SubGraphDest.BooksDownload) }
+                    onNavigateToDownloader = { navHostController.navigate(SubGraphDest.BooksDownload) },
+                    onNavigateToBookDetail = { gitabaseId, bookId ->
+                        // Navigate to BookPreview with arguments
+                        navHostController.navigate(Dest.BookPreview)
+                    }
                 )
             }
             
-            composable<Dest.BookDetail> {
-                // TODO: Implement BookDetailScreen
-                BooksScreen(
-                    onNavigateBack = { navHostController.popBackStack() },
-                    onNavigateToSettings = { navHostController.navigate(Dest.Settings) }
+            composable<Dest.BookPreview> {
+                // For now, we'll use default values since we need to extract arguments from the route
+                // In a real implementation, you'd parse the navigation arguments
+                val gitabaseId = com.gbr.model.gitabase.GitabaseID(
+                    type = com.gbr.model.gitabase.GitabaseType.HELP,
+                    lang = com.gbr.model.gitabase.GitabaseLang.ENG
+                )
+                val bookId = 1 // Default book ID
+                
+                com.gbr.scrbook.screen.BookPreviewScreen(
+                    gitabaseId = gitabaseId,
+                    bookId = bookId,
+                    onNavigateBack = { navHostController.popBackStack() }
                 )
             }
         }
