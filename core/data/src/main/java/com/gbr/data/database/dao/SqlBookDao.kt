@@ -22,11 +22,30 @@ class SqlBookDao(
             val bookDetailList = mutableListOf<BookPreview>()
 
             try {
-                val cursor: Cursor? = database.rawQuery("SELECT * FROM books", null)
+                val cursor: Cursor? = database.rawQuery("""
+                    SELECT 
+                      b._id as book_id,
+                      b.sort as book_sort,
+                      b.title as book_title,
+                      b.author,
+                      b.desc,
+                      b.type,
+                      b.levels,
+                      b.web_abbrev,
+                      s._id as song_id,
+                      s.song as song_number,
+                      s.songname,
+                      s.sort as song_sort,
+                      s.colorBackgnd,
+                      s.colorForegnd
+                    FROM books b
+                    LEFT JOIN songs s ON b._id = s.book_id
+                    ORDER BY b.sort, s.sort
+                """.trimIndent(), null)
                 cursor?.use { c ->
                     while (c.moveToNext()) {
                         try {
-                            val book = createBookFromCursor(c)
+                            val book = createBookPreviewFromJoinedCursor(c)
                             bookDetailList.add(book)
                         } catch (e: Exception) {
                             // Skip invalid rows, continue processing
@@ -129,12 +148,74 @@ class SqlBookDao(
                 ?: BookStructure.CHAPTERS,
             colorBack = null,
             colorFore = null,
-            volumeBookTitle = null,
-            volumeAbbrev = null,
-            volumeBookSort = null,
-            volumeBookId = null,
+            volumeGroupTitle = null,
+            volumeGroupAbbrev = null,
+            volumeGroupSort = null,
+            volumeGroupId = null,
             volumeNumber = null
         )
+    }
+
+    /**
+     * Creates a domain Book model from a Cursor with joined books and songs data.
+     * Handles both books with volumes and standalone books.
+     */
+    private fun createBookPreviewFromJoinedCursor(cursor: Cursor): BookPreview {
+        val songId = cursor.getIntOrNull("song_id")
+        val bookId = cursor.getIntOrNull("book_id") ?: 0
+        val bookTitle = cursor.getStringOrNull("book_title") ?: ""
+        val bookAuthor = cursor.getStringOrNull("author") ?: ""
+        val bookDescription = cursor.getStringOrNull("desc")
+        val bookType = cursor.getStringOrNull("type") ?: ""
+        val bookLevel = cursor.getIntOrNull("levels") ?: 3
+        val bookSort = cursor.getIntOrNull("book_sort") ?: 0
+        val bookWebAbbrev = cursor.getStringOrNull("web_abbrev")
+        
+        return if (songId != null) {
+            // Book WITH volumes - create BookPreview for the volume
+            val songName = cursor.getStringOrNull("songname") ?: ""
+            val songSort = cursor.getIntOrNull("song_sort") ?: 0
+            val songNumber = cursor.getStringOrNull("song_number")?.toIntOrNull()
+            val colorBack = cursor.getStringOrNull("colorBackgnd")?.takeIf { it.isNotEmpty() }
+            val colorFore = cursor.getStringOrNull("colorForegnd")?.takeIf { it.isNotEmpty() }
+            
+            BookPreview(
+                id = songId,
+                sort = songSort,
+                title = songName,
+                author = bookAuthor,
+                description = bookDescription,
+                type = bookType,
+                level = bookLevel,
+                structure = BookStructure.fromInt(bookLevel) ?: BookStructure.CHAPTERS,
+                colorBack = colorBack,
+                colorFore = colorFore,
+                volumeGroupTitle = bookTitle,
+                volumeGroupAbbrev = bookWebAbbrev,
+                volumeGroupSort = bookSort,
+                volumeGroupId = bookId,
+                volumeNumber = songNumber
+            )
+        } else {
+            // Book WITHOUT volumes - create BookPreview for the book itself
+            BookPreview(
+                id = bookId,
+                sort = bookSort,
+                title = bookTitle,
+                author = bookAuthor,
+                description = bookDescription,
+                type = bookType,
+                level = bookLevel,
+                structure = BookStructure.fromInt(bookLevel) ?: BookStructure.CHAPTERS,
+                colorBack = null,
+                colorFore = null,
+                volumeGroupTitle = null,
+                volumeGroupAbbrev = null,
+                volumeGroupSort = null,
+                volumeGroupId = null,
+                volumeNumber = null
+            )
+        }
     }
 }
 

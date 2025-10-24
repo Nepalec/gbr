@@ -3,6 +3,7 @@ package com.gbr.tabbooks.screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.IconButton
@@ -41,12 +44,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.tabbooks.components.CustomAppBar
 import com.gbr.tabbooks.viewmodel.BooksViewModel
+import com.gbr.tabbooks.viewmodel.BookDisplayItem
 import com.gbr.designsystem.components.ShimmerEffect
 import com.gbr.model.gitabase.GitabaseType
 import kotlinx.coroutines.launch
 import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.gbr.model.gitabase.Gitabase
@@ -200,18 +205,34 @@ fun BooksScreen(
                                 .fillMaxSize()
                                 .padding(16.dp),
                             contentPadding = PaddingValues(bottom = 80.dp), // Add bottom padding for navigation bar
-                            verticalArrangement = Arrangement.spacedBy(0.dp)
+                            verticalArrangement = Arrangement.spacedBy(0.dp) // No spacing between books
                         ) {
-                            items(uiState.books.size) { index ->
-                                val book = uiState.books[index]
-                                BookItem(
-                                    bookPreview = book,
-                                    onClick = {
-                                        uiState.selectedGitabase?.let { gitabase ->
-                                            onNavigateToBookDetail(gitabase.id, book.id)
-                                        }
+                            items(uiState.displayItems.size) { index ->
+                                val displayItem = uiState.displayItems[index]
+                                when (displayItem) {
+                                    is BookDisplayItem.StandaloneBook -> {
+                                        BookItem(
+                                            bookPreview = displayItem.book,
+                                            onClick = {
+                                                uiState.selectedGitabase?.let { gitabase ->
+                                                    onNavigateToBookDetail(gitabase.id, displayItem.book.id)
+                                                }
+                                            }
+                                        )
                                     }
-                                )
+                                    is BookDisplayItem.VolumeGroup -> {
+                                        VolumeGroupCarousel(
+                                            title = displayItem.title,
+                                            author = displayItem.author,
+                                            volumes = displayItem.volumes,
+                                            onVolumeClick = { volume ->
+                                                uiState.selectedGitabase?.let { gitabase ->
+                                                    onNavigateToBookDetail(gitabase.id, volume.id)
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -470,5 +491,94 @@ fun CustomGitabaseDrawerItemPreview() {
                 onDelete = {}
             )
         }
+    }
+}
+
+@Composable
+private fun VolumeGroupCarousel(
+    title: String,
+    author: String,
+    volumes: List<com.gbr.model.book.BookPreview>,
+    onVolumeClick: (com.gbr.model.book.BookPreview) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedCard(
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            // Group header (same style as regular book)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+            ) {
+                Text(
+                    text = author,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+
+            // Horizontal carousel of volumes
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 0.dp)
+            ) {
+                items(volumes.size) { index ->
+                    val volume = volumes[index]
+                    VolumeCard(
+                        volume = volume,
+                        onClick = { onVolumeClick(volume) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun VolumeCard(
+    volume: com.gbr.model.book.BookPreview,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Use the same background color as the LazyColumn (surfaceContainerHigh)
+    val backgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh
+    val textColor = MaterialTheme.colorScheme.onSurface
+
+    androidx.compose.foundation.layout.Box(
+        modifier = modifier
+            .width(120.dp)
+            .height(160.dp) // 2x higher (80dp -> 160dp)
+            .background(
+                color = backgroundColor,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+            )
+            .clickable { onClick() }
+            .padding(8.dp),
+        contentAlignment = Alignment.Center // Center content vertically and horizontally
+    ) {
+        Text(
+            text = volume.title,
+            style = MaterialTheme.typography.bodyMedium,
+            color = textColor,
+            maxLines = 4,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
     }
 }

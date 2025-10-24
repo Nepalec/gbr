@@ -12,6 +12,7 @@ import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseType
 import com.gbr.model.gitabase.GitabaseLang
+import com.gbr.model.book.BookPreview
 import java.io.File
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,11 +78,16 @@ class BooksViewModel @Inject constructor(
                 val result = textsRepository.getAllBooks(gitabaseId)
                 result.fold(
                     onSuccess = { books ->
-                        _uiState.value = _uiState.value.copy(books = books)
+                        val displayItems = processBooksIntoDisplayItems(books)
+                        _uiState.value = _uiState.value.copy(
+                            books = books,
+                            displayItems = displayItems
+                        )
                     },
                     onFailure = { error ->
                         _uiState.value = _uiState.value.copy(
                             books = emptyList(),
+                            displayItems = emptyList(),
                             error = "Failed to load books: ${error.message}"
                         )
                     }
@@ -89,8 +95,53 @@ class BooksViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     books = emptyList(),
+                    displayItems = emptyList(),
                     error = "Error loading books: ${e.message}"
                 )
+            }
+        }
+    }
+
+    /**
+     * Process books into display items, grouping volumes and sorting appropriately
+     */
+    private fun processBooksIntoDisplayItems(books: List<BookPreview>): List<BookDisplayItem> {
+        val displayItems = mutableListOf<BookDisplayItem>()
+        
+        // Separate standalone books from volume groups
+        val standaloneBooks = books.filter { it.volumeGroupTitle == null }
+        val volumeGroups = books.filter { it.volumeGroupTitle != null }
+            .groupBy { it.volumeGroupId }
+            .filterKeys { it != null }
+            .mapValues { (_, volumes) ->
+                val firstVolume = volumes.first()
+                BookDisplayItem.VolumeGroup(
+                    title = firstVolume.volumeGroupTitle ?: "",
+                    author = firstVolume.author,
+                    volumes = volumes.sortedBy { it.sort },
+                    sortOrder = firstVolume.volumeGroupSort ?: 0
+                )
+            }
+            .values
+        
+        // Add standalone books
+        standaloneBooks.forEach { book ->
+            displayItems.add(
+                BookDisplayItem.StandaloneBook(
+                    book = book,
+                    sortOrder = book.sort
+                )
+            )
+        }
+        
+        // Add volume groups
+        displayItems.addAll(volumeGroups)
+        
+        // Sort all display items by their sort order
+        return displayItems.sortedBy { item ->
+            when (item) {
+                is BookDisplayItem.StandaloneBook -> item.sortOrder
+                is BookDisplayItem.VolumeGroup -> item.sortOrder
             }
         }
     }
@@ -269,12 +320,30 @@ class BooksViewModel @Inject constructor(
     }
 }
 
+/**
+ * Sealed class representing different types of display items in the books list
+ */
+sealed class BookDisplayItem {
+    data class StandaloneBook(
+        val book: BookPreview,
+        val sortOrder: Int
+    ) : BookDisplayItem()
+    
+    data class VolumeGroup(
+        val title: String,
+        val author: String,
+        val volumes: List<BookPreview>,
+        val sortOrder: Int
+    ) : BookDisplayItem()
+}
+
 data class BooksUiState(
     val isLoading: Boolean = true,
     val isInitialized: Boolean = false,
     val gitabases: LinkedHashSet<Gitabase> = linkedSetOf(),
     val selectedGitabase: Gitabase? = null,
-    val books: List<com.gbr.model.book.BookPreview> = emptyList(),
+    val books: List<BookPreview> = emptyList(),
+    val displayItems: List<BookDisplayItem> = emptyList(),
     val message: String? = null,
     val error: String? = null,
     val copyingGitabases: Set<Gitabase> = emptySet()

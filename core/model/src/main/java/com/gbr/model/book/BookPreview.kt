@@ -1,7 +1,5 @@
 package com.gbr.model.book
 
-import android.health.connect.datatypes.units.Volume
-
 /**
  * Domain model representing a Book from a gitabase.
  * This is the clean domain model separate from database entities.
@@ -19,10 +17,10 @@ data class BookPreview(
     val colorFore: String?,
 
     //for multi-volume book (group of volumes)
-    val volumeBookTitle: String?, //title for group of volumes
-    val volumeAbbrev:String?, //abbreviation for group of volumes
-    val volumeBookSort: Int?,   //sort for group of volumes
-    val volumeBookId: Int?,     //id for group of volumes
+    val volumeGroupTitle: String?, //title for group of volumes
+    val volumeGroupAbbrev:String?, //abbreviation for group of volumes
+    val volumeGroupSort: Int?,   //sort for group of volumes
+    val volumeGroupId: Int?,     //id for group of volumes
 
     val volumeNumber: Int? //this book volume number in a group of volumes
 )
