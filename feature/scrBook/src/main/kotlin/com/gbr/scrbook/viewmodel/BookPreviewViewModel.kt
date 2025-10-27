@@ -3,6 +3,7 @@ package com.gbr.scrbook.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gbr.data.repository.TextsRepository
+import com.gbr.model.book.BookDetail
 import com.gbr.model.book.BookPreview
 import com.gbr.model.gitabase.GitabaseID
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,42 +21,33 @@ class BookPreviewViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(BookPreviewUiState())
     val uiState: StateFlow<BookPreviewUiState> = _uiState.asStateFlow()
 
-    fun loadBook(gitabaseId: GitabaseID, bookId: Int) {
+    fun loadBook(gitabaseId: GitabaseID, bookPreview: BookPreview) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
             try {
-                // Get all books from the repository
-                val result = textsRepository.getAllBooks(gitabaseId)
+                // Get book detail using the new composition approach
+                val result = textsRepository.getBookDetail(gitabaseId, bookPreview)
 
                 if (result.isSuccess) {
-                    val books = result.getOrThrow()
-                    val book = books.find { it.id == bookId }
+                    val bookDetail = result.getOrThrow()
 
-                    if (book != null) {
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            book = book,
-                            error = null
-                        )
-                    } else {
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            book = null,
-                            error = "Book with ID $bookId not found"
-                        )
-                    }
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        bookDetail = bookDetail,
+                        error = null
+                    )
                 } else {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        book = null,
-                        error = result.exceptionOrNull()?.message ?: "Failed to load books"
+                        bookDetail = null,
+                        error = result.exceptionOrNull()?.message ?: "Failed to load book detail"
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    book = null,
+                    bookDetail = null,
                     error = e.message ?: "Unknown error occurred"
                 )
             }
@@ -65,6 +57,6 @@ class BookPreviewViewModel @Inject constructor(
 
 data class BookPreviewUiState(
     val isLoading: Boolean = false,
-    val book: BookPreview? = null,
+    val bookDetail: BookDetail? = null,
     val error: String? = null
 )

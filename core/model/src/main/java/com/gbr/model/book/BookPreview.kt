@@ -22,5 +22,12 @@ data class BookPreview(
     val volumeGroupSort: Int?,   //sort for group of volumes
     val volumeGroupId: Int?,     //id for group of volumes
 
-    val volumeNumber: Int? //this book volume number in a group of volumes
-)
+    val volumeNumber: Int?, //this book volume number in a group of volumes
+
+    val hasSanskrit: Boolean = false,
+    val isSimple: Boolean = false,
+    val code: String = "",
+){
+    val isVolume: Boolean
+    get() = volumeGroupId!=null
+}

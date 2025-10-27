@@ -25,26 +25,50 @@ class BooksFeatureImpl @Inject constructor() : BooksFeature {
                     onNavigateBack = { navHostController.popBackStack() },
                     onNavigateToSettings = { navHostController.navigate(Dest.Settings) },
                     onNavigateToDownloader = { navHostController.navigate(SubGraphDest.BooksDownload) },
-                    onNavigateToBookDetail = { gitabaseId, bookId ->
-                        // Navigate to BookPreview with arguments
+                    onNavigateToBookDetail = { gitabaseId, bookPreview ->
+                        // Set the selected book in global state
+                        BookNavigationState.setSelectedBook(gitabaseId, bookPreview)
+                        // Navigate to BookPreview
                         navHostController.navigate(Dest.BookPreview)
                     }
                 )
             }
             
             composable<Dest.BookPreview> {
-                // For now, we'll use default values since we need to extract arguments from the route
-                // In a real implementation, you'd parse the navigation arguments
-                val gitabaseId = com.gbr.model.gitabase.GitabaseID(
+                // Get the selected book from global state
+                val selectedBook = BookNavigationState.getSelectedBook()
+                val gitabaseId = selectedBook?.gitabaseId ?: com.gbr.model.gitabase.GitabaseID(
                     type = com.gbr.model.gitabase.GitabaseType.HELP,
                     lang = com.gbr.model.gitabase.GitabaseLang.ENG
                 )
-                val bookId = 1 // Default book ID
+                val bookPreview = selectedBook?.bookPreview ?: com.gbr.model.book.BookPreview(
+                    id = 1,
+                    sort = 0,
+                    title = "Default Book",
+                    author = "Unknown Author",
+                    description = null,
+                    type = "unknown",
+                    level = 3,
+                    structure = com.gbr.model.book.BookStructure.CHAPTERS,
+                    colorBack = null,
+                    colorFore = null,
+                    volumeGroupTitle = null,
+                    volumeGroupAbbrev = null,
+                    volumeGroupSort = null,
+                    volumeGroupId = null,
+                    volumeNumber = null,
+                    hasSanskrit = false,
+                    isSimple = false,
+                    code = ""
+                )
                 
                 com.gbr.scrbook.screen.BookPreviewScreen(
                     gitabaseId = gitabaseId,
-                    bookId = bookId,
-                    onNavigateBack = { navHostController.popBackStack() }
+                    bookPreview = bookPreview,
+                    onNavigateBack = { 
+                        BookNavigationState.clearSelectedBook()
+                        navHostController.popBackStack() 
+                    }
                 )
             }
         }

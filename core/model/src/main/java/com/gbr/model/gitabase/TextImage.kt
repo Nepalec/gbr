@@ -50,19 +50,7 @@ data class TextImage(
         return "$chapterId.$textNumber"
     }
 
-    /**
-     * Check if this is a cover image
-     */
-    fun isCoverImage(): Boolean {
-        return type == ImageType.BOOK_COVER || type == ImageType.SONG_COVER
-    }
 
-    /**
-     * Check if this is a chapter number image
-     */
-    fun isChapterNumber(): Boolean {
-        return type == ImageType.NUMBER
-    }
 
     /**
      * Get display name for the image
@@ -78,42 +66,6 @@ data class TextImage(
         return content.isNotBlank()
     }
 
-    companion object {
-        /**
-         * Create a chapter number image
-         */
-        fun createChapterNumber(chapterId: Int): TextImage {
-            return TextImage(
-                id = "chapter_$chapterId",
-                textId = "",
-                chapterId = chapterId,
-                textNumber = "",
-                description = "Chapter $chapterId",
-                type = ImageType.NUMBER,
-                format = ImageFormat.PNG
-            )
-        }
-
-        /**
-         * Create a book cover image
-         */
-        fun createBookCover(
-            id: String,
-            description: String,
-            fullPath: String
-        ): TextImage {
-            return TextImage(
-                id = id,
-                textId = "",
-                chapterId = 0,
-                textNumber = "",
-                description = description,
-                type = ImageType.BOOK_COVER,
-                format = ImageFormat.JPEG,
-                filePath = fullPath
-            )
-        }
-    }
 }
 
 /**
@@ -121,17 +73,11 @@ data class TextImage(
  */
 enum class ImageType(
     val value: Int,
-    val description: String,
-    val isStructural: Boolean = false
 ) {
-    NUMBER(0, "Chapter Number", true),
-    PICTURE(1, "Picture"),
-    CARD(2, "Card"),
-    DIAGRAM(3, "Diagram"),
-    FRESCO(4, "Fresco"),
-    PLACE(5, "Place"),
-    BOOK_COVER(10, "Book Cover"),
-    SONG_COVER(11, "Song Cover")
+    PICTURE(1),
+    CARD(2),
+    DIAGRAM(3),
+    FRESCO(4)
 }
 
 /**

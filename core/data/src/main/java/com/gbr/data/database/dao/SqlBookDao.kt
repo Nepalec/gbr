@@ -4,6 +4,12 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.gbr.model.book.BookPreview
 import com.gbr.model.book.BookStructure
+import com.gbr.model.book.ChapterContentsItem
+import com.gbr.model.book.TextContentsItem
+import com.gbr.model.book.ImageFileItem
+import com.gbr.model.gitabase.TextImage
+import com.gbr.model.gitabase.ImageType
+import com.gbr.model.gitabase.ImageFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,37 +17,108 @@ import kotlinx.coroutines.withContext
 
 /**
  * SQLite implementation for Book operations using raw SQL queries.
- * Works directly with domain models, bypassing Room entities.
+ * Works directly with domain models
+ * BookPreview works as a key
  */
 class SqlBookDao(
     private val database: SQLiteDatabase
 ) {
+    fun getBookContentsChapters(book: BookPreview): Flow<List<ChapterContentsItem>> = flow {
+        val chapters = withContext(Dispatchers.IO) {
+            val chapterList = mutableListOf<ChapterContentsItem>()
 
-    fun getAllBooks(): Flow<List<BookPreview>> = flow {
+            try {
+                val debugQuery = if (book.isVolume) {
+                    """
+                        SELECT *
+                        FROM chapters c
+                        WHERE c.book_id = ${book.volumeGroupId} AND c.song = ${book.volumeNumber}
+                        ORDER BY c.number
+                    """.trimIndent()
+                } else {
+                    """
+                        SELECT *
+                        FROM chapters c
+                        WHERE c.book_id = ${book.id}
+                        ORDER BY c.number
+                    """.trimIndent()
+                }
+                val cursor: Cursor? = database.rawQuery(debugQuery, null)
+
+                cursor?.use { c ->
+                    while (c.moveToNext()) {
+                        try {
+                            val chapter = ChapterContentsItem(
+                                id = c.getIntOrNull("_id") ?: 0,
+                                book = book,
+                                number = c.getIntOrNull("number") ?: 0,
+                                title = c.getStringOrNull("title") ?: "",
+                                intro = c.getStringOrNull("desc"),
+                            )
+                            chapterList.add(chapter)
+                        } catch (e: Exception) {
+                            // Skip invalid rows, continue processing
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Return empty list on database errors
+            }
+
+            chapterList
+        }
+        emit(chapters)
+    }
+
+    fun getBookContentsTexts(book: BookPreview, chapterNumber: String? = null): Flow<List<TextContentsItem>> = flow {
+        val texts = withContext(Dispatchers.IO) {
+            val textList = mutableListOf<TextContentsItem>()
+
+            try {
+                val debugQuery = """
+                    SELECT *
+                    FROM textnums t
+                    WHERE t.book_id = ${book.id}
+                    ORDER BY t._id
+                """.trimIndent()
+                val cursor: Cursor? = database.rawQuery(debugQuery, null)
+
+                cursor?.use { c ->
+                    while (c.moveToNext()) {
+                        try {
+                            val textContentsItem = TextContentsItem(
+                                id = c.getIntOrNull("_id") ?: 0,
+                                book = book,
+                                textNumber = c.getStringOrNull("txt_no") ?: "",
+                                title = c.getStringOrNull("preview") ?: ""
+                            )
+                            textList.add(textContentsItem)
+                        } catch (e: Exception) {
+                            // Skip invalid rows, continue processing
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Return empty list on database errors
+            }
+
+            textList
+        }
+        emit(texts)
+    }
+
+    fun getAllBookPreviews(): Flow<List<BookPreview>> = flow {
         val books = withContext(Dispatchers.IO) {
             val bookDetailList = mutableListOf<BookPreview>()
 
             try {
-                val cursor: Cursor? = database.rawQuery("""
-                    SELECT 
-                      b._id as book_id,
-                      b.sort as book_sort,
-                      b.title as book_title,
-                      b.author,
-                      b.desc,
-                      b.type,
-                      b.levels,
-                      b.web_abbrev,
-                      s._id as song_id,
-                      s.song as song_number,
-                      s.songname,
-                      s.sort as song_sort,
-                      s.colorBackgnd,
-                      s.colorForegnd
+                val debugQuery = """
+                    SELECT b._id as book_id, b.sort as book_sort, b.title as book_title, b.author, b.desc, b.type, b.levels, b.web_abbrev, b.hasSanskrit, b.isSimple, b.compare_code as code, s._id as song_id, s.song as song_number, s.songname, s.sort as song_sort, s.colorBackgnd, s.colorForegnd
                     FROM books b
                     LEFT JOIN songs s ON b._id = s.book_id
                     ORDER BY b.sort, s.sort
-                """.trimIndent(), null)
+                """.trimIndent()
+                val cursor: Cursor? = database.rawQuery(debugQuery, null)
                 cursor?.use { c ->
                     while (c.moveToNext()) {
                         try {
@@ -53,7 +130,7 @@ class SqlBookDao(
                     }
                 }
             } catch (e: Exception) {
-                // Return empty list on database errors
+                emptyList<BookPreview>()
             }
 
             bookDetailList
@@ -61,100 +138,39 @@ class SqlBookDao(
         emit(books)
     }
 
-    suspend fun getBookById(id: Int): BookPreview? = withContext(Dispatchers.IO) {
+    suspend fun getBookCoverImageBitmap(book: BookPreview): String? = withContext(Dispatchers.IO) {
         try {
-            val cursor: Cursor? = database.rawQuery(
-                "SELECT * FROM books WHERE _id = ?",
-                arrayOf(id.toString())
-            )
+            val debugQuery = if(book.isVolume) {
+                "select * from image_nums nums LEFT JOIN images imgs " +
+                    "on nums.image_id=imgs.image_id  " +
+                    "LEFT JOIN textnums txt on txt.text_id=nums.text_id " +
+                    "WHERE nums.bid='${book.volumeGroupId}' AND nums.sid='${book.volumeNumber}' AND kind='11'"
+            }
+            else{
+                "select * from image_nums nums LEFT JOIN images imgs on nums.image_id=imgs.image_id  " +
+                    "LEFT JOIN textnums txt on txt.text_id=nums.text_id " +
+                    "WHERE nums.bid='${book.id}' AND kind='10'"
+            }
 
-            cursor?.use { c ->
-                if (c.moveToFirst()) {
-                    return@withContext createBookFromCursor(c)
+            val debugCursor: Cursor? =
+                database.rawQuery(debugQuery, null)
+
+            debugCursor?.use { c ->
+                if (c.moveToNext()) {
+                    return@withContext c.getStringOrNull("content")
                 }
             }
+
         } catch (e: Exception) {
-            // Log error if needed
         }
 
         null
     }
 
-    suspend fun getBooksByCompareCode(compareCode: String): List<BookPreview> = withContext(Dispatchers.IO) {
-        val bookDetails = mutableListOf<BookPreview>()
+//    fun getBookChapters(book: BookPreview): Flow<List<Chapter>> = flow {}
+//    fun getBookTexts(book: BookPreview): Flow<List<TextItem>> = flow {}
+//    fun getBookImagesFileNames(book: BookPreview): Flow<List<TextImage>> = flow {}
 
-        try {
-            val cursor: Cursor? = database.rawQuery(
-                "SELECT * FROM books WHERE compare_code = ?",
-                arrayOf(compareCode)
-            )
-
-            cursor?.use { c ->
-                while (c.moveToNext()) {
-                    try {
-                        val book = createBookFromCursor(c)
-                        bookDetails.add(book)
-                    } catch (e: Exception) {
-                        // Skip invalid rows, continue processing
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            // Log error if needed
-        }
-
-        bookDetails
-    }
-
-    suspend fun getBooksByType(type: String): List<BookPreview> = withContext(Dispatchers.IO) {
-        val bookDetails = mutableListOf<BookPreview>()
-
-        try {
-            val cursor: Cursor? = database.rawQuery(
-                "SELECT * FROM books WHERE type = ?",
-                arrayOf(type)
-            )
-
-            cursor?.use { c ->
-                while (c.moveToNext()) {
-                    try {
-                        val book = createBookFromCursor(c)
-                        bookDetails.add(book)
-                    } catch (e: Exception) {
-                        // Skip invalid rows, continue processing
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            // Log error if needed
-        }
-
-        bookDetails
-    }
-
-    /**
-     * Creates a domain Book model from a Cursor positioned at a valid row.
-     */
-    private fun createBookFromCursor(cursor: Cursor): BookPreview {
-        return BookPreview(
-            id = cursor.getIntOrNull("_id") ?: 0,
-            sort = cursor.getIntOrNull("sort") ?: 0,
-            title = cursor.getStringOrNull("title") ?: "",
-            author = cursor.getStringOrNull("author") ?: "",
-            description = cursor.getStringOrNull("desc"),
-            type = cursor.getStringOrNull("type") ?: "",
-            level = cursor.getIntOrNull("levels") ?: 3,
-            structure = BookStructure.fromInt(cursor.getIntOrNull("levels") ?: 3)
-                ?: BookStructure.CHAPTERS,
-            colorBack = null,
-            colorFore = null,
-            volumeGroupTitle = null,
-            volumeGroupAbbrev = null,
-            volumeGroupSort = null,
-            volumeGroupId = null,
-            volumeNumber = null
-        )
-    }
 
     /**
      * Creates a domain Book model from a Cursor with joined books and songs data.
@@ -170,7 +186,12 @@ class SqlBookDao(
         val bookLevel = cursor.getIntOrNull("levels") ?: 3
         val bookSort = cursor.getIntOrNull("book_sort") ?: 0
         val bookWebAbbrev = cursor.getStringOrNull("web_abbrev")
-        
+
+        // Get additional metadata fields
+        val hasSanskrit = cursor.getIntOrNull("hasSanskrit") == 1
+        val isSimple = cursor.getIntOrNull("isSimple") == 1
+        val code = cursor.getStringOrNull("code") ?: ""
+
         return if (songId != null) {
             // Book WITH volumes - create BookPreview for the volume
             val songName = cursor.getStringOrNull("songname") ?: ""
@@ -178,7 +199,7 @@ class SqlBookDao(
             val songNumber = cursor.getStringOrNull("song_number")?.toIntOrNull()
             val colorBack = cursor.getStringOrNull("colorBackgnd")?.takeIf { it.isNotEmpty() }
             val colorFore = cursor.getStringOrNull("colorForegnd")?.takeIf { it.isNotEmpty() }
-            
+
             BookPreview(
                 id = songId,
                 sort = songSort,
@@ -194,7 +215,10 @@ class SqlBookDao(
                 volumeGroupAbbrev = bookWebAbbrev,
                 volumeGroupSort = bookSort,
                 volumeGroupId = bookId,
-                volumeNumber = songNumber
+                volumeNumber = songNumber,
+                hasSanskrit = hasSanskrit,
+                isSimple = isSimple,
+                code = code
             )
         } else {
             // Book WITHOUT volumes - create BookPreview for the book itself
@@ -213,10 +237,84 @@ class SqlBookDao(
                 volumeGroupAbbrev = null,
                 volumeGroupSort = null,
                 volumeGroupId = null,
-                volumeNumber = null
+                volumeNumber = null,
+                hasSanskrit = hasSanskrit,
+                isSimple = isSimple,
+                code = code
             )
         }
     }
+
+
+    fun getBookImagesFileNames(book: BookPreview): Flow<Map<Int, List<ImageFileItem>>?> = flow {
+        val images = withContext(Dispatchers.IO) {
+            val imageList = mutableListOf<Pair<Int, ImageFileItem>>()
+
+            try {
+                val debugQuery = if (book.isVolume) {
+                    """
+                        SELECT nums.image_id, nums.kind, nums.type, nums.cid
+                        FROM image_nums nums
+                        WHERE nums.bid = ${book.volumeGroupId} AND nums.sid = ${book.volumeNumber} AND nums.kind < 10
+                        ORDER BY nums.kind, nums.image_id
+                    """.trimIndent()
+                } else {
+                    """
+                        SELECT nums.image_id, nums.kind, nums.type, nums.cid
+                        FROM image_nums nums
+                        WHERE nums.bid = ${book.id} AND nums.kind < 10
+                        ORDER BY nums.kind, nums.image_id
+                    """.trimIndent()
+                }
+                val cursor: Cursor? = database.rawQuery(debugQuery, null)
+
+                cursor?.use { c ->
+                    while (c.moveToNext()) {
+                        try {
+                            val kind = c.getIntOrNull("kind") ?: 1
+                            val typeValue = c.getIntOrNull("type") ?: 3
+
+                            val imageType = when (kind) {
+                                1 -> ImageType.PICTURE
+                                2 -> ImageType.CARD
+                                3 -> ImageType.DIAGRAM
+                                4 -> ImageType.FRESCO
+                                else -> ImageType.PICTURE
+                            }
+
+                            val imageFormat = when (typeValue) {
+                                1 -> ImageFormat.GIF
+                                2 -> ImageFormat.PNG
+                                3 -> ImageFormat.JPEG
+                                4 -> ImageFormat.SVG
+                                else -> ImageFormat.JPEG
+                            }
+
+                            val imageFileItem = ImageFileItem(
+                                id = c.getStringOrNull("image_id") ?: "",
+                                format = imageFormat,
+                                bitmap = null,
+                                type = imageType,
+                                chapter = c.getIntOrNull("cid")
+                            )
+                            imageList.add(kind to imageFileItem)
+                        } catch (e: Exception) {
+                            // Skip invalid rows, continue processing
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Return empty list on database errors
+            }
+
+            // Group by kind
+            imageList
+                .groupBy({ it.first }, { it.second })
+                .takeIf { it.isNotEmpty() }
+        }
+        emit(images)
+    }
+
 }
 
 /**
@@ -233,5 +331,12 @@ private fun Cursor.getStringOrNull(columnName: String): String? {
     val columnIndex = getColumnIndex(columnName)
     return if (columnIndex >= 0 && !isNull(columnIndex)) {
         getString(columnIndex)
+    } else null
+}
+
+private fun Cursor.getBlobOrNull(columnName: String): ByteArray? {
+    val columnIndex = getColumnIndex(columnName)
+    return if (columnIndex >= 0 && !isNull(columnIndex)) {
+        getBlob(columnIndex)
     } else null
 }

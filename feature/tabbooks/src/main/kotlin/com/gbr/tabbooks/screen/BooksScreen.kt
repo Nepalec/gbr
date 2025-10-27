@@ -61,7 +61,7 @@ fun BooksScreen(
     onNavigateBack: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onNavigateToDownloader: () -> Unit = {},
-    onNavigateToBookDetail: (com.gbr.model.gitabase.GitabaseID, Int) -> Unit = { _, _ -> },
+    onNavigateToBookDetail: (com.gbr.model.gitabase.GitabaseID, com.gbr.model.book.BookPreview) -> Unit = { _, _ -> },
     viewModel: BooksViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -215,7 +215,7 @@ fun BooksScreen(
                                             bookPreview = displayItem.book,
                                             onClick = {
                                                 uiState.selectedGitabase?.let { gitabase ->
-                                                    onNavigateToBookDetail(gitabase.id, displayItem.book.id)
+                                                    onNavigateToBookDetail(gitabase.id, displayItem.book)
                                                 }
                                             }
                                         )
@@ -227,7 +227,7 @@ fun BooksScreen(
                                             volumes = displayItem.volumes,
                                             onVolumeClick = { volume ->
                                                 uiState.selectedGitabase?.let { gitabase ->
-                                                    onNavigateToBookDetail(gitabase.id, volume.id)
+                                                    onNavigateToBookDetail(gitabase.id, volume)
                                                 }
                                             }
                                         )
