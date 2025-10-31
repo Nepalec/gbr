@@ -20,9 +20,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.key
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.launch
 import com.gbr.model.book.BookDetail
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,24 +74,16 @@ fun AuthorTitleTabsRow(
                 edgePadding = 0.dp,
                 divider = {}
             ) {
-                Tab(
-                    selected = selectedTabIndex == 0,
-                    onClick = { onTabSelected(0) },
-                    text = { Text("Contents", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface) },
-                    modifier = Modifier.wrapContentWidth(),
+                BookTab("Contents", 0, selectedTabIndex, onTabSelected)
 
-                )
                 bookDetail.imageTabs?.forEachIndexed { index, imageTab ->
-                    Tab(
-                        selected = selectedTabIndex == index + 1,
-                        onClick = { onTabSelected(index + 1) },
-                        text = { Text(imageTab.tabTitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface) },
-                    )
+                    BookTab(imageTab.tabTitle, index + 1, selectedTabIndex, onTabSelected)
                 }
+
             }
 
             IconButton(
-             //   modifier = Modifier.background(color = Color.Blue),
+                //   modifier = Modifier.background(color = Color.Blue),
                 onClick = {
                     if (showSheet) {
                         scope.launch { sheetState.hide() }.invokeOnCompletion { showSheet = false }
@@ -127,3 +122,23 @@ fun AuthorTitleTabsRow(
         }
     }
 }
+
+@Composable
+private fun BookTab(
+    title: String,
+    index: Int,
+    selectedTabIndex: Int,
+    onTabSelected: (Int) -> Unit
+) {
+        Tab(
+            selected = selectedTabIndex == index,
+            onClick = { onTabSelected(index) },
+            text = { Text(title, fontSize = 12.sp) },
+            modifier = Modifier
+                .wrapContentWidth()
+                //.background(Color(Random.nextLong() or 0xFF000000)),
+
+            )
+
+}
+

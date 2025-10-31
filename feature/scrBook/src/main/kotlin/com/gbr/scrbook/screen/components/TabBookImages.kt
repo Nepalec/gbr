@@ -18,10 +18,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gbr.model.book.BookImageTab
+import kotlin.random.Random
 
 @Composable
 fun TabBookImages(imageTab: BookImageTab) {
-    Box(modifier = Modifier.fillMaxSize().padding(vertical = 8.dp)){
+    Box(modifier = Modifier.fillMaxSize()
+       // .background(Color(Random.nextLong() or 0xFF000000))
+        .padding(vertical = 8.dp)){
         LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp))
         {
             items(imageTab.images) { imageItem ->
