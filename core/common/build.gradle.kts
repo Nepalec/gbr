@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.gbr.android.library)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.org.jetbrains.kotlin.serialization)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -27,18 +27,5 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
-    kapt(libs.dagger.hilt.compiler)
-}
-
-// Fix for KAPT with Java 17+
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-}
-
-kapt {
-    javacOptions {
-        option("-Xmaxerrs", 500)
-    }
+    ksp(libs.dagger.hilt.compiler)
 }

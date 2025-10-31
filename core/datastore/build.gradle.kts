@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.gbr.android.library)
     alias(libs.plugins.gbr.android.hilt)
-    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.org.jetbrains.kotlin.serialization)
 }
@@ -30,7 +30,7 @@ dependencies {
 
     // Hilt dependencies
     implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 
     // DataStore dependencies
     implementation(libs.androidx.datastore.preferences)
@@ -38,15 +38,3 @@ dependencies {
     // Serialization dependencies
     implementation(libs.kotlinx.serialization.json)
 }
-// Fix for KAPT with Java 17+
-// tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-//     kotlinOptions {
-//         jvmTarget = "17"
-//     }
-// }
-//
-// kapt {
-//     javacOptions {
-//         option("-Xmaxerrs", 500)
-//     }
-// }

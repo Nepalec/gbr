@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.gbr.android.library)
     alias(libs.plugins.gbr.android.hilt)
-    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt)
 }
 
@@ -44,12 +44,12 @@ dependencies {
 
     // Hilt dependencies
     implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 
     // Room dependencies
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     // Test dependencies
     testImplementation(libs.junit)
@@ -67,19 +67,6 @@ dependencies {
     androidTestImplementation(libs.kotlinx.coroutines.test)
 
     // Hilt test dependencies
-    kaptAndroidTest(libs.hilt.compiler)
-    kaptTest(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
+    kspTest(libs.hilt.compiler)
 }
-
-// Fix for KAPT with Java 17+
-// tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-//     kotlinOptions {
-//         jvmTarget = "17"
-//     }
-// }
-//
-// kapt {
-//     javacOptions {
-//         option("-Xmaxerrs", 500)
-//     }
-// }

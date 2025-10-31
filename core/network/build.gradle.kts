@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.gbr.android.library)
     alias(libs.plugins.gbr.android.hilt)
-    alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.org.jetbrains.kotlin.serialization)
 }
@@ -52,7 +52,7 @@ dependencies {
     testImplementation(libs.truth)
 
     androidTestImplementation(libs.dagger.hilt.testing)
-    kaptAndroidTest(libs.dagger.hilt.compiler)
+    kspAndroidTest(libs.dagger.hilt.compiler)
 
     // Android test runner dependencies
     androidTestImplementation("androidx.test:runner:1.5.2")

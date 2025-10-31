@@ -9,7 +9,6 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 
 class AndroidHiltConventionPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = with(target) {
@@ -18,14 +17,9 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
             jvmToolchain(17)
         }
 
-        // Apply Hilt + KAPT (Hilt uses KAPT, not KSP)
+        // Apply Hilt + KSP (migrated from KAPT)
         pluginManager.apply("com.google.dagger.hilt.android")
-        pluginManager.apply("org.jetbrains.kotlin.kapt")
-
-        // Optional but useful KAPT config
-        extensions.configure<KaptExtension> {
-            correctErrorTypes = true
-        }
+        pluginManager.apply("com.google.devtools.ksp")
 
         val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
@@ -34,15 +28,15 @@ class AndroidHiltConventionPlugin : Plugin<Project> {
             add("implementation", libs.findLibrary("dagger-hilt").get())
 
             // Hilt compiler for main
-            add("kapt", libs.findLibrary("dagger-hilt-compiler").get())
+            add("ksp", libs.findLibrary("dagger-hilt-compiler").get())
 
             // ---- Instrumented tests ----
             add("androidTestImplementation", libs.findLibrary("dagger-hilt-testing").get())
-            add("kaptAndroidTest", libs.findLibrary("dagger-hilt-compiler").get())
+            add("kspAndroidTest", libs.findLibrary("dagger-hilt-compiler").get())
 
             // ---- Local unit tests (optional / Robolectric) ----
             add("testImplementation", libs.findLibrary("dagger-hilt-testing").get())
-            add("kaptTest", libs.findLibrary("dagger-hilt-compiler").get())
+            add("kspTest", libs.findLibrary("dagger-hilt-compiler").get())
         }
 
         // Set Hilt test runner for Android modules

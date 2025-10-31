@@ -52,6 +52,7 @@ import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.gbr.model.gitabase.Gitabase
@@ -177,34 +178,46 @@ fun BooksScreen(
             },
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
         ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = androidx.compose.ui.Alignment.Center
-            ) {
-                if (uiState.error != null) {
-                    Text(
-                        text = "Error: ${uiState.error}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                } else if (uiState.selectedGitabase != null) {
-                    if (uiState.books.isEmpty()) {
-                        // No books in selected gitabase
+            when {
+                uiState.error != null -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
                         Text(
-                            text = "No books found in ${uiState.selectedGitabase?.title}",
+                            text = "Error: ${uiState.error}",
                             style = MaterialTheme.typography.bodyLarge,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.error
                         )
+                    }
+                }
+                uiState.selectedGitabase != null -> {
+                    if (uiState.books.isEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            contentAlignment = androidx.compose.ui.Alignment.Center
+                        ) {
+                            Text(
+                                text = "No books found in ${uiState.selectedGitabase?.title}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     } else {
                         // Display books list
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp),
-                            contentPadding = PaddingValues(bottom = 80.dp), // Add bottom padding for navigation bar
+                                .padding(top = innerPadding.calculateTopPadding()),
+                            contentPadding = PaddingValues(
+                                horizontal = 16.dp,
+                                vertical = 16.dp
+                            ),
                             verticalArrangement = Arrangement.spacedBy(0.dp) // No spacing between books
                         ) {
                             items(uiState.displayItems.size) { index ->
@@ -236,23 +249,31 @@ fun BooksScreen(
                             }
                         }
                     }
-                } else {
-                    Column(
-                        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                }
+                else -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
                     ) {
-                        Text(
-                            text = "Found ${uiState.gitabases.size} Gitabase files",
-                            style = MaterialTheme.typography.headlineLarge,
-                            textAlign = TextAlign.Center,
-                            fontSize = 24.sp
-                        )
-                        Text(
-                            text = "Select a Gitabase from the menu to view its books",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Column(
+                            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "Found ${uiState.gitabases.size} Gitabase files",
+                                style = MaterialTheme.typography.headlineLarge,
+                                textAlign = TextAlign.Center,
+                                fontSize = 24.sp
+                            )
+                            Text(
+                                text = "Select a Gitabase from the menu to view its books",
+                                style = MaterialTheme.typography.bodyMedium,
+                                textAlign = TextAlign.Center,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }

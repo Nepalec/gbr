@@ -33,5 +33,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.dagger.hilt)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
+    
+    // Material Icons Extended (version managed by Compose BOM)
+    implementation("androidx.compose.material:material-icons-extended")
 }

@@ -14,7 +14,7 @@ import java.io.File
 
 
 internal fun Project.configureAndroidCompose(
-    commonExtension: CommonExtension<*, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
@@ -28,10 +28,8 @@ internal fun Project.configureAndroidCompose(
             targetCompatibility = JavaVersion.VERSION_17
         }
 
-        composeOptions {
-            kotlinCompilerExtensionVersion =
-                libs.findVersion("androidxComposeCompiler").get().toString()
-        }
+        // Note: composeOptions is not needed for Kotlin 2.0+
+        // The Compose Compiler plugin handles this automatically
 
         dependencies {
             val bom = libs.findLibrary("androidx-compose-bom").get()
