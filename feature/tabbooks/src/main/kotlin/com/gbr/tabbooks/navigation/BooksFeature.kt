@@ -29,12 +29,12 @@ class BooksFeatureImpl @Inject constructor() : BooksFeature {
                         // Set the selected book in global state
                         BookNavigationState.setSelectedBook(gitabaseId, bookPreview)
                         // Navigate to BookPreview
-                        navHostController.navigate(Dest.BookPreview)
+                        navHostController.navigate(Dest.BookDetail)
                     }
                 )
             }
-            
-            composable<Dest.BookPreview> {
+
+            composable<Dest.BookDetail> {
                 // Get the selected book from global state
                 val selectedBook = BookNavigationState.getSelectedBook()
                 val gitabaseId = selectedBook?.gitabaseId ?: com.gbr.model.gitabase.GitabaseID(
@@ -61,13 +61,13 @@ class BooksFeatureImpl @Inject constructor() : BooksFeature {
                     isSimple = false,
                     code = ""
                 )
-                
-                com.gbr.scrbook.screen.BookPreviewScreen(
+
+                com.gbr.scrbook.screen.BookDetailScreen(
                     gitabaseId = gitabaseId,
                     bookPreview = bookPreview,
-                    onNavigateBack = { 
+                    onNavigateBack = {
                         BookNavigationState.clearSelectedBook()
-                        navHostController.popBackStack() 
+                        navHostController.popBackStack()
                     }
                 )
             }

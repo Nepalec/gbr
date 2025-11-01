@@ -7,7 +7,6 @@ import com.gbr.model.book.BookStructure
 import com.gbr.model.book.ChapterContentsItem
 import com.gbr.model.book.TextContentsItem
 import com.gbr.model.book.ImageFileItem
-import com.gbr.model.gitabase.TextImage
 import com.gbr.model.gitabase.ImageType
 import com.gbr.model.gitabase.ImageFormat
 import kotlinx.coroutines.Dispatchers
@@ -251,17 +250,36 @@ class SqlBookDao(
             val imageList = mutableListOf<Pair<Int, ImageFileItem>>()
 
             try {
+                // Build the query with optional LEFT JOIN for chapters when book.hasChapters is true
+                val joinClause = if (book.hasChapters) {
+                    """
+                        LEFT JOIN chapters ch ON ch.number = nums.cid 
+                        AND ch.book_id = ${if (book.isVolume) book.volumeGroupId else book.id}
+                        ${if (book.isVolume) "AND ch.song = ${book.volumeNumber}" else ""}
+                    """.trimIndent()
+                } else {
+                    ""
+                }
+                
+                val selectClause = if (book.hasChapters) {
+                    "SELECT nums.image_id, nums.kind, nums.type, nums.cid, ch.title as chapter_title"
+                } else {
+                    "SELECT nums.image_id, nums.kind, nums.type, nums.cid, NULL as chapter_title"
+                }
+                
                 val debugQuery = if (book.isVolume) {
                     """
-                        SELECT nums.image_id, nums.kind, nums.type, nums.cid
+                        $selectClause
                         FROM image_nums nums
+                        $joinClause
                         WHERE nums.bid = ${book.volumeGroupId} AND nums.sid = ${book.volumeNumber} AND nums.kind < 10
                         ORDER BY nums.kind, nums.image_id
                     """.trimIndent()
                 } else {
                     """
-                        SELECT nums.image_id, nums.kind, nums.type, nums.cid
+                        $selectClause
                         FROM image_nums nums
+                        $joinClause
                         WHERE nums.bid = ${book.id} AND nums.kind < 10
                         ORDER BY nums.kind, nums.image_id
                     """.trimIndent()
@@ -295,7 +313,8 @@ class SqlBookDao(
                                 format = imageFormat,
                                 bitmap = null,
                                 type = imageType,
-                                chapter = c.getIntOrNull("cid")
+                                chapterNumber = c.getIntOrNull("cid"),
+                                chapterTitle = c.getStringOrNull("chapter_title")
                             )
                             imageList.add(kind to imageFileItem)
                         } catch (e: Exception) {

@@ -30,4 +30,6 @@ data class BookPreview(
 ){
     val isVolume: Boolean
     get() = volumeGroupId!=null
+    val hasChapters:Boolean
+        get() = structure == BookStructure.CHAPTERS
 }

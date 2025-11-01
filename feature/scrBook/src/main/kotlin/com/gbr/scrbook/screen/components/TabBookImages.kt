@@ -1,7 +1,9 @@
 package com.gbr.scrbook.screen.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -20,18 +22,83 @@ import androidx.compose.ui.unit.sp
 import com.gbr.model.book.BookImageTab
 import kotlin.random.Random
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
-fun TabBookImages(imageTab: BookImageTab) {
+fun TabBookImages(
+    imageTab: BookImageTab,
+    columns: Int = 1,
+    groupByChapters: Boolean = false
+) {
     Box(modifier = Modifier.fillMaxSize()
        // .background(Color(Random.nextLong() or 0xFF000000))
         .padding(vertical = 8.dp)){
-        LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp))
-        {
-            items(imageTab.images) { imageItem ->
-                ImagePlaceholder(
-                    imageItem = imageItem,
-                    modifier = Modifier.fillMaxWidth()
-                )
+        if (groupByChapters) {
+            // Grouped view with sticky headers
+            val groupedImages = imageTab.images.groupBy {
+                (it.chapterNumber ?: 0) to (it.chapterTitle ?: "No Chapter")
+            }.toSortedMap { a, b ->
+                a.first.compareTo(b.first) // Sort by chapter number
+            }
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                groupedImages.forEach { (chapterKey, items) ->
+                    val (chapterNumber, chapterTitle) = chapterKey
+
+                    // Create chapter title string
+                    val headerText = when {
+                        !chapterTitle.isNullOrEmpty() -> "$chapterNumber. $chapterTitle"
+                        chapterNumber > 0 -> "Chapter $chapterNumber"
+                        else -> "No Chapter"
+                    }
+
+                    stickyHeader {
+                        Text(
+                            text = headerText,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(8.dp),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    item {
+                        BoxWithConstraints(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            val spacingDp = (columns - 1) * 2f
+                            val itemWidth = ((maxWidth.value - spacingDp) / columns).dp
+                            FlowRow(
+                                maxItemsInEachRow = columns,
+                                horizontalArrangement = Arrangement.spacedBy(1.dp),
+                                verticalArrangement = Arrangement.spacedBy(1.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                items.forEach { imageItem ->
+                                    ImagePlaceholder(
+                                        imageItem = imageItem,
+                                        modifier = Modifier.width(itemWidth)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            // Ungrouped view - original implementation
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(columns),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp)
+            ) {
+                items(imageTab.images) { imageItem ->
+                    ImagePlaceholder(
+                        imageItem = imageItem,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }

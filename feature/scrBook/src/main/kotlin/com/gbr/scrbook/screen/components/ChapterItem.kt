@@ -11,11 +11,14 @@ import androidx.compose.ui.unit.dp
 import com.gbr.model.book.ChapterContentsItem
 
 @Composable
-fun ChapterItem(chapter: ChapterContentsItem) {
+fun ChapterItem(
+    chapter: ChapterContentsItem,
+    textSizeMultiplier: Float = 1f
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(horizontal = 4.dp, vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -23,7 +26,9 @@ fun ChapterItem(chapter: ChapterContentsItem) {
         ) {
             Text(
                 text = "Chapter ${chapter.number}",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = MaterialTheme.typography.bodySmall.fontSize * textSizeMultiplier
+                ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -31,7 +36,9 @@ fun ChapterItem(chapter: ChapterContentsItem) {
                 text = Html.fromHtml(chapter.title, Html.FROM_HTML_MODE_COMPACT).toString(),
                 maxLines = 4,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize * textSizeMultiplier
+                ),
                 fontWeight = FontWeight.Bold
             )
             val intro = chapter.intro
@@ -39,7 +46,9 @@ fun ChapterItem(chapter: ChapterContentsItem) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = intro,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = MaterialTheme.typography.bodyMedium.fontSize * textSizeMultiplier
+                    ),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis

@@ -23,7 +23,8 @@ data class ImageFileItem(
     val format: ImageFormat,
     val bitmap: String?,
     val type: ImageType,
-    val chapter: Int? //chapter number
+    val chapterNumber: Int?,
+    val chapterTitle: String?
 )
 
 /**
