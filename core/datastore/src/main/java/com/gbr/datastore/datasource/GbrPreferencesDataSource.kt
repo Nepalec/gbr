@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.datastore.model.UserData
@@ -28,6 +29,8 @@ class GbrPreferencesDataSource @Inject constructor(
         private const val TAG = "GbrPreferences"
         private val DARK_THEME_CONFIG_KEY = stringPreferencesKey("dark_theme_config")
         private val LAST_USED_GITABASE_KEY = stringPreferencesKey("last_used_gitabase")
+        private val BOOK_CONTENTS_TEXT_SIZE_KEY = intPreferencesKey("book_contents_text_size")
+        private val BOOK_CONTENTS_COLUMNS_KEY = intPreferencesKey("book_contents_columns")
     }
 
     /**
@@ -140,6 +143,106 @@ class GbrPreferencesDataSource @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse GitabaseID from key: $key", e)
             null
+        }
+    }
+    
+    /**
+     * Gets the book contents text size preference.
+     * Default value is 0.
+     *
+     * @return The text size slider value (-2 to 2)
+     */
+    suspend fun getBookContentsTextSize(): Int {
+        return try {
+            userPreferences.data.map { preferences ->
+                preferences[BOOK_CONTENTS_TEXT_SIZE_KEY] ?: 0
+            }.firstOrNull() ?: 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get book contents text size", e)
+            0
+        }
+    }
+    
+    /**
+     * Sets the book contents text size preference.
+     *
+     * @param textSize The text size slider value (-2 to 2)
+     */
+    suspend fun setBookContentsTextSize(textSize: Int) {
+        try {
+            userPreferences.edit { preferences ->
+                preferences[BOOK_CONTENTS_TEXT_SIZE_KEY] = textSize
+            }
+        } catch (ioException: IOException) {
+            Log.e(TAG, "Failed to update book contents text size", ioException)
+        }
+    }
+    
+    /**
+     * Gets the book contents columns preference.
+     * Default value is 1.
+     *
+     * @return The number of columns (1 or 2)
+     */
+    suspend fun getBookContentsColumns(): Int {
+        return try {
+            userPreferences.data.map { preferences ->
+                preferences[BOOK_CONTENTS_COLUMNS_KEY] ?: 1
+            }.firstOrNull() ?: 1
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get book contents columns", e)
+            1
+        }
+    }
+    
+    /**
+     * Sets the book contents columns preference.
+     *
+     * @param columns The number of columns (1 or 2)
+     */
+    suspend fun setBookContentsColumns(columns: Int) {
+        try {
+            userPreferences.edit { preferences ->
+                preferences[BOOK_CONTENTS_COLUMNS_KEY] = columns
+            }
+        } catch (ioException: IOException) {
+            Log.e(TAG, "Failed to update book contents columns", ioException)
+        }
+    }
+    
+    /**
+     * Gets the book images columns preference for a specific ImageType.
+     * Default value is 1.
+     *
+     * @param imageTypeValue The ImageType.value (1=PICTURE, 2=CARD, 3=DIAGRAM, 4=FRESCO)
+     * @return The number of columns (1, 2, 3, or 4)
+     */
+    suspend fun getBookImagesColumns(imageTypeValue: Int): Int {
+        return try {
+            val key = intPreferencesKey("book_images_columns_type_$imageTypeValue")
+            userPreferences.data.map { preferences ->
+                preferences[key] ?: 1
+            }.firstOrNull() ?: 1
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get book images columns for type $imageTypeValue", e)
+            1
+        }
+    }
+    
+    /**
+     * Sets the book images columns preference for a specific ImageType.
+     *
+     * @param imageTypeValue The ImageType.value (1=PICTURE, 2=CARD, 3=DIAGRAM, 4=FRESCO)
+     * @param columns The number of columns (1, 2, 3, or 4)
+     */
+    suspend fun setBookImagesColumns(imageTypeValue: Int, columns: Int) {
+        try {
+            val key = intPreferencesKey("book_images_columns_type_$imageTypeValue")
+            userPreferences.edit { preferences ->
+                preferences[key] = columns
+            }
+        } catch (ioException: IOException) {
+            Log.e(TAG, "Failed to update book images columns for type $imageTypeValue", ioException)
         }
     }
 }

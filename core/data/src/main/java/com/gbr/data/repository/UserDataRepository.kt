@@ -41,4 +41,48 @@ interface UserDataRepository {
      * Flow of last used Gitabase ID that emits whenever the preference changes.
      */
     val lastUsedGitabase: Flow<GitabaseID?>
+    
+    /**
+     * Gets the book contents text size preference.
+     *
+     * @return The text size slider value (-2 to 2), default is 0
+     */
+    suspend fun getBookContentsTextSize(): Int
+    
+    /**
+     * Sets the book contents text size preference.
+     *
+     * @param textSize The text size slider value (-2 to 2)
+     */
+    suspend fun setBookContentsTextSize(textSize: Int)
+    
+    /**
+     * Gets the book contents columns preference.
+     *
+     * @return The number of columns (1 or 2), default is 1
+     */
+    suspend fun getBookContentsColumns(): Int
+    
+    /**
+     * Sets the book contents columns preference.
+     *
+     * @param columns The number of columns (1 or 2)
+     */
+    suspend fun setBookContentsColumns(columns: Int)
+    
+    /**
+     * Gets the book images columns preference for a specific ImageType.
+     *
+     * @param imageTypeValue The ImageType.value (1=PICTURE, 2=CARD, 3=DIAGRAM, 4=FRESCO)
+     * @return The number of columns (1, 2, 3, or 4), default is 1
+     */
+    suspend fun getBookImagesColumns(imageTypeValue: Int): Int
+    
+    /**
+     * Sets the book images columns preference for a specific ImageType.
+     *
+     * @param imageTypeValue The ImageType.value (1=PICTURE, 2=CARD, 3=DIAGRAM, 4=FRESCO)
+     * @param columns The number of columns (1, 2, 3, or 4)
+     */
+    suspend fun setBookImagesColumns(imageTypeValue: Int, columns: Int)
 }

@@ -3,6 +3,7 @@ package com.gbr.scrbook.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gbr.data.repository.TextsRepository
+import com.gbr.data.repository.UserDataRepository
 import com.gbr.model.book.BookDetail
 import com.gbr.model.book.BookPreview
 import com.gbr.model.gitabase.GitabaseID
@@ -15,12 +16,45 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookPreviewViewModel @Inject constructor(
-    private val textsRepository: TextsRepository
+    private val textsRepository: TextsRepository,
+    private val userDataRepository: UserDataRepository
 ) : ViewModel() {
+    
+    private val _textSize = MutableStateFlow(0)
+    val textSize: StateFlow<Int> = _textSize.asStateFlow()
+    
+    private val _contentsColumns = MutableStateFlow(1)
+    val contentsColumns: StateFlow<Int> = _contentsColumns.asStateFlow()
+    
+    // Map to store columns for each ImageType (key = ImageType.value)
+    private val _imagesColumnsMap = MutableStateFlow<Map<Int, Int>>(emptyMap())
+    val imagesColumnsMap: StateFlow<Map<Int, Int>> = _imagesColumnsMap.asStateFlow()
 
     private val _uiState = MutableStateFlow(BookPreviewUiState())
     val uiState: StateFlow<BookPreviewUiState> = _uiState.asStateFlow()
 
+    init {
+        // Load text size and contents columns preferences on ViewModel initialization
+        // Image tab columns are loaded on-demand when tabs are available
+        viewModelScope.launch {
+            _textSize.value = userDataRepository.getBookContentsTextSize()
+            _contentsColumns.value = userDataRepository.getBookContentsColumns()
+        }
+    }
+    
+    /**
+     * Gets the columns for a specific ImageType.
+     * Loads from preferences if not already in memory.
+     */
+    suspend fun getImageTabColumns(imageTypeValue: Int): Int {
+        val currentMap = _imagesColumnsMap.value
+        return currentMap[imageTypeValue] ?: run {
+            val columns = userDataRepository.getBookImagesColumns(imageTypeValue)
+            _imagesColumnsMap.value = currentMap + (imageTypeValue to columns)
+            columns
+        }
+    }
+    
     fun loadBook(gitabaseId: GitabaseID, bookPreview: BookPreview) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
@@ -51,6 +85,27 @@ class BookPreviewViewModel @Inject constructor(
                     error = e.message ?: "Unknown error occurred"
                 )
             }
+        }
+    }
+    
+    fun setTextSize(textSize: Int) {
+        viewModelScope.launch {
+            _textSize.value = textSize
+            userDataRepository.setBookContentsTextSize(textSize)
+        }
+    }
+    
+    fun setContentsColumns(columns: Int) {
+        viewModelScope.launch {
+            _contentsColumns.value = columns
+            userDataRepository.setBookContentsColumns(columns)
+        }
+    }
+    
+    fun setImagesColumns(imageTypeValue: Int, columns: Int) {
+        viewModelScope.launch {
+            _imagesColumnsMap.value = _imagesColumnsMap.value + (imageTypeValue to columns)
+            userDataRepository.setBookImagesColumns(imageTypeValue, columns)
         }
     }
 }

@@ -21,12 +21,17 @@ import com.gbr.model.book.BookImageTab
 import kotlin.random.Random
 
 @Composable
-fun TabBookImages(imageTab: BookImageTab) {
+fun TabBookImages(
+    imageTab: BookImageTab,
+    columns: Int = 1
+) {
     Box(modifier = Modifier.fillMaxSize()
        // .background(Color(Random.nextLong() or 0xFF000000))
         .padding(vertical = 8.dp)){
-        LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp))
-        {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(columns),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp)
+        ) {
             items(imageTab.images) { imageItem ->
                 ImagePlaceholder(
                     imageItem = imageItem,

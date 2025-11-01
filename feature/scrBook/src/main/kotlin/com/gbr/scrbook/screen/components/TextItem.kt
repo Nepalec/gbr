@@ -11,7 +11,10 @@ import androidx.compose.ui.unit.dp
 import com.gbr.model.book.TextContentsItem
 
 @Composable
-fun TextItem(text: TextContentsItem) {
+fun TextItem(
+    text: TextContentsItem,
+    textSizeMultiplier: Float = 1f
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -23,7 +26,9 @@ fun TextItem(text: TextContentsItem) {
         ) {
             Text(
                 text = "Text ${text.textNumber}",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = MaterialTheme.typography.bodySmall.fontSize * textSizeMultiplier
+                ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -31,7 +36,9 @@ fun TextItem(text: TextContentsItem) {
                 text = Html.fromHtml(text.title, Html.FROM_HTML_MODE_COMPACT).toString(),
                 maxLines = 4,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = MaterialTheme.typography.titleMedium.fontSize * textSizeMultiplier
+                ),
                 fontWeight = FontWeight.Bold
             )
         }

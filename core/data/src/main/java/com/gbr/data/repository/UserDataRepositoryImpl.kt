@@ -56,4 +56,46 @@ class UserDataRepositoryImpl @Inject constructor(
      * Flow of last used Gitabase ID that emits whenever the preference changes.
      */
     override val lastUsedGitabase: Flow<GitabaseID?> = gbrPreferencesDataSource.lastUsedGitabase
+    
+    /**
+     * Gets the book contents text size preference.
+     */
+    override suspend fun getBookContentsTextSize(): Int {
+        return gbrPreferencesDataSource.getBookContentsTextSize()
+    }
+    
+    /**
+     * Sets the book contents text size preference.
+     */
+    override suspend fun setBookContentsTextSize(textSize: Int) {
+        gbrPreferencesDataSource.setBookContentsTextSize(textSize)
+    }
+    
+    /**
+     * Gets the book contents columns preference.
+     */
+    override suspend fun getBookContentsColumns(): Int {
+        return gbrPreferencesDataSource.getBookContentsColumns()
+    }
+    
+    /**
+     * Sets the book contents columns preference.
+     */
+    override suspend fun setBookContentsColumns(columns: Int) {
+        gbrPreferencesDataSource.setBookContentsColumns(columns)
+    }
+    
+    /**
+     * Gets the book images columns preference for a specific ImageType.
+     */
+    override suspend fun getBookImagesColumns(imageTypeValue: Int): Int {
+        return gbrPreferencesDataSource.getBookImagesColumns(imageTypeValue)
+    }
+    
+    /**
+     * Sets the book images columns preference for a specific ImageType.
+     */
+    override suspend fun setBookImagesColumns(imageTypeValue: Int, columns: Int) {
+        gbrPreferencesDataSource.setBookImagesColumns(imageTypeValue, columns)
+    }
 }
