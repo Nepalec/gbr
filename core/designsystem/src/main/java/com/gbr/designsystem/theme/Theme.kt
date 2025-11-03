@@ -1,16 +1,14 @@
 package com.gbr.designsystem.theme
 
 import android.app.Activity
-import android.content.SharedPreferences
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
@@ -93,23 +91,32 @@ private val darkScheme = darkColorScheme(
 @Composable
 fun SemestaUIKitTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
-
-    val colorScheme = if (darkTheme){
-        darkScheme
-    } else {
-        lightScheme
-    }
+    val colorScheme = if (darkTheme) darkScheme else lightScheme
 
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat
-                .getInsetsController(window, view)
-                .isAppearanceLightStatusBars = darkTheme
+            val insetsController = WindowCompat.getInsetsController(window, view)
+            val primaryColor = colorScheme.primary.toArgb()
+
+            // Set status bar color to primary according to Android documentation
+            // https://developer.android.com/develop/ui/compose/system/system-bars
+            window.statusBarColor = primaryColor
+
+            // Set navigation bar color to primary
+            window.navigationBarColor = primaryColor
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                window.isNavigationBarContrastEnforced = false
+            }
+
+            // Set icon appearance: light icons (white) for dark primary background
+            // isAppearanceLightStatusBars = false means light icons (white)
+            // isAppearanceLightStatusBars = true means dark icons (black)
+            insetsController.isAppearanceLightStatusBars = !darkTheme
+            insetsController.isAppearanceLightNavigationBars = !darkTheme
         }
     }
 

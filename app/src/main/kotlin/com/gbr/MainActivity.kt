@@ -2,6 +2,7 @@ package com.gbr
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,22 +19,24 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    
+
     @Inject
     lateinit var defaultNavigator: DefaultNavigator
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
 
         setContent {
             val mainViewModel: MainViewModel = hiltViewModel()
             val isLoading by mainViewModel.isLoading.collectAsState()
             val message by mainViewModel.message.collectAsState()
             val shouldUseDarkTheme by mainViewModel.shouldUseDarkTheme.collectAsState()
-            
+
             // Set the activity reference for theme monitoring
             mainViewModel.setActivity(this)
-            
+
             SemestaUIKitTheme(darkTheme = shouldUseDarkTheme) {
                 if (isLoading) {
                     SplashScreen(
