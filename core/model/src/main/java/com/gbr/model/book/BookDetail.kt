@@ -24,7 +24,9 @@ data class ImageFileItem(
     val bitmap: String?,
     val type: ImageType,
     val chapterNumber: Int?,
-    val chapterTitle: String?
+    val textNumber: String,
+    val chapterTitle: String?,
+    val imageDescription: String?
 )
 
 /**

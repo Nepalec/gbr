@@ -79,7 +79,8 @@ fun TabBookImages(
                                 items.forEach { imageItem ->
                                     ImagePlaceholder(
                                         imageItem = imageItem,
-                                        modifier = Modifier.width(itemWidth)
+                                        modifier = Modifier.width(itemWidth),
+                                        columns = columns
                                     )
                                 }
                             }
@@ -96,7 +97,8 @@ fun TabBookImages(
                 items(imageTab.images) { imageItem ->
                     ImagePlaceholder(
                         imageItem = imageItem,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        columns = columns
                     )
                 }
             }
@@ -108,44 +110,62 @@ fun TabBookImages(
 @Composable
 private fun ImagePlaceholder(
     imageItem: com.gbr.model.book.ImageFileItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    columns: Int = 1
 ) {
-    Card(
-        modifier = modifier
-            .height(120.dp).padding(2.dp),
-        shape = RectangleShape,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Box(
+    Column(modifier = modifier) {
+        Card(
             modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .height(120.dp)
+                .padding(2.dp),
+            shape = RectangleShape,
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "🖼️", // Image placeholder emoji
-                    fontSize = 32.sp
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = imageItem.id,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = imageItem.format.name,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center
-                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "🖼️", // Image placeholder emoji
+                        fontSize = 32.sp
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = imageItem.id,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = imageItem.format.name,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
+        }
+        
+        // Show image description below the placeholder when columns == 1
+        val imageDescription = imageItem.imageDescription
+        if (columns == 1 && !imageDescription.isNullOrEmpty()) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = imageDescription,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

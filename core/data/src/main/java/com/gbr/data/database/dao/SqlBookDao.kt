@@ -251,7 +251,8 @@ class SqlBookDao(
 
             try {
                 // Build the query with optional LEFT JOIN for chapters when book.hasChapters is true
-                val joinClause = if (book.hasChapters) {
+                // Also join textnums for fallback description
+                val chaptersJoin = if (book.hasChapters) {
                     """
                         LEFT JOIN chapters ch ON ch.number = nums.cid 
                         AND ch.book_id = ${if (book.isVolume) book.volumeGroupId else book.id}
@@ -261,10 +262,17 @@ class SqlBookDao(
                     ""
                 }
                 
-                val selectClause = if (book.hasChapters) {
-                    "SELECT nums.image_id, nums.kind, nums.type, nums.cid, ch.title as chapter_title"
+                val textnumsJoin = "LEFT JOIN textnums txt ON txt.text_id = nums.text_id"
+                val joinClause = if (book.hasChapters) {
+                    "$chaptersJoin\n                        $textnumsJoin"
                 } else {
-                    "SELECT nums.image_id, nums.kind, nums.type, nums.cid, NULL as chapter_title"
+                    textnumsJoin
+                }
+                
+                val selectClause = if (book.hasChapters) {
+                    "SELECT nums.image_id, nums.kind, nums.type, nums.cid, ch.title as chapter_title, nums.tnum as text_number, nums.desc as image_description, txt.preview as text_preview"
+                } else {
+                    "SELECT nums.image_id, nums.kind, nums.type, nums.cid, NULL as chapter_title, nums.tnum as text_number, nums.desc as image_description, txt.preview as text_preview"
                 }
                 
                 val debugQuery = if (book.isVolume) {
@@ -308,13 +316,20 @@ class SqlBookDao(
                                 else -> ImageFormat.JPEG
                             }
 
+                            // Get imageDescription with fallback: use nums.desc if not empty, otherwise use txt.preview
+                            val imageDescription = c.getStringOrNull("image_description")
+                                ?.takeIf { it.isNotEmpty() }
+                                ?: c.getStringOrNull("text_preview")
+                            
                             val imageFileItem = ImageFileItem(
                                 id = c.getStringOrNull("image_id") ?: "",
                                 format = imageFormat,
                                 bitmap = null,
                                 type = imageType,
                                 chapterNumber = c.getIntOrNull("cid"),
-                                chapterTitle = c.getStringOrNull("chapter_title")
+                                textNumber = c.getStringOrNull("text_number") ?: "",
+                                chapterTitle = c.getStringOrNull("chapter_title"),
+                                imageDescription = imageDescription
                             )
                             imageList.add(kind to imageFileItem)
                         } catch (e: Exception) {

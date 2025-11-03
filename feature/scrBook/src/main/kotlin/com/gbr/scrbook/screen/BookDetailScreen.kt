@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import android.widget.Toast
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.model.book.BookDetail
 import com.gbr.model.book.BookImageTab
@@ -53,7 +52,7 @@ fun BookDetailScreen(
     bookPreview: BookPreview,
     onNavigateBack: () -> Unit = {},
     onSearchClick: () -> Unit = {},
-    viewModel: BookPreviewViewModel = hiltViewModel()
+    viewModel: BookDetailViewModel = hiltViewModel()
 ) {
     // Load book data when screen is composed
     LaunchedEffect(gitabaseId, bookPreview) {
@@ -69,14 +68,14 @@ fun BookDetailScreen(
     // Calculate total number of tabs (1 for contents + image tabs)
     val totalTabs = 1 + (uiState.bookDetail?.imageTabs?.size ?: 0)
     val pagerState = rememberPagerState(pageCount = { totalTabs })
-    
+
     // Reset pager to page 0 if current page is out of bounds when tab count changes
     LaunchedEffect(totalTabs, pagerState.currentPage) {
         if (totalTabs > 0 && pagerState.currentPage >= totalTabs) {
             pagerState.animateScrollToPage(0)
         }
     }
-    
+
     val pagerCurrentPage by remember { derivedStateOf { pagerState.currentPage } }
     val scope = rememberCoroutineScope()
 

@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BookPreviewViewModel @Inject constructor(
+class BookDetailViewModel @Inject constructor(
     private val textsRepository: TextsRepository,
     private val userDataRepository: UserDataRepository
 ) : ViewModel() {
