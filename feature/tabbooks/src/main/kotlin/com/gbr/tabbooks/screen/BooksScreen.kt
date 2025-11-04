@@ -3,7 +3,6 @@ package com.gbr.tabbooks.screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.PaddingValues
@@ -43,8 +42,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.tabbooks.components.CustomAppBar
-import com.gbr.tabbooks.viewmodel.BooksViewModel
-import com.gbr.tabbooks.viewmodel.BookDisplayItem
 import com.gbr.designsystem.components.ShimmerEffect
 import com.gbr.model.gitabase.GitabaseType
 import kotlinx.coroutines.launch
@@ -52,7 +49,6 @@ import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.gbr.model.gitabase.Gitabase

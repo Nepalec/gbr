@@ -8,7 +8,6 @@ import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.scrDownloader.navigation.DownloaderNavigation
 import com.gbr.tabbooks.screen.BooksScreen
-import com.gbr.tabbooks.viewmodel.BooksViewModel
 
 @Composable
 fun BooksNavigation(

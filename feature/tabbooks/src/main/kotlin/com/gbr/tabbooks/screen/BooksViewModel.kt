@@ -1,4 +1,4 @@
-package com.gbr.tabbooks.viewmodel
+package com.gbr.tabbooks.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -107,7 +107,7 @@ class BooksViewModel @Inject constructor(
      */
     private fun processBooksIntoDisplayItems(books: List<BookPreview>): List<BookDisplayItem> {
         val displayItems = mutableListOf<BookDisplayItem>()
-        
+
         // Separate standalone books from volume groups
         val standaloneBooks = books.filter { it.volumeGroupTitle == null }
         val volumeGroups = books.filter { it.volumeGroupTitle != null }
@@ -123,7 +123,7 @@ class BooksViewModel @Inject constructor(
                 )
             }
             .values
-        
+
         // Add standalone books
         standaloneBooks.forEach { book ->
             displayItems.add(
@@ -133,10 +133,10 @@ class BooksViewModel @Inject constructor(
                 )
             )
         }
-        
+
         // Add volume groups
         displayItems.addAll(volumeGroups)
-        
+
         // Sort all display items by their sort order
         return displayItems.sortedBy { item ->
             when (item) {
@@ -328,7 +328,7 @@ sealed class BookDisplayItem {
         val book: BookPreview,
         val sortOrder: Int
     ) : BookDisplayItem()
-    
+
     data class VolumeGroup(
         val title: String,
         val author: String,

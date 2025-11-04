@@ -113,10 +113,17 @@ class SqlBookDao(
 
             try {
                 val debugQuery = """
-                    SELECT b._id as book_id, b.sort as book_sort, b.title as book_title, b.author, b.desc, b.type, b.levels, b.web_abbrev, b.hasSanskrit, b.isSimple, b.compare_code as code, s._id as song_id, s.song as song_number, s.songname, s.sort as song_sort, s.colorBackgnd, s.colorForegnd
-                    FROM books b
-                    LEFT JOIN songs s ON b._id = s.book_id
-                    ORDER BY b.sort, s.sort
+                SELECT
+                  b.*,                        -- all columns from the books table
+                  s._id AS song_id,
+                  s.song AS song_number,
+                  s.songname,
+                  s.sort AS song_sort,
+                  s.colorBackgnd,
+                  s.colorForegnd
+                FROM books b
+                LEFT JOIN songs s ON b._id = s.book_id
+                ORDER BY b.sort, s.sort;
                 """.trimIndent()
                 val cursor: Cursor? = database.rawQuery(debugQuery, null)
                 cursor?.use { c ->
@@ -178,19 +185,20 @@ class SqlBookDao(
      */
     private fun createBookPreviewFromJoinedCursor(cursor: Cursor): BookPreview {
         val songId = cursor.getIntOrNull("song_id")
-        val bookId = cursor.getIntOrNull("book_id") ?: 0
-        val bookTitle = cursor.getStringOrNull("book_title") ?: ""
+        // Since query uses b.*, column names are the actual table column names (not aliased)
+        val bookId = cursor.getIntOrNull("_id") ?: 0
+        val bookTitle = cursor.getStringOrNull("title") ?: ""
         val bookAuthor = cursor.getStringOrNull("author") ?: ""
         val bookDescription = cursor.getStringOrNull("desc")
         val bookType = cursor.getStringOrNull("type") ?: ""
         val bookLevel = cursor.getIntOrNull("levels") ?: 3
-        val bookSort = cursor.getIntOrNull("book_sort") ?: 0
+        val bookSort = cursor.getIntOrNull("sort") ?: 0
         val bookWebAbbrev = cursor.getStringOrNull("web_abbrev")
 
         // Get additional metadata fields
         val hasSanskrit = cursor.getIntOrNull("hasSanskrit") == 1
         val isSimple = cursor.getIntOrNull("isSimple") == 1
-        val code = cursor.getStringOrNull("code") ?: ""
+        val code = cursor.getStringOrNull("compare_code") ?: ""
 
         return if (songId != null) {
             // Book WITH volumes - create BookPreview for the volume
