@@ -53,14 +53,14 @@ class TextsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getBookDetail(gitabaseId: GitabaseID, book: BookPreview): Result<BookDetail> {
+    override suspend fun getBookDetail(gitabaseId: GitabaseID, book: BookPreview, extractImages: Boolean): Result<BookDetail> {
         return withContext(Dispatchers.IO) {
             try {
                 val database = databaseManager.getDatabase(gitabaseId)
 
                 // Get cover image for this specific book
                 val coverImage = database.bookDao().getBookCoverImageBitmap(book)
-                val imagesMap = database.bookDao().getBookImagesFileNames(book).first()
+                val imagesMap = database.bookDao().getBookImagesFileNames(book, gitabaseId, extractImages).first()
 
                 // Convert Map<Int, List<ImageFileItem>> to List<BookImageTab>
                 val imageTabs = imagesMap?.map { (kind, imageList) ->

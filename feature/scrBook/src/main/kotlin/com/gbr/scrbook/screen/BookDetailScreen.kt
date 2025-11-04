@@ -62,6 +62,7 @@ fun BookDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     val contentsOptions by viewModel.contentsTabOptions.collectAsState()
     val imagesOptionsMap by viewModel.imagesTabOptionsMap.collectAsState()
+    val imageFilesExtracted = uiState.imageFilesExtracted
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
@@ -222,7 +223,8 @@ fun BookDetailScreen(
                                     TabBookImages(
                                         imageTab = imageTab,
                                         columns = tabOptions.columns,
-                                        groupByChapters = tabOptions.groupByChapter
+                                        groupByChapters = tabOptions.groupByChapter,
+                                        imageFilesExtracted = imageFilesExtracted
                                     )
                                 }
                             }

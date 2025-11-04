@@ -3,10 +3,13 @@ package com.gbr.data.di
 import android.content.Context
 import com.gbr.data.repository.GitabasesRepository
 import com.gbr.data.repository.GitabasesDescRepository
+import com.gbr.data.repository.ImageFilesRepository
+import com.gbr.data.repository.TextsRepository
 import com.gbr.data.repository.UserPreferencesRepository
 import com.gbr.data.repository.UserPreferencesRepositoryImpl
 import com.gbr.data.usecase.CopyGitabaseUseCase
 import com.gbr.data.usecase.ExtractGitabasesUseCase
+import com.gbr.data.usecase.LoadBookDetailUseCase
 import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import com.gbr.data.usecase.InitializeGitabasesUseCase
@@ -80,5 +83,14 @@ object UseCaseModule {
         userPreferencesRepository: UserPreferencesRepository
     ): SetCurrentGitabaseUseCase {
         return SetCurrentGitabaseUseCase(gitabasesRepository, userPreferencesRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLoadBookDetailUseCase(
+        textsRepository: TextsRepository,
+        imageFilesRepository: ImageFilesRepository
+    ): LoadBookDetailUseCase {
+        return LoadBookDetailUseCase(textsRepository, imageFilesRepository)
     }
 }

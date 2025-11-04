@@ -9,6 +9,7 @@ import com.gbr.model.book.TextContentsItem
 import com.gbr.model.book.ImageFileItem
 import com.gbr.model.gitabase.ImageType
 import com.gbr.model.gitabase.ImageFormat
+import com.gbr.model.gitabase.GitabaseID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -245,7 +246,7 @@ class SqlBookDao(
     }
 
 
-    fun getBookImagesFileNames(book: BookPreview): Flow<Map<Int, List<ImageFileItem>>?> = flow {
+    fun getBookImagesFileNames(book: BookPreview, gitabaseId: GitabaseID, extractImages: Boolean): Flow<Map<Int, List<ImageFileItem>>?> = flow {
         val images = withContext(Dispatchers.IO) {
             val imageList = mutableListOf<Pair<Int, ImageFileItem>>()
 
@@ -254,27 +255,46 @@ class SqlBookDao(
                 // Also join textnums for fallback description
                 val chaptersJoin = if (book.hasChapters) {
                     """
-                        LEFT JOIN chapters ch ON ch.number = nums.cid 
+                        LEFT JOIN chapters ch ON ch.number = nums.cid
                         AND ch.book_id = ${if (book.isVolume) book.volumeGroupId else book.id}
                         ${if (book.isVolume) "AND ch.song = ${book.volumeNumber}" else ""}
                     """.trimIndent()
                 } else {
                     ""
                 }
-                
+
                 val textnumsJoin = "LEFT JOIN textnums txt ON txt.text_id = nums.text_id"
-                val joinClause = if (book.hasChapters) {
-                    "$chaptersJoin\n                        $textnumsJoin"
+                val imagesJoin = if (extractImages) {
+                    "LEFT JOIN images img ON img.image_id = nums.image_id"
                 } else {
-                    textnumsJoin
+                    ""
                 }
-                
-                val selectClause = if (book.hasChapters) {
-                    "SELECT nums.image_id, nums.kind, nums.type, nums.cid, ch.title as chapter_title, nums.tnum as text_number, nums.desc as image_description, txt.preview as text_preview"
-                } else {
-                    "SELECT nums.image_id, nums.kind, nums.type, nums.cid, NULL as chapter_title, nums.tnum as text_number, nums.desc as image_description, txt.preview as text_preview"
+
+                val joinClause = buildString {
+                    if (book.hasChapters) {
+                        append(chaptersJoin)
+                        append("\n                        ")
+                    }
+                    append(textnumsJoin)
+                    if (extractImages) {
+                        append("\n                        ")
+                        append(imagesJoin)
+                    }
                 }
-                
+
+                val selectClause = buildString {
+                    append("SELECT nums.image_id, nums.kind, nums.type, nums.cid, ")
+                    if (book.hasChapters) {
+                        append("ch.title as chapter_title, ")
+                    } else {
+                        append("NULL as chapter_title, ")
+                    }
+                    append("nums.tnum as text_number, nums.desc as image_description, txt.preview as text_preview")
+                    if (extractImages) {
+                        append(", img.content as image_content")
+                    }
+                }
+
                 val debugQuery = if (book.isVolume) {
                     """
                         $selectClause
@@ -320,11 +340,34 @@ class SqlBookDao(
                             val imageDescription = c.getStringOrNull("image_description")
                                 ?.takeIf { it.isNotEmpty() }
                                 ?: c.getStringOrNull("text_preview")
-                            
+
+                            // Get bitmap from images table if extractImages is true
+                            // BLOB contains UTF-8 bytes of Base64 string, convert to String (don't encode)
+                            val bitmap = if (extractImages) {
+                                val imageContent = c.getBlobOrNull("image_content")
+                                if (imageContent != null) {
+                                    String(imageContent, Charsets.UTF_8)
+                                } else {
+                                    null
+                                }
+                            } else {
+                                null
+                            }
+
+                            // Construct full image path: gitabaseId.key/imageId.format.fileExtension
+                            // This will be combined with context.filesDir in the repository layer
+                            val imageId = c.getStringOrNull("image_id") ?: ""
+                            val fullImagePath = if (imageId.isNotEmpty()) {
+                                "${gitabaseId.key}/${imageId}.${imageFormat.fileExtension}"
+                            } else {
+                                null
+                            }
+
                             val imageFileItem = ImageFileItem(
-                                id = c.getStringOrNull("image_id") ?: "",
+                                id = imageId,
                                 format = imageFormat,
-                                bitmap = null,
+                                bitmap = bitmap,
+                                fullImagePath = fullImagePath,
                                 type = imageType,
                                 chapterNumber = c.getIntOrNull("cid"),
                                 textNumber = c.getStringOrNull("text_number") ?: "",

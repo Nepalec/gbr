@@ -26,6 +26,7 @@ dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.model)
     implementation(projects.core.data)
+    implementation(projects.core.network)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeKtx)
     implementation(libs.androidx.lifecycle.viewModelCompose)
@@ -37,4 +38,7 @@ dependencies {
     
     // Material Icons Extended (version managed by Compose BOM)
     implementation("androidx.compose.material:material-icons-extended")
+    
+    // Coil for image loading
+    implementation(libs.coil.kt.compose)
 }

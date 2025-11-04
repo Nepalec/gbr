@@ -22,6 +22,7 @@ data class ImageFileItem(
     val id: String,
     val format: ImageFormat,
     val bitmap: String?,
+    val fullImagePath: String?,
     val type: ImageType,
     val chapterNumber: Int?,
     val textNumber: String,

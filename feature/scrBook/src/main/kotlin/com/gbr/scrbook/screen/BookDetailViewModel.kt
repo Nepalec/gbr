@@ -2,8 +2,9 @@ package com.gbr.scrbook.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gbr.data.repository.TextsRepository
 import com.gbr.data.repository.UserDataRepository
+import com.gbr.data.usecase.ImageLoadingState
+import com.gbr.data.usecase.LoadBookDetailUseCase
 import com.gbr.model.book.BookContentsTabOptions
 import com.gbr.model.book.BookDetail
 import com.gbr.model.book.BookImagesTabOptions
@@ -19,8 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookDetailViewModel @Inject constructor(
-    private val textsRepository: TextsRepository,
-    private val userDataRepository: UserDataRepository
+    private val userDataRepository: UserDataRepository,
+    private val loadBookDetailUseCase: LoadBookDetailUseCase
 ) : ViewModel() {
 
     // Tab options:
@@ -31,8 +32,8 @@ class BookDetailViewModel @Inject constructor(
     private val _imagesTabOptionsMap = MutableStateFlow<Map<ImageType, BookImagesTabOptions>>(emptyMap())
     val imagesTabOptionsMap: StateFlow<Map<ImageType, BookImagesTabOptions>> = _imagesTabOptionsMap.asStateFlow()
 
-    private val _uiState = MutableStateFlow(BookPreviewUiState())
-    val uiState: StateFlow<BookPreviewUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(BookDetailUiState())
+    val uiState: StateFlow<BookDetailUiState> = _uiState.asStateFlow()
 
     init {
         // Load contents tab options on ViewModel initialization
@@ -57,33 +58,44 @@ class BookDetailViewModel @Inject constructor(
 
     fun loadBook(gitabaseId: GitabaseID, bookPreview: BookPreview) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-
-            try {
-                // Get book detail using the new composition approach
-                val result = textsRepository.getBookDetail(gitabaseId, bookPreview)
-
-                if (result.isSuccess) {
-                    val bookDetail = result.getOrThrow()
-
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        bookDetail = bookDetail,
-                        error = null
-                    )
-                } else {
-                    _uiState.value = _uiState.value.copy(
+            loadBookDetailUseCase.execute(gitabaseId, bookPreview).collect { state ->
+                // Handle errors first
+                if (state.error != null) {
+                    _uiState.value = BookDetailUiState(
                         isLoading = false,
                         bookDetail = null,
-                        error = result.exceptionOrNull()?.message ?: "Failed to load book detail"
+                        imageFilesExtracted = false,
+                        error = state.error
                     )
+                    return@collect
                 }
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    bookDetail = null,
-                    error = e.message ?: "Unknown error occurred"
-                )
+
+                when (state.imageLoadingState) {
+                    is ImageLoadingState.LoadingMetadata -> {
+                        _uiState.value = BookDetailUiState(
+                            isLoading = true,
+                            bookDetail = null,
+                            imageFilesExtracted = false,
+                            error = null
+                        )
+                    }
+                    is ImageLoadingState.MetadataReady -> {
+                        _uiState.value = BookDetailUiState(
+                            isLoading = false,
+                            bookDetail = state.bookDetail,
+                            imageFilesExtracted = false,  // Show placeholders
+                            error = null
+                        )
+                    }
+                    is ImageLoadingState.Ready -> {
+                        _uiState.value = BookDetailUiState(
+                            isLoading = false,
+                            bookDetail = state.bookDetail,
+                            imageFilesExtracted = (state.imageLoadingState as ImageLoadingState.Ready).imageFilesExtracted,
+                            error = null
+                        )
+                    }
+                }
             }
         }
     }
@@ -103,8 +115,9 @@ class BookDetailViewModel @Inject constructor(
     }
 }
 
-data class BookPreviewUiState(
+data class BookDetailUiState(
     val isLoading: Boolean = false,
+    val imageFilesExtracted: Boolean = false,
     val bookDetail: BookDetail? = null,
     val error: String? = null
 )
