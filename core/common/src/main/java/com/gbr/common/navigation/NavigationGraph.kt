@@ -69,3 +69,22 @@ sealed class Dest {
     @Serializable
     data object Settings : Dest()
 }
+
+/**
+ * Fullscreen content destinations
+ * These represent screens that should be displayed in fullscreen mode (hiding bottom navigation)
+ */
+@Serializable
+sealed class FullscreenDest {
+    @Serializable data object Root : FullscreenDest()
+    @Serializable
+    data class BookDetail(
+        val gitabaseIdKey: String, // GitabaseID.key
+        val bookId: Int // BookPreview.id
+    ) : FullscreenDest()
+
+    @Serializable
+    data class ChapterDetail(
+        val chapterId: Int
+    ) : FullscreenDest()
+}

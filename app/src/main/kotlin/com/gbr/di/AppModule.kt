@@ -1,6 +1,7 @@
 package com.gbr.di
 
 import com.gbr.navigation.DefaultNavigator
+import com.gbr.navigation.FullscreenContent
 import com.gbr.scrDownloader.navigation.DownloaderFeature
 import com.gbr.tabbooks.navigation.BooksFeature
 import com.gbr.tabreading.navigation.ReadingFeature
@@ -27,7 +28,8 @@ object AppModule {
         discussFeature: DiscussFeature,
         notesFeature: NotesFeature,
         profileFeature: ProfileFeature,
-        settingsFeature: SettingsFeature
+        settingsFeature: SettingsFeature,
+        fullscreenContent: FullscreenContent
     ): DefaultNavigator {
         return DefaultNavigator(
             booksFeature = booksFeature,
@@ -36,7 +38,8 @@ object AppModule {
             discussFeature = discussFeature,
             notesFeature = notesFeature,
             profileFeature = profileFeature,
-            settingsFeature = settingsFeature
+            settingsFeature = settingsFeature,
+            fullscreenContent = fullscreenContent
         )
     }
 }

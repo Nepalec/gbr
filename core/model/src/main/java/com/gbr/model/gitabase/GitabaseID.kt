@@ -12,6 +12,22 @@ data class GitabaseID(val type: GitabaseType, val lang:GitabaseLang) : Parcelabl
         return "$gitabaseFolderPath/gitabase_${key}.db"
     }
 }
+fun String.parseGitabaseID(): GitabaseID? {
+    return try {
+        val parts = this.split("_")
+        if (parts.size >= 2) {
+            GitabaseID(
+                type = GitabaseType(parts[0]),
+                lang = GitabaseLang(parts[1])
+            )
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        null
+    }
+}
+
 @Parcelize
 data class GitabaseType(val value: String) : Parcelable {
     companion object {

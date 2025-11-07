@@ -1,5 +1,7 @@
 package com.gbr.navigation
 
+import com.gbr.common.navigation.FullscreenDest
+import com.gbr.navigation.FullscreenContent
 import com.gbr.scrDownloader.navigation.DownloaderFeature
 import com.gbr.tabbooks.navigation.BooksFeature
 import com.gbr.tabreading.navigation.ReadingFeature
@@ -18,5 +20,8 @@ data class DefaultNavigator(
     val discussFeature: DiscussFeature,
     val notesFeature: NotesFeature,
     val profileFeature: ProfileFeature,
-    val settingsFeature: SettingsFeature
+    val settingsFeature: SettingsFeature,
+    val fullscreenContent: FullscreenContent,
+    val onNavigateToFullscreen: (FullscreenDest) -> Unit = {}
+
 )

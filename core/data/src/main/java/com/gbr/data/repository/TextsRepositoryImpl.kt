@@ -12,6 +12,8 @@ import com.gbr.model.gitabase.GitabaseID
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,29 +28,107 @@ class TextsRepositoryImpl @Inject constructor(
     private val gitabasesRepository: GitabasesRepository,
     private val databaseManager: GitabaseDatabaseManager
 ) : TextsRepository {
+    
+    companion object {
+        private const val MAX_CACHE_SIZE = 5
+    }
+
+    // LinkedHashMap with access-order mode (true) for LRU behavior
+    // When accessed, entries move to the end of the map
+    // The first entry is always the least recently used
+    private val booksCache = LinkedHashMap<GitabaseID, List<BookPreview>>(
+        MAX_CACHE_SIZE,
+        0.75f,  // load factor
+        true     // access-order mode (vs insertion-order)
+    )
+    
+    // Mutex for thread-safe cache access (allows suspending functions)
+    private val cacheMutex = Mutex()
 
     override suspend fun getAllBooks(gitabaseId: GitabaseID): Result<List<BookPreview>> {
         return withContext(Dispatchers.IO) {
-            try {
-                // Verify gitabase exists in repository
-                val gitabaseExists = gitabasesRepository.getAllGitabases()
-                    .any { it.id == gitabaseId }
+            cacheMutex.withLock {
+                try {
+                    // Check cache first
+                    val cachedBooks = booksCache[gitabaseId]
+                    if (cachedBooks != null) {
+                        return@withContext Result.success(cachedBooks)
+                    }
 
-                if (!gitabaseExists) {
-                    return@withContext Result.failure(
-                        IllegalArgumentException("Gitabase not found: $gitabaseId")
-                    )
+                    // Verify gitabase exists in repository
+                    val gitabaseExists = gitabasesRepository.getAllGitabases()
+                        .any { it.id == gitabaseId }
+
+                    if (!gitabaseExists) {
+                        return@withContext Result.failure(
+                            IllegalArgumentException("Gitabase not found: $gitabaseId")
+                        )
+                    }
+
+                    // Get database from manager (uses cache for optimal performance)
+                    val database = databaseManager.getDatabase(gitabaseId)
+
+                    // Query books using DAO (already returns domain models)
+                    val books = database.bookDao().getAllBookPreviews().first()
+
+                    // If cache is full, evict the least recently used entry
+                    if (booksCache.size >= MAX_CACHE_SIZE) {
+                        evictLRU()
+                    }
+
+                    // Store in cache
+                    booksCache[gitabaseId] = books
+
+                    Result.success(books)
+                } catch (e: Exception) {
+                    Result.failure(e)
                 }
+            }
+        }
+    }
 
-                // Get database from manager (uses cache for optimal performance)
-                val database = databaseManager.getDatabase(gitabaseId)
+    override suspend fun getBookPreviewById(gitabaseId: GitabaseID, id: Int): Result<BookPreview?> {
+        return withContext(Dispatchers.IO) {
+            cacheMutex.withLock {
+                try {
+                    // Check cache first
+                    val cachedBooks = booksCache[gitabaseId]
+                    if (cachedBooks != null) {
+                        val book = cachedBooks.find { book -> book.id == id }
+                        return@withContext Result.success(book)
+                    }
 
-                // Query books using DAO (already returns domain models)
-                val books = database.bookDao().getAllBookPreviews().first()
+                    // Verify gitabase exists in repository
+                    val gitabaseExists = gitabasesRepository.getAllGitabases()
+                        .any { it.id == gitabaseId }
 
-                Result.success(books)
-            } catch (e: Exception) {
-                Result.failure(e)
+                    if (!gitabaseExists) {
+                        return@withContext Result.failure(
+                            IllegalArgumentException("Gitabase not found: $gitabaseId")
+                        )
+                    }
+
+                    // Get database from manager (uses cache for optimal performance)
+                    val database = databaseManager.getDatabase(gitabaseId)
+
+                    // Query books using DAO (already returns domain models)
+                    val books = database.bookDao().getAllBookPreviews().first()
+
+                    // If cache is full, evict the least recently used entry
+                    if (booksCache.size >= MAX_CACHE_SIZE) {
+                        evictLRU()
+                    }
+
+                    // Store in cache
+                    booksCache[gitabaseId] = books
+
+                    // Find book by id
+                    val book = books.find { book -> book.id == id }
+
+                    Result.success(book)
+                } catch (e: Exception) {
+                    Result.failure(e)
+                }
             }
         }
     }
@@ -112,6 +192,40 @@ class TextsRepositoryImpl @Inject constructor(
             } catch (e: Exception) {
                 Result.failure(e)
             }
+        }
+    }
+
+    /**
+     * Evicts the least recently used entry from the cache.
+     * The first entry in LinkedHashMap (access-order mode) is the LRU.
+     * Must be called within cacheMutex.withLock { } block.
+     */
+    private fun evictLRU() {
+        val lruEntry = booksCache.entries.firstOrNull()
+        if (lruEntry != null) {
+            booksCache.remove(lruEntry.key)
+        }
+    }
+
+    /**
+     * Invalidates the cache for a specific gitabase.
+     * Useful when a gitabase is deleted or updated.
+     *
+     * @param gitabaseId The ID of the gitabase to invalidate
+     */
+    suspend fun invalidateCache(gitabaseId: GitabaseID) {
+        cacheMutex.withLock {
+            booksCache.remove(gitabaseId)
+        }
+    }
+
+    /**
+     * Clears all cached book previews.
+     * Should be called when all caches need to be refreshed.
+     */
+    suspend fun clearCache() {
+        cacheMutex.withLock {
+            booksCache.clear()
         }
     }
 
