@@ -6,6 +6,7 @@ import com.gbr.model.book.BookPreview
 import com.gbr.model.book.BookStructure
 import com.gbr.model.book.ChapterContentsItem
 import com.gbr.model.book.TextContentsItem
+import com.gbr.model.book.TextItem
 import com.gbr.model.book.ImageFileItem
 import com.gbr.model.gitabase.ImageType
 import com.gbr.model.gitabase.ImageFormat
@@ -93,6 +94,59 @@ class SqlBookDao(
                                 title = c.getStringOrNull("preview") ?: ""
                             )
                             textList.add(textContentsItem)
+                        } catch (e: Exception) {
+                            // Skip invalid rows, continue processing
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Return empty list on database errors
+            }
+
+            textList
+        }
+        emit(texts)
+    }
+
+    fun getChapterTexts(book: BookPreview, chapterNumber: Int): Flow<List<TextItem>> = flow {
+        val texts = withContext(Dispatchers.IO) {
+            val textList = mutableListOf<TextItem>()
+
+            try {
+
+                val debugQuery = if (book.isVolume) {
+                    """
+                        SELECT *
+                        FROM textnums t
+                        WHERE t.book_id = ${book.volumeGroupId}
+                        AND t.song = ${book.volumeNumber}
+                        AND t.ch_no = ${chapterNumber}
+                        ORDER BY t._id
+                    """.trimIndent()
+                } else {
+                    """
+                   SELECT *
+                        FROM textnums t
+                        WHERE t.book_id = ${book.id}
+                        AND t.ch_no = ${chapterNumber}
+                        ORDER BY t._id
+                    """.trimIndent()
+                }
+
+                val cursor: Cursor? = database.rawQuery(debugQuery, null)
+
+                cursor?.use { c ->
+                    while (c.moveToNext()) {
+                        try {
+                            val textItem = TextItem(
+                                id = c.getIntOrNull("_id") ?: 0,
+                                book = book,
+                                chapterNumber = c.getIntOrNull("ch_no") ?: chapterNumber,
+                                textNumber = c.getStringOrNull("txt_no") ?: "",
+                                title = c.getStringOrNull("preview") ?: "",
+                                titleSanskrit = c.getStringOrNull("title_sanskrit") ?: ""
+                            )
+                            textList.add(textItem)
                         } catch (e: Exception) {
                             // Skip invalid rows, continue processing
                         }

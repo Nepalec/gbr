@@ -27,6 +27,7 @@ dependencies {
     implementation(projects.core.model)
     implementation(projects.core.data)
     implementation(projects.core.network)
+    implementation(projects.feature.scrChapter)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeKtx)
     implementation(libs.androidx.lifecycle.viewModelCompose)
@@ -35,10 +36,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
-    
+
     // Material Icons Extended (version managed by Compose BOM)
     implementation("androidx.compose.material:material-icons-extended")
-    
+
     // Coil for image loading
     implementation(libs.coil.kt.compose)
 }

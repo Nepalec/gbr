@@ -85,6 +85,8 @@ sealed class FullscreenDest {
 
     @Serializable
     data class ChapterDetail(
-        val chapterId: Int
+        val gitabaseIdKey: String, // GitabaseID.key
+        val bookId: Int, // BookPreview.id
+        val chapterNumber: Int // Chapter number
     ) : FullscreenDest()
 }

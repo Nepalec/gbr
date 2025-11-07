@@ -50,3 +50,12 @@ data class TextContentsItem(
     val textNumber: String,
     val title: String,
 )
+
+data class TextItem(
+    val id: Int,
+    val book: BookPreview,
+    val chapterNumber: Int,
+    val textNumber: String,
+    val title: String,
+    val titleSanskrit: String,
+)

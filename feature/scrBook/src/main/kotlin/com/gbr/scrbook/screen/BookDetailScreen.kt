@@ -52,6 +52,7 @@ fun BookDetailScreen(
     bookPreview: BookPreview,
     onNavigateBack: () -> Unit = {},
     onSearchClick: () -> Unit = {},
+    onNavigateToChapter: (Int) -> Unit = {}, // chapterNumber
     viewModel: BookDetailViewModel = hiltViewModel()
 ) {
     // Load book data when screen is composed
@@ -204,7 +205,10 @@ fun BookDetailScreen(
                                     TabBookContents(
                                         bookDetail = data as BookDetail,
                                         textSizeMultiplier = textSizeMultiplier,
-                                        columns = contentsOptions.columns
+                                        columns = contentsOptions.columns,
+                                        onChapterClick = { chapterNumber ->
+                                            onNavigateToChapter(chapterNumber)
+                                        }
                                     )
                                 }
 

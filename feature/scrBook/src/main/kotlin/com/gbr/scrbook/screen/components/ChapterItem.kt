@@ -13,13 +13,15 @@ import com.gbr.model.book.ChapterContentsItem
 @Composable
 fun ChapterItem(
     chapter: ChapterContentsItem,
-    textSizeMultiplier: Float = 1f
+    textSizeMultiplier: Float = 1f,
+    onClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp, vertical = 4.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

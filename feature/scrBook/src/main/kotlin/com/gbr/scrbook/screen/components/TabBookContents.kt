@@ -21,7 +21,8 @@ import kotlin.random.Random
 fun TabBookContents(
     bookDetail: BookDetail,
     textSizeMultiplier: Float = 1f,
-    columns: Int = 1
+    columns: Int = 1,
+    onChapterClick: (Int) -> Unit = {} // chapterNumber
 ) {
     val chapters = bookDetail.chapters
     val texts = bookDetail.texts
@@ -41,7 +42,8 @@ fun TabBookContents(
                     items(chapters.size) { chapter ->
                         ChapterItem(
                             chapter = chapters[chapter],
-                            textSizeMultiplier = textSizeMultiplier
+                            textSizeMultiplier = textSizeMultiplier,
+                            onClick = { onChapterClick(chapters[chapter].number) }
                         )
                     }
                 }
@@ -77,7 +79,8 @@ fun TabBookContents(
                     items(chapters) { chapter ->
                         ChapterItem(
                             chapter = chapter,
-                            textSizeMultiplier = textSizeMultiplier
+                            textSizeMultiplier = textSizeMultiplier,
+                            onClick = { onChapterClick(chapter.number) }
                         )
                     }
                 }

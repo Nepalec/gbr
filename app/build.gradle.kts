@@ -50,6 +50,7 @@ dependencies {
     implementation(projects.feature.settings)
     implementation(projects.feature.scrDownloader)
     implementation(projects.feature.scrBook)
+    implementation(projects.feature.scrChapter)
     implementation(libs.androidx.tracing.ktx)
 
     debugImplementation(libs.androidx.compose.ui.tooling)

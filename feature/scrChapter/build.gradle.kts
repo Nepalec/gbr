@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gbr.navigation"
+    namespace = "com.gbr.scrchapter"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -23,16 +23,19 @@ android {
 
 dependencies {
     implementation(projects.core.common)
-    implementation(projects.core.data)
+    implementation(projects.core.designsystem)
     implementation(projects.core.model)
-    implementation(projects.feature.scrBook)
-    implementation(projects.feature.scrChapter)
+    implementation(projects.core.data)
+    implementation(projects.core.network)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeKtx)
+    implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+    // Coil for image loading
+    implementation(libs.coil.kt.compose)
 }
 

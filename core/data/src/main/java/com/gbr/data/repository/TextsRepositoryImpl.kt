@@ -8,6 +8,7 @@ import com.gbr.model.book.BookDetail
 import com.gbr.model.book.BookStructure
 import com.gbr.model.book.ImageFileItem
 import com.gbr.model.book.BookImageTab
+import com.gbr.model.book.TextItem
 import com.gbr.model.gitabase.GitabaseID
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -189,6 +190,18 @@ class TextsRepositoryImpl @Inject constructor(
                 }
 
                 Result.success(bookDetail)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    override suspend fun getChapterTexts(gitabaseId: GitabaseID, bookPreview: BookPreview, chapterNumber: Int): Result<List<TextItem>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val database = databaseManager.getDatabase(gitabaseId)
+                val texts = database.bookDao().getChapterTexts(bookPreview, chapterNumber).first()
+                Result.success(texts)
             } catch (e: Exception) {
                 Result.failure(e)
             }
