@@ -2,24 +2,25 @@ package com.gbr.tabbooks.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gbr.common.strings.StringProvider
+import com.gbr.data.repository.GitabasesRepository
+import com.gbr.data.repository.TextsRepository
 import com.gbr.data.usecase.CopyGitabaseUseCase
 import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import com.gbr.data.usecase.SetCurrentGitabaseUseCase
-import com.gbr.data.repository.GitabasesRepository
-import com.gbr.data.repository.TextsRepository
+import com.gbr.model.book.BookPreview
 import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseID
-import com.gbr.model.gitabase.GitabaseType
 import com.gbr.model.gitabase.GitabaseLang
-import com.gbr.model.book.BookPreview
-import java.io.File
+import com.gbr.model.gitabase.GitabaseType
+import com.gbr.tabbooks.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.LinkedHashSet
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,7 +30,8 @@ class BooksViewModel @Inject constructor(
     private val copyGitabaseUseCase: CopyGitabaseUseCase,
     private val removeGitabaseUseCase: RemoveGitabaseUseCase,
     private val scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase,
-    private val setCurrentGitabaseUseCase: SetCurrentGitabaseUseCase
+    private val setCurrentGitabaseUseCase: SetCurrentGitabaseUseCase,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BooksUiState())
@@ -51,7 +53,7 @@ class BooksViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Failed to load gitabases"
+                    error = e.message ?: stringProvider.getString(R.string.error_failed_to_load_gitabases)
                 )
             }
         }
@@ -88,7 +90,7 @@ class BooksViewModel @Inject constructor(
                         _uiState.value = _uiState.value.copy(
                             books = emptyList(),
                             displayItems = emptyList(),
-                            error = "Failed to load books: ${error.message}"
+                            error = stringProvider.getString(R.string.error_failed_to_load_books, error.message ?: "")
                         )
                     }
                 )
@@ -96,7 +98,7 @@ class BooksViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     books = emptyList(),
                     displayItems = emptyList(),
-                    error = "Error loading books: ${e.message}"
+                    error = stringProvider.getString(R.string.error_loading_books, e.message ?: "")
                 )
             }
         }
@@ -171,7 +173,7 @@ class BooksViewModel @Inject constructor(
 
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
-                message = "Copying Gitabase file...",
+                message = stringProvider.getString(R.string.message_copying_gitabase_file),
                 copyingGitabases = setOf(tempGitabase)
             )
 
@@ -186,14 +188,17 @@ class BooksViewModel @Inject constructor(
                 } else {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = "Failed to copy file: ${copyResult.exceptionOrNull()?.message}",
+                        error = stringProvider.getString(
+                            R.string.error_failed_to_copy_file,
+                            copyResult.exceptionOrNull()?.message ?: ""
+                        ),
                         copyingGitabases = emptySet()
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Error copying file: ${e.message}",
+                    error = stringProvider.getString(R.string.error_copying_file, e.message ?: ""),
                     copyingGitabases = emptySet()
                 )
             }
@@ -217,7 +222,7 @@ class BooksViewModel @Inject constructor(
             title = fileName,
             version = 1,
             filePath = filePath,
-            lastModified = "Copying..."
+            lastModified = stringProvider.getString(R.string.status_copying)
         )
     }
 
@@ -228,7 +233,7 @@ class BooksViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = _uiState.value.copy(
-                    message = "Validating copied Gitabase..."
+                    message = stringProvider.getString(R.string.message_validating_copied_gitabase)
                 )
 
                 // Get the gitabase folder path
@@ -261,21 +266,24 @@ class BooksViewModel @Inject constructor(
                     } else {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            error = "Copied file was not recognized as a valid Gitabase",
+                            error = stringProvider.getString(R.string.error_file_not_recognized_gitabase),
                             copyingGitabases = emptySet()
                         )
                     }
                 } else {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = "Failed to validate copied file: ${scanResult.exceptionOrNull()?.message}",
+                        error = stringProvider.getString(
+                            R.string.error_failed_to_validate_file,
+                            scanResult.exceptionOrNull()?.message ?: ""
+                        ),
                         copyingGitabases = emptySet()
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Error validating copied file: ${e.message}",
+                    error = stringProvider.getString(R.string.error_validating_file, e.message ?: ""),
                     copyingGitabases = emptySet()
                 )
             }
@@ -291,7 +299,7 @@ class BooksViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
-                message = "Removing Gitabase..."
+                message = stringProvider.getString(R.string.message_removing_gitabase)
             )
 
             try {
@@ -307,13 +315,16 @@ class BooksViewModel @Inject constructor(
                 } else {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = "Failed to remove file: ${removeResult.exceptionOrNull()?.message}"
+                        error = stringProvider.getString(
+                            R.string.error_failed_to_remove_file,
+                            removeResult.exceptionOrNull()?.message ?: ""
+                        )
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Error removing Gitabase: ${e.message}"
+                    error = stringProvider.getString(R.string.error_removing_gitabase, e.message ?: "")
                 )
             }
         }

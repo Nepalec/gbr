@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_api_endpoint_not_found">API endpoint not found (404). Please check the URL configuration.</string>
+    <string name="error_http_error">HTTP error %1$d: %2$s</string>
+    <string name="error_network_error">Network error: %1$s</string>
+</resources>
+

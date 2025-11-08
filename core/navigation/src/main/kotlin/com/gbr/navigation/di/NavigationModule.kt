@@ -11,7 +11,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class NavigationModule {
-    
+
     @Binds
     @Singleton
     abstract fun bindFullscreenContent(impl: FullscreenContentImpl): FullscreenContent

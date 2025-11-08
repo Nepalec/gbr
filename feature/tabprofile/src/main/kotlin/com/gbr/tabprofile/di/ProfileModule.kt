@@ -11,7 +11,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ProfileModule {
-    
+
     @Binds
     @Singleton
     abstract fun bindProfileFeature(impl: ProfileFeatureImpl): ProfileFeature

@@ -11,11 +11,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.gbr.common.navigation.Dest
 import com.gbr.common.navigation.FullscreenDest
 import com.gbr.common.navigation.SubGraphDest
 import com.gbr.designsystem.components.navigationbar.textandicon.NavigationBarWithTextAndIconView
@@ -54,7 +54,7 @@ fun GbrNavHost(
     }
 
     val destinations = TopLevelDestination.values()
-    val items = destinations.map { it.title }
+    val items = destinations.map { stringResource(it.titleResId) }
     val icons = destinations.map { it.icon }
     val selectedIcons = destinations.map { it.selectedIcon }
 

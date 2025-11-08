@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_api_endpoint_not_found">Конечная точка API не найдена (404). Проверьте конфигурацию URL.</string>
+    <string name="error_http_error">Ошибка HTTP %1$d: %2$s</string>
+    <string name="error_network_error">Ошибка сети: %1$s</string>
+</resources>
+

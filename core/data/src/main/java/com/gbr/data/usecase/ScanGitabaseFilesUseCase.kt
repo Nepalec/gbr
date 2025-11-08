@@ -1,9 +1,10 @@
 package com.gbr.data.usecase
 
-import com.gbr.model.gitabase.Gitabase
-import com.gbr.data.repository.GitabasesRepository
+import com.gbr.common.strings.StringProvider
+import com.gbr.data.R
 import com.gbr.data.repository.GitabasesDescRepository
-import com.gbr.data.model.GitabaseDescNetwork
+import com.gbr.data.repository.GitabasesRepository
+import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType
@@ -18,7 +19,8 @@ import javax.inject.Inject
  */
 class ScanGitabaseFilesUseCase @Inject constructor(
     private val gitabasesRepository: GitabasesRepository,
-    private val gitabasesDescRepository: GitabasesDescRepository
+    private val gitabasesDescRepository: GitabasesDescRepository,
+    private val stringProvider: StringProvider
 ) {
 
     /**
@@ -32,7 +34,14 @@ class ScanGitabaseFilesUseCase @Inject constructor(
         return try {
             val folder = File(folderPath)
             if (!folder.exists() || !folder.isDirectory) {
-                return Result.failure(IllegalArgumentException("Invalid folder path: $folderPath"))
+                return Result.failure(
+                    IllegalArgumentException(
+                        stringProvider.getString(
+                            R.string.error_invalid_folder_path,
+                            folderPath
+                        )
+                    )
+                )
             }
 
             // Find all .db files in the folder

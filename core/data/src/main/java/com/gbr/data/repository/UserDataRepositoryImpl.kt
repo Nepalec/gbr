@@ -4,9 +4,9 @@ import com.gbr.data.model.UserData
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
 import com.gbr.model.book.BookContentsTabOptions
 import com.gbr.model.book.BookImagesTabOptions
+import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.ImageType
 import com.gbr.model.theme.DarkThemeConfig
-import com.gbr.model.gitabase.GitabaseID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -59,28 +59,28 @@ class UserDataRepositoryImpl @Inject constructor(
      * Flow of last used Gitabase ID that emits whenever the preference changes.
      */
     override val lastUsedGitabase: Flow<GitabaseID?> = gbrPreferencesDataSource.lastUsedGitabase
-    
+
     /**
      * Gets the book contents tab options preference.
      */
     override suspend fun getBookContentsTabOptions(): BookContentsTabOptions {
         return gbrPreferencesDataSource.getBookContentsTabOptions()
     }
-    
+
     /**
      * Sets the book contents tab options preference.
      */
     override suspend fun setBookContentsTabOptions(options: BookContentsTabOptions) {
         gbrPreferencesDataSource.setBookContentsTabOptions(options)
     }
-    
+
     /**
      * Gets the book images tab options preference for a specific ImageType.
      */
     override suspend fun getBookImagesTabOptions(imageType: ImageType): BookImagesTabOptions {
         return gbrPreferencesDataSource.getBookImagesTabOptions(imageType)
     }
-    
+
     /**
      * Sets the book images tab options preference for a specific ImageType.
      */

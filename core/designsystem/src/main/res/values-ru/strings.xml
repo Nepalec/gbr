@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Preview/Demo strings for design system components -->
+    <string name="preview_back_to_home">Вернуться на главную</string>
+    <string name="preview_save">Сохранить</string>
+    <string name="preview_allow_notifications">Разрешить уведомления</string>
+    <string name="preview_icon_only">Только иконка</string>
+    <string name="preview_with_text_and_icon">С текстом и иконкой</string>
+</resources>
+

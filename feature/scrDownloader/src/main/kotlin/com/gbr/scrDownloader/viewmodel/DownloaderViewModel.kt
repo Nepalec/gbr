@@ -4,9 +4,11 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gbr.common.strings.StringProvider
 import com.gbr.data.repository.GitabasesDescRepository
 import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseLang
+import com.gbr.scrDownloader.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DownloaderViewModel @Inject constructor(
     private val gitabasesDescRepository: GitabasesDescRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DownloaderUiState())
@@ -45,7 +48,7 @@ class DownloaderViewModel @Inject constructor(
             try {
                 val gitabases = gitabasesDescRepository.getAllGitabases()
                 val languages = gitabases.map { it.id.lang }.distinct().sortedBy { it.value }
-                
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     languages = languages,
@@ -56,7 +59,7 @@ class DownloaderViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Failed to load languages"
+                    error = e.message ?: stringProvider.getString(R.string.error_failed_to_load_languages)
                 )
                 saveState()
             }
@@ -75,11 +78,11 @@ class DownloaderViewModel @Inject constructor(
                     downloadingGitabase = gitabase
                 )
                 saveState()
-                
+
                 // TODO: Implement actual download logic
                 // For now, just simulate download
                 kotlinx.coroutines.delay(2000)
-                
+
                 _uiState.value = _uiState.value.copy(
                     downloadingGitabase = null,
                     downloadedGitabases = _uiState.value.downloadedGitabases + gitabase
@@ -88,7 +91,7 @@ class DownloaderViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     downloadingGitabase = null,
-                    error = "Failed to download ${gitabase.title}: ${e.message}"
+                    error = stringProvider.getString(R.string.error_failed_to_download, gitabase.title, e.message ?: "")
                 )
                 saveState()
             }

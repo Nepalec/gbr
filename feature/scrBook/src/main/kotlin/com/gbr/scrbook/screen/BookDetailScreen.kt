@@ -16,11 +16,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -38,13 +37,14 @@ import com.gbr.model.book.BookImagesTabOptions
 import com.gbr.model.book.BookPreview
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.scrbook.screen.components.AuthorTitleTabsRow
-import com.gbr.scrbook.screen.components.TabBookContents
 import com.gbr.scrbook.screen.components.ErrorState
 import com.gbr.scrbook.screen.components.HEADER_ROW_HEIGHT
 import com.gbr.scrbook.screen.components.HeaderRow
-import com.gbr.scrbook.screen.components.TabBookImages
 import com.gbr.scrbook.screen.components.LoadingState
+import com.gbr.scrbook.screen.components.TabBookContents
+import com.gbr.scrbook.screen.components.TabBookImages
 import com.gbr.scrbook.screen.components.TabOptionsSheet
+import kotlinx.coroutines.launch
 
 @Composable
 fun BookDetailScreen(

@@ -1,6 +1,8 @@
 package com.gbr.data.usecase
 
 import android.content.Context
+import com.gbr.common.strings.StringProvider
+import com.gbr.data.R
 import com.gbr.model.gitabase.GitabaseID
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
@@ -11,7 +13,8 @@ import javax.inject.Inject
  * Deletes the physical file and updates the repository.
  */
 class RemoveGitabaseUseCase @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val stringProvider: StringProvider
 ) {
 
     /**
@@ -25,7 +28,7 @@ class RemoveGitabaseUseCase @Inject constructor(
             val gitabasesFolder = File(context.getExternalFilesDir(null), "gitabases")
 
             if (!gitabasesFolder.exists()) {
-                return Result.failure(IllegalArgumentException("Gitabases folder does not exist"))
+                return Result.failure(IllegalArgumentException(stringProvider.getString(R.string.error_gitabases_folder_not_exist)))
             }
 
             // Construct the expected filename based on gitabase ID
@@ -33,15 +36,36 @@ class RemoveGitabaseUseCase @Inject constructor(
             val fileToDelete = File(gitabasesFolder, fileName)
 
             if (!fileToDelete.exists()) {
-                return Result.failure(IllegalArgumentException("Gitabase file does not exist: $fileName"))
+                return Result.failure(
+                    IllegalArgumentException(
+                        stringProvider.getString(
+                            R.string.error_gitabase_file_not_exist,
+                            fileName
+                        )
+                    )
+                )
             }
 
             if (!fileToDelete.isFile) {
-                return Result.failure(IllegalArgumentException("Path is not a file: $fileName"))
+                return Result.failure(
+                    IllegalArgumentException(
+                        stringProvider.getString(
+                            R.string.error_path_not_file,
+                            fileName
+                        )
+                    )
+                )
             }
 
             if (!fileToDelete.canWrite()) {
-                return Result.failure(IllegalArgumentException("Cannot delete file: $fileName"))
+                return Result.failure(
+                    IllegalArgumentException(
+                        stringProvider.getString(
+                            R.string.error_cannot_delete_file,
+                            fileName
+                        )
+                    )
+                )
             }
 
             // Delete the file
@@ -50,7 +74,7 @@ class RemoveGitabaseUseCase @Inject constructor(
             if (deleted) {
                 Result.success(Unit)
             } else {
-                Result.failure(Exception("Failed to delete file: $fileName"))
+                Result.failure(Exception(stringProvider.getString(R.string.error_failed_to_delete_file, fileName)))
             }
         } catch (e: Exception) {
             Result.failure(e)

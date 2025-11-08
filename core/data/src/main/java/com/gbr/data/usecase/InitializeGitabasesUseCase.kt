@@ -1,7 +1,8 @@
 package com.gbr.data.usecase
 
 import android.content.Context
-import android.content.res.Configuration
+import com.gbr.common.strings.StringProvider
+import com.gbr.data.R
 import com.gbr.data.repository.GitabasesRepository
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
 import com.gbr.model.gitabase.Gitabase
@@ -12,7 +13,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -25,7 +25,8 @@ class InitializeGitabasesUseCase @Inject constructor(
     private val scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase,
     private val extractGitabasesUseCase: ExtractGitabasesUseCase,
     private val gitabasesRepository: GitabasesRepository,
-    private val gbrPreferencesDataSource: GbrPreferencesDataSource
+    private val gbrPreferencesDataSource: GbrPreferencesDataSource,
+    private val stringProvider: StringProvider
 ) {
 
     /**
@@ -58,10 +59,10 @@ class InitializeGitabasesUseCase @Inject constructor(
                     if (gitabases.isNotEmpty()) {
                         // Found gitabases, set them in repository
                         gitabasesRepository.setAllGitabases(gitabases)
-                        
+
                         // Determine and set current gitabase
                         determineAndSetCurrentGitabase(gitabases)
-                        
+
                         return@withContext Result.success(gitabases)
                     }
                 }
@@ -69,7 +70,10 @@ class InitializeGitabasesUseCase @Inject constructor(
                 // No gitabases found, extract help gitabases from resources
                 val extractResult = extractHelpGitabases(folderPath)
                 if (extractResult.isFailure) {
-                    return@withContext Result.failure(extractResult.exceptionOrNull() ?: Exception("Failed to extract help gitabases"))
+                    return@withContext Result.failure(
+                        extractResult.exceptionOrNull()
+                            ?: Exception(stringProvider.getString(R.string.error_failed_to_extract_help_gitabases))
+                    )
                 }
 
                 // Scan again after extraction
@@ -77,13 +81,16 @@ class InitializeGitabasesUseCase @Inject constructor(
                 if (rescanResult.isSuccess) {
                     val gitabases = rescanResult.getOrThrow()
                     gitabasesRepository.setAllGitabases(gitabases)
-                    
+
                     // Determine and set current gitabase
                     determineAndSetCurrentGitabase(gitabases)
-                    
+
                     Result.success(gitabases)
                 } else {
-                    Result.failure(rescanResult.exceptionOrNull() ?: Exception("Failed to scan after extraction"))
+                    Result.failure(
+                        rescanResult.exceptionOrNull()
+                            ?: Exception(stringProvider.getString(R.string.error_failed_to_scan_after_extraction))
+                    )
                 }
 
             } catch (e: Exception) {
@@ -121,7 +128,7 @@ class InitializeGitabasesUseCase @Inject constructor(
         try {
             // Check if there's a saved preference
             val savedGitabaseId = gbrPreferencesDataSource.getLastUsedGitabase()
-            
+
             if (savedGitabaseId != null) {
                 // Try to find the saved gitabase
                 val savedGitabase = gitabases.find { it.id == savedGitabaseId }
@@ -130,7 +137,7 @@ class InitializeGitabasesUseCase @Inject constructor(
                     return
                 }
             }
-            
+
             // No saved preference or saved gitabase not found, determine based on system language
             val systemLanguage = getSystemLanguage()
             val defaultGitabaseId = if (systemLanguage == "ru") {
@@ -138,7 +145,7 @@ class InitializeGitabasesUseCase @Inject constructor(
             } else {
                 GitabaseID(GitabaseType.HELP, GitabaseLang.ENG)
             }
-            
+
             // Find the default gitabase
             val defaultGitabase = gitabases.find { it.id == defaultGitabaseId }
             if (defaultGitabase != null) {

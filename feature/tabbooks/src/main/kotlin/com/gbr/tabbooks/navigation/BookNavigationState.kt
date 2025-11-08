@@ -1,7 +1,7 @@
 package com.gbr.tabbooks.navigation
 
-import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.book.BookPreview
+import com.gbr.model.gitabase.GitabaseID
 
 /**
  * Simple global state for passing book navigation arguments

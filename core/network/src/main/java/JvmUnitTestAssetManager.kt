@@ -1,4 +1,3 @@
-
 import com.gbr.network.asset.AssetManager
 import java.io.File
 import java.io.InputStream
@@ -10,7 +9,7 @@ import java.util.Properties
  * @see <a href="https://developer.android.com/reference/tools/gradle-api/7.3/com/android/build/api/dsl/UnitTestOptions">UnitTestOptions</a>
  */
 
-internal object JvmUnitTestAssetManager: AssetManager {
+internal object JvmUnitTestAssetManager : AssetManager {
     private val config =
         requireNotNull(javaClass.getResource("com/android/tools/test_config.properties")) {
             """

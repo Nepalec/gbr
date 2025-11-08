@@ -9,9 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.gbr.tabprofile.R
 import com.gbr.tabprofile.components.CustomAppBar
 import com.gbr.tabprofile.viewmodel.ProfileViewModel
 
@@ -24,7 +26,7 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             CustomAppBar(
-                title = "Profile",
+                title = stringResource(R.string.profile),
                 onNavigationClick = onNavigateBack,
                 onActionClick = onNavigateToSettings
             )
@@ -38,7 +40,7 @@ fun ProfileScreen(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Profile Content",
+                text = stringResource(R.string.profile_content),
                 style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
                 fontSize = 24.sp

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">gbr</string>
+
+    <!-- Error Messages -->
+    <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="error_failed_to_load_book_detail">Не удалось загрузить детали книги</string>
+    <string name="error_failed_to_load_book_preview">Не удалось загрузить превью книги</string>
+    <string name="error_chapter_not_found">Глава не найдена</string>
+    <string name="error_failed_to_load_gitabases">Не удалось загрузить Gitabase</string>
+    <string name="error_failed_to_load_books">Не удалось загрузить книги: %1$s</string>
+    <string name="error_loading_books">Ошибка загрузки книг: %1$s</string>
+    <string name="error_failed_to_copy_file">Не удалось скопировать файл: %1$s</string>
+    <string name="error_copying_file">Ошибка копирования файла: %1$s</string>
+    <string name="error_failed_to_validate_file">Не удалось проверить скопированный файл: %1$s</string>
+    <string name="error_validating_file">Ошибка проверки файла: %1$s</string>
+    <string name="error_failed_to_remove_file">Не удалось удалить файл: %1$s</string>
+    <string name="error_removing_gitabase">Ошибка удаления Gitabase: %1$s</string>
+    <string name="error_failed_to_load_languages">Не удалось загрузить языки</string>
+    <string name="error_failed_to_download">Не удалось загрузить %1$s: %2$s</string>
+    <string name="error_failed_to_load_settings">Не удалось загрузить настройки: %1$s</string>
+    <string name="error_failed_to_save_theme">Не удалось сохранить тему: %1$s</string>
+    <string name="error_prefix">Ошибка: %1$s</string>
+
+    <!-- UI Labels -->
+    <string name="loading">Загрузка…</string>
+    <string name="chapter">Глава %1$d</string>
+    <string name="text">Текст %1$s</string>
+    <string name="no_chapters_available">Нет доступных глав</string>
+    <string name="no_contents_available">Нет доступного содержимого</string>
+    <string name="gitabase_packages">Тексты Gitabase</string>
+    <string name="no_gitabase_files_found">Файлы Gitabase не найдены</string>
+    <string name="no_books_found">Книги не найдены в %1$s</string>
+    <string name="found_gitabase_files">Найдено файлов Gitabase: %1$d</string>
+    <string name="select_gitabase_from_menu">Выберите Gitabase из меню для просмотра книг</string>
+    <string name="download_gitabase_pack">Загрузить пакет Gitabase</string>
+    <string name="error">Ошибка</string>
+    <string name="select_language">Выберите язык</string>
+    <string name="available_gitabases">Доступные Gitabase</string>
+    <string name="profile_content">Содержимое профиля</string>
+    <string name="notes_content">Содержимое заметок</string>
+    <string name="reading_content">Содержимое чтения</string>
+    <string name="discuss_content">Содержимое обсуждения</string>
+    <string name="settings">Настройки</string>
+    <string name="application_theme">Тема приложения</string>
+    <string name="columns">Колонки</string>
+    <string name="group_by_chapters">Группировать по главам</string>
+    <string name="text_size">Размер текста:</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_open_drawer">Открыть меню</string>
+    <string name="cd_more_options">Дополнительные опции</string>
+    <string name="cd_download_from_internet">Загрузить из интернета</string>
+    <string name="cd_add_from_local_storage">Добавить из локального хранилища</string>
+    <string name="cd_delete">Удалить %1$s</string>
+    <string name="cd_back">Назад</string>
+    <string name="cd_downloaded">Загружено</string>
+    <string name="cd_search">Поиск</string>
+    <string name="cd_navigation">Навигация</string>
+    <string name="cd_settings">Настройки</string>
+    <string name="cd_book_cover">Обложка книги</string>
+
+    <!-- Placeholders -->
+    <string name="image_placeholder">🖼️</string>
+    <string name="warning_emoji">⚠️</string>
+
+    <!-- Top Level Navigation -->
+    <string name="nav_books">Книги</string>
+    <string name="nav_reading">Чтение</string>
+    <string name="nav_discuss">Обсудить</string>
+    <string name="nav_notes">Заметки</string>
+    <string name="nav_profile">Профиль</string>
+
+    <!-- Status Messages -->
+    <string name="message_scanning_for_gitabase_files">Сканирование файлов Gitabase…</string>
+</resources>
+
+

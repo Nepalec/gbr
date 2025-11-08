@@ -9,9 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.gbr.tabdiscuss.R
 import com.gbr.tabdiscuss.components.CustomAppBar
 import com.gbr.tabdiscuss.viewmodel.DiscussViewModel
 
@@ -24,7 +26,7 @@ fun DiscussScreen(
     Scaffold(
         topBar = {
             CustomAppBar(
-                title = "Discuss",
+                title = stringResource(R.string.discuss),
                 onNavigationClick = onNavigateBack,
                 onActionClick = onNavigateToSettings
             )
@@ -38,7 +40,7 @@ fun DiscussScreen(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Discuss Content",
+                text = stringResource(R.string.discuss_content),
                 style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
                 fontSize = 24.sp

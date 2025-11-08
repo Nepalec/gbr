@@ -2,8 +2,10 @@ package com.gbr.settings.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gbr.common.strings.StringProvider
 import com.gbr.data.repository.UserPreferencesRepository
 import com.gbr.model.theme.DarkThemeConfig
+import com.gbr.settings.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -32,7 +35,7 @@ class SettingsViewModel @Inject constructor(
                     DarkThemeConfig.DARK -> ThemeOption.DARK
                     DarkThemeConfig.FOLLOW_SYSTEM -> ThemeOption.SYSTEM
                 }
-                
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     selectedTheme = themeOption
@@ -40,7 +43,7 @@ class SettingsViewModel @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Failed to load settings: ${e.message}",
+                    error = stringProvider.getString(R.string.error_failed_to_load_settings, e.message ?: ""),
                     selectedTheme = ThemeOption.SYSTEM
                 )
             }
@@ -60,25 +63,25 @@ class SettingsViewModel @Inject constructor(
                     ThemeOption.DARK -> DarkThemeConfig.DARK
                     ThemeOption.SYSTEM -> DarkThemeConfig.FOLLOW_SYSTEM
                 }
-                
+
                 // Save the theme preference
                 userPreferencesRepository.setAppTheme(darkThemeConfig)
-                
+
                 // Update UI state
                 _uiState.value = _uiState.value.copy(selectedTheme = theme)
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    error = "Failed to save theme: ${e.message}"
+                    error = stringProvider.getString(R.string.error_failed_to_save_theme, e.message ?: "")
                 )
             }
         }
     }
 }
 
-enum class ThemeOption(val displayName: String) {
-    LIGHT("Light"),
-    DARK("Dark"),
-    SYSTEM("System")
+enum class ThemeOption {
+    LIGHT,
+    DARK,
+    SYSTEM
 }
 
 data class SettingsUiState(

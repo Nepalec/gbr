@@ -1,6 +1,8 @@
 package com.gbr.data.usecase
 
 import android.content.Context
+import com.gbr.common.strings.StringProvider
+import com.gbr.data.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import javax.inject.Inject
@@ -10,7 +12,8 @@ import javax.inject.Inject
  * This allows the app to provide default Gitabase files bundled with the app.
  */
 class ExtractGitabasesUseCase @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val stringProvider: StringProvider
 ) {
 
     /**
@@ -32,7 +35,14 @@ class ExtractGitabasesUseCase @Inject constructor(
             }
 
             if (!destinationFolder.isDirectory) {
-                return Result.failure(IllegalArgumentException("Destination must be a directory: ${destinationFolder.absolutePath}"))
+                return Result.failure(
+                    IllegalArgumentException(
+                        stringProvider.getString(
+                            R.string.error_destination_must_be_directory,
+                            destinationFolder.absolutePath
+                        )
+                    )
+                )
             }
 
             val extractedFiles = mutableListOf<String>()
@@ -81,7 +91,13 @@ class ExtractGitabasesUseCase @Inject constructor(
 
             return destinationFile
         } catch (e: Exception) {
-            throw RuntimeException("Failed to extract Gitabase file '$fileName': ${e.message}", e)
+            throw RuntimeException(
+                stringProvider.getString(
+                    R.string.error_failed_to_extract_gitabase_file,
+                    fileName,
+                    e.message ?: ""
+                ), e
+            )
         }
     }
 
@@ -114,9 +130,11 @@ class ExtractGitabasesUseCase @Inject constructor(
                 fileName in HELP_GITABASE_FILES -> {
                     context.resources.assets.open("gitabases/$fileName").use { true }
                 }
+
                 fileName in TEST_GITABASE_FILES -> {
                     context.resources.assets.open("test_gitabases/$fileName").use { true }
                 }
+
                 else -> {
                     // Try both locations
                     try {

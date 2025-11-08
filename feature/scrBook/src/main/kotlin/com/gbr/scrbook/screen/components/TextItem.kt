@@ -1,14 +1,23 @@
 package com.gbr.scrbook.screen.components
 
 import android.text.Html
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gbr.model.book.TextContentsItem
+import com.gbr.scrbook.R
 
 @Composable
 fun TextItem(
@@ -25,7 +34,7 @@ fun TextItem(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Text ${text.textNumber}",
+                text = stringResource(R.string.text, text.textNumber),
                 style = MaterialTheme.typography.bodySmall.copy(
                     fontSize = MaterialTheme.typography.bodySmall.fontSize * textSizeMultiplier
                 ),

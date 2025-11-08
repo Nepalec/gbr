@@ -1,13 +1,13 @@
 package com.gbr.data.repository
 
 import android.content.Context
+import com.gbr.common.strings.StringProvider
 import com.gbr.data.R
 import com.gbr.data.database.GitabaseDatabaseManager
-import com.gbr.model.book.BookPreview
 import com.gbr.model.book.BookDetail
-import com.gbr.model.book.BookStructure
-import com.gbr.model.book.ImageFileItem
 import com.gbr.model.book.BookImageTab
+import com.gbr.model.book.BookPreview
+import com.gbr.model.book.BookStructure
 import com.gbr.model.book.TextItem
 import com.gbr.model.gitabase.GitabaseID
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,9 +27,10 @@ import javax.inject.Singleton
 class TextsRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val gitabasesRepository: GitabasesRepository,
-    private val databaseManager: GitabaseDatabaseManager
+    private val databaseManager: GitabaseDatabaseManager,
+    private val stringProvider: StringProvider
 ) : TextsRepository {
-    
+
     companion object {
         private const val MAX_CACHE_SIZE = 5
     }
@@ -42,7 +43,7 @@ class TextsRepositoryImpl @Inject constructor(
         0.75f,  // load factor
         true     // access-order mode (vs insertion-order)
     )
-    
+
     // Mutex for thread-safe cache access (allows suspending functions)
     private val cacheMutex = Mutex()
 
@@ -62,7 +63,12 @@ class TextsRepositoryImpl @Inject constructor(
 
                     if (!gitabaseExists) {
                         return@withContext Result.failure(
-                            IllegalArgumentException("Gitabase not found: $gitabaseId")
+                            IllegalArgumentException(
+                                stringProvider.getString(
+                                    R.string.error_gitabase_not_found,
+                                    gitabaseId.toString()
+                                )
+                            )
                         )
                     }
 
@@ -105,7 +111,12 @@ class TextsRepositoryImpl @Inject constructor(
 
                     if (!gitabaseExists) {
                         return@withContext Result.failure(
-                            IllegalArgumentException("Gitabase not found: $gitabaseId")
+                            IllegalArgumentException(
+                                stringProvider.getString(
+                                    R.string.error_gitabase_not_found,
+                                    gitabaseId.toString()
+                                )
+                            )
                         )
                     }
 
@@ -134,7 +145,11 @@ class TextsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getBookDetail(gitabaseId: GitabaseID, book: BookPreview, extractImages: Boolean): Result<BookDetail> {
+    override suspend fun getBookDetail(
+        gitabaseId: GitabaseID,
+        book: BookPreview,
+        extractImages: Boolean
+    ): Result<BookDetail> {
         return withContext(Dispatchers.IO) {
             try {
                 val database = databaseManager.getDatabase(gitabaseId)
@@ -152,16 +167,16 @@ class TextsRepositoryImpl @Inject constructor(
                         4 -> com.gbr.model.gitabase.ImageType.FRESCO
                         else -> com.gbr.model.gitabase.ImageType.PICTURE
                     }
-                    
+
                     val tabTitleResId = when (imageType) {
                         com.gbr.model.gitabase.ImageType.PICTURE -> R.string.image_tab_pictures
                         com.gbr.model.gitabase.ImageType.CARD -> R.string.image_tab_cards
                         com.gbr.model.gitabase.ImageType.DIAGRAM -> R.string.image_tab_diagrams
                         com.gbr.model.gitabase.ImageType.FRESCO -> R.string.image_tab_frescoes
                     }
-                    
+
                     val tabTitle = context.getString(tabTitleResId)
-                    
+
                     BookImageTab(
                         type = imageType,
                         images = imageList,
@@ -196,7 +211,11 @@ class TextsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getChapterTexts(gitabaseId: GitabaseID, bookPreview: BookPreview, chapterNumber: Int): Result<List<TextItem>> {
+    override suspend fun getChapterTexts(
+        gitabaseId: GitabaseID,
+        bookPreview: BookPreview,
+        chapterNumber: Int
+    ): Result<List<TextItem>> {
         return withContext(Dispatchers.IO) {
             try {
                 val database = databaseManager.getDatabase(gitabaseId)

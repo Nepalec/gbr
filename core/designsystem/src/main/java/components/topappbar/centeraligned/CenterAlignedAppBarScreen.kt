@@ -60,10 +60,12 @@ fun CenterAlignedAppBarScreen() {
 fun CenterAlignedAppBarView(title: String = "Title Center") {
 
     CenterAlignedTopAppBar(
-        title = { Text(
-            text = title,
-            style = MaterialTheme.typography.titleLarge
-        ) },
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
         navigationIcon = {
             IconButton(onClick = { }) {
                 Icon(

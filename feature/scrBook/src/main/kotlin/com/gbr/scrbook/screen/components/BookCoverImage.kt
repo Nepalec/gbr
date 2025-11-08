@@ -3,17 +3,20 @@ package com.gbr.scrbook.screen.components
 import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.gbr.model.book.BookDetail
+import com.gbr.scrbook.R
 
 @Composable
 fun BookCoverImage(bookDetail: BookDetail) {
@@ -35,7 +38,7 @@ fun BookCoverImage(bookDetail: BookDetail) {
             if (bitmap != null) {
                 Image(
                     bitmap = bitmap.asImageBitmap(),
-                    contentDescription = "Book cover",
+                    contentDescription = stringResource(R.string.cd_book_cover),
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )

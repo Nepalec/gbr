@@ -15,8 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
 
@@ -29,11 +31,11 @@ fun RadioButtonWithTextView() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(24.dp)
-                    .clickable {
-            isChecked = !isChecked
-        }
+            .fillMaxWidth()
+            .heightIn(24.dp)
+            .clickable {
+                isChecked = !isChecked
+            }
     ) {
 
         RadioButton(
@@ -41,7 +43,7 @@ fun RadioButtonWithTextView() {
             onClick = { isChecked = !isChecked }
         )
 
-        Text(text = "Allow Notifications")
+        Text(text = stringResource(R.string.preview_allow_notifications))
 
     }
 }

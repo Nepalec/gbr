@@ -25,7 +25,7 @@ class DownloaderFeatureImpl @Inject constructor() : DownloaderFeature {
                     onNavigateBack = { navHostController.popBackStack() }
                 )
             }
-            
+
             composable<Dest.BooksDownloadDetail> {
                 // TODO: Implement BooksDownloadDetailScreen
                 DownloaderScreen(

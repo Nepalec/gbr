@@ -1,6 +1,8 @@
 package com.gbr.data.di
 
 import android.content.Context
+import com.gbr.common.strings.StringProvider
+import com.gbr.data.R
 import com.gbr.data.database.GitabaseDatabaseManager
 import com.gbr.data.repository.GitabasesRepository
 import com.gbr.data.repository.TextsRepository
@@ -19,7 +21,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-    
+
     /**
      * Provides the GitabaseDatabaseManager with gitabase folder path configuration.
      * Uses the external files directory for gitabase storage.
@@ -27,19 +29,21 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideGitabaseDatabaseManager(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        stringProvider: StringProvider
     ): GitabaseDatabaseManager {
-        val gitabaseFolderPath = context.getExternalFilesDir(null)?.let { 
-            "${it.absolutePath}/gitabases" 
-        } ?: throw IllegalStateException("External files directory not available")
-        
+        val gitabaseFolderPath = context.getExternalFilesDir(null)?.let {
+            "${it.absolutePath}/gitabases"
+        }
+            ?: throw IllegalStateException(stringProvider.getString(R.string.error_external_files_directory_not_available))
+
         return GitabaseDatabaseManager(
             context = context,
             gitabaseFolderPath = gitabaseFolderPath,
             maxCacheSize = 3 // Keep up to 3 databases open for optimal performance
         )
     }
-    
+
     /**
      * Provides the TextsRepository implementation.
      * Uses the database manager for cached database access.
@@ -49,12 +53,14 @@ object DatabaseModule {
     fun provideTextsRepository(
         @ApplicationContext context: Context,
         gitabasesRepository: GitabasesRepository,
-        databaseManager: GitabaseDatabaseManager
+        databaseManager: GitabaseDatabaseManager,
+        stringProvider: StringProvider
     ): TextsRepository {
         return TextsRepositoryImpl(
             context = context,
             gitabasesRepository = gitabasesRepository,
-            databaseManager = databaseManager
+            databaseManager = databaseManager,
+            stringProvider = stringProvider
         )
     }
 }

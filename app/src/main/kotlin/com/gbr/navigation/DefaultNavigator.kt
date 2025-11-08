@@ -1,14 +1,13 @@
 package com.gbr.navigation
 
 import com.gbr.common.navigation.FullscreenDest
-import com.gbr.navigation.FullscreenContent
 import com.gbr.scrDownloader.navigation.DownloaderFeature
+import com.gbr.settings.navigation.SettingsFeature
 import com.gbr.tabbooks.navigation.BooksFeature
-import com.gbr.tabreading.navigation.ReadingFeature
 import com.gbr.tabdiscuss.navigation.DiscussFeature
 import com.gbr.tabnotes.navigation.NotesFeature
 import com.gbr.tabprofile.navigation.ProfileFeature
-import com.gbr.settings.navigation.SettingsFeature
+import com.gbr.tabreading.navigation.ReadingFeature
 
 /**
  * Navigation coordinator that holds all feature implementations

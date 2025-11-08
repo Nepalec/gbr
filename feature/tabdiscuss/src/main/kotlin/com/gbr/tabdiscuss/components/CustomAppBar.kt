@@ -9,8 +9,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.gbr.designsystem.R
+import com.gbr.tabdiscuss.R as DiscussR
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +35,7 @@ fun CustomAppBar(
             IconButton(onClick = onActionClick) {
                 Icon(
                     imageVector = ImageVector.vectorResource(actionIcon),
-                    contentDescription = "Settings"
+                    contentDescription = stringResource(DiscussR.string.cd_settings)
                 )
             }
         },

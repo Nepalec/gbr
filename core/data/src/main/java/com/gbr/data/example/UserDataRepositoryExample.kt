@@ -1,11 +1,10 @@
 package com.gbr.data.example
 
 import com.gbr.data.repository.UserDataRepository
-import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType
-import kotlinx.coroutines.flow.collect
+import com.gbr.model.theme.DarkThemeConfig
 import javax.inject.Inject
 
 /**
@@ -25,9 +24,11 @@ class UserDataRepositoryExample @Inject constructor(
                 DarkThemeConfig.FOLLOW_SYSTEM -> {
                     println("Using system theme")
                 }
+
                 DarkThemeConfig.LIGHT -> {
                     println("Using light theme")
                 }
+
                 DarkThemeConfig.DARK -> {
                     println("Using dark theme")
                 }

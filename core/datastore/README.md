@@ -5,14 +5,14 @@ This module provides user preferences management using Android DataStore.
 ## Features
 
 - **Dark Theme Configuration**: Manage app's dark theme preference with 3 options:
-  - `FOLLOW_SYSTEM` - Follow system's dark theme setting
-  - `LIGHT` - Always use light theme
-  - `DARK` - Always use dark theme
+    - `FOLLOW_SYSTEM` - Follow system's dark theme setting
+    - `LIGHT` - Always use light theme
+    - `DARK` - Always use dark theme
 
 - **Last Used Gitabase**: Remember and restore the last used Gitabase database:
-  - Save `GitabaseID` objects with type and language
-  - Reactive Flow-based observation
-  - Automatic serialization/deserialization
+    - Save `GitabaseID` objects with type and language
+    - Reactive Flow-based observation
+    - Automatic serialization/deserialization
 
 ## Usage
 

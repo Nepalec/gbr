@@ -9,9 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.gbr.tabreading.R
 import com.gbr.tabreading.components.CustomAppBar
 import com.gbr.tabreading.viewmodel.ReadingViewModel
 
@@ -24,7 +26,7 @@ fun ReadingScreen(
     Scaffold(
         topBar = {
             CustomAppBar(
-                title = "Reading",
+                title = stringResource(R.string.reading),
                 onNavigationClick = onNavigateBack,
                 onActionClick = onNavigateToSettings
             )
@@ -38,7 +40,7 @@ fun ReadingScreen(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Reading Content",
+                text = stringResource(R.string.reading_content),
                 style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
                 fontSize = 24.sp

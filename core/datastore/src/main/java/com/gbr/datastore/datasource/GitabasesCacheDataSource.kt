@@ -61,7 +61,7 @@ class GitabasesCacheDataSource @Inject constructor(
         try {
             val jsonString = json.encodeToString(gitabases)
             val timestamp = System.currentTimeMillis()
-            
+
             userPreferences.edit { preferences ->
                 preferences[GITABASES_CACHE_KEY] = jsonString
                 preferences[CACHE_TIMESTAMP_KEY] = timestamp.toString()

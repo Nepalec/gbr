@@ -2,12 +2,14 @@ package com.gbr.scrchapter.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gbr.common.strings.StringProvider
 import com.gbr.data.repository.TextsRepository
 import com.gbr.model.book.BookDetail
 import com.gbr.model.book.BookPreview
 import com.gbr.model.book.ChapterContentsItem
 import com.gbr.model.book.TextItem
 import com.gbr.model.gitabase.GitabaseID
+import com.gbr.scrchapter.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChapterViewModel @Inject constructor(
-    private val textsRepository: TextsRepository
+    private val textsRepository: TextsRepository,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ChapterUiState())
@@ -37,35 +40,36 @@ class ChapterViewModel @Inject constructor(
                         detailResult.onSuccess { detail ->
                             // Find the chapter by number
                             val chapter = detail.chapters?.find { it.number == chapterNumber }
-                            
+
                             // Load chapter texts
                             val textsResult = textsRepository.getChapterTexts(gitabaseId, book, chapterNumber)
                             val texts = textsResult.getOrNull() ?: emptyList()
-                            
+
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
                                 bookDetail = detail,
                                 chapter = chapter,
                                 chapterTexts = texts,
-                                error = if (chapter == null) "Chapter not found" else null
+                                error = if (chapter == null) stringProvider.getString(R.string.error_chapter_not_found) else null
                             )
                         }.onFailure { error ->
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
-                                error = error.message ?: "Failed to load book detail"
+                                error = error.message
+                                    ?: stringProvider.getString(R.string.error_failed_to_load_book_detail)
                             )
                         }
                     }
                 }.onFailure { error ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = error.message ?: "Failed to load book preview"
+                        error = error.message ?: stringProvider.getString(R.string.error_failed_to_load_book_preview)
                     )
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = e.message ?: "Unknown error"
+                    error = e.message ?: stringProvider.getString(R.string.error_unknown)
                 )
             }
         }

@@ -51,7 +51,6 @@ data class TextImage(
     }
 
 
-
     /**
      * Get display name for the image
      */

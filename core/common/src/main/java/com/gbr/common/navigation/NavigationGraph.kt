@@ -76,7 +76,9 @@ sealed class Dest {
  */
 @Serializable
 sealed class FullscreenDest {
-    @Serializable data object Root : FullscreenDest()
+    @Serializable
+    data object Root : FullscreenDest()
+
     @Serializable
     data class BookDetail(
         val gitabaseIdKey: String, // GitabaseID.key

@@ -1,7 +1,18 @@
 package com.gbr.scrbook.screen.components
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -12,10 +23,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.activity.compose.BackHandler
 import com.gbr.model.book.BookContentsTabOptions
 import com.gbr.model.book.BookImagesTabOptions
+import com.gbr.scrbook.R
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -62,7 +74,8 @@ fun TabOptionsSheet(
     // Note: Slider API requires Float, so we convert from Int
     var sliderValue by remember(showSheet, currentTabIndex, initialContentsOptions, initialImagesOptions) {
         mutableFloatStateOf(
-            if (currentTabIndex == 0) initialContentsOptions.columns.toFloat() else (initialImagesOptions?.columns ?: 2).toFloat()
+            if (currentTabIndex == 0) initialContentsOptions.columns.toFloat() else (initialImagesOptions?.columns
+                ?: 2).toFloat()
         )
     }
 
@@ -123,7 +136,7 @@ fun TabOptionsSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Columns",
+                        text = stringResource(R.string.columns),
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
@@ -146,14 +159,13 @@ fun TabOptionsSheet(
                         },
                         // Slider API requires Float range, convert from Int
                         valueRange = minColumns.toFloat()..maxColumns.toFloat(),
-                        steps = steps-1,
+                        steps = steps - 1,
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 16.dp)
                     )
                 }
-                if(currentTabIndex>0)
-                {
+                if (currentTabIndex > 0) {
                     // Group by chapters row
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -161,7 +173,7 @@ fun TabOptionsSheet(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Group by chapters",
+                            text = stringResource(R.string.group_by_chapters),
                             style = MaterialTheme.typography.titleMedium
                         )
 
@@ -183,7 +195,7 @@ fun TabOptionsSheet(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Text size:",
+                            text = stringResource(R.string.text_size),
                             style = MaterialTheme.typography.titleMedium
                         )
 

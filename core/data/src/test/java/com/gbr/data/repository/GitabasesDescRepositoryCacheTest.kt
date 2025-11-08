@@ -1,8 +1,6 @@
 package com.gbr.data.repository
 
 import com.gbr.datastore.datasource.GitabasesCacheDataSource
-import com.gbr.network.IGitabasesDescDataSource
-import com.gbr.network.model.NetworkGitabasesDescResp
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
@@ -62,7 +60,7 @@ class GitabasesDescRepositoryCacheTest {
         // Given - First call to populate cache
         val firstResult = repository.getGitabasesDesc()
         assertEquals("First call should succeed", 1, firstResult.success)
-        
+
         // When - Clear cache and try again (simulating network failure)
         // Note: In a real scenario, we'd mock the network to fail
         // For this test, we'll verify the cache is populated

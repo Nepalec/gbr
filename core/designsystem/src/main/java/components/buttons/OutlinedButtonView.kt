@@ -5,7 +5,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
 
@@ -16,7 +18,7 @@ fun OutlinedButtonView() {
         onClick = { }
     ) {
         Text(
-            text = "Back to home",
+            text = stringResource(R.string.preview_back_to_home),
             style = MaterialTheme.typography.labelLarge
         )
     }

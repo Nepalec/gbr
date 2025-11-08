@@ -4,4 +4,33 @@
     <string name="image_tab_cards">Cards</string>
     <string name="image_tab_diagrams">Diagrams</string>
     <string name="image_tab_frescoes">Frescoes</string>
+
+    <!-- Error Messages -->
+    <string name="error_gitabase_not_found">Gitabase not found: %1$s</string>
+    <string name="error_failed_to_load_book_detail">Failed to load book detail</string>
+    <string name="error_failed_to_extract_images">Failed to extract images</string>
+    <string name="error_unknown_occurred">Unknown error occurred</string>
+    <string name="error_source_file_not_exist">Source file does not exist: %1$s</string>
+    <string name="error_source_path_not_file">Source path is not a file: %1$s</string>
+    <string name="error_cannot_read_source_file">Cannot read source file: %1$s</string>
+    <string name="error_source_must_be_db">Source file must be a .db file: %1$s</string>
+    <string name="error_source_not_valid_gitabase">Source file is not a valid Gitabase: %1$s</string>
+    <string name="error_file_not_recognized_gitabase">File is not recognized as a valid Gitabase</string>
+    <string name="error_failed_to_validate_gitabase">Failed to validate Gitabase file: %1$s</string>
+    <string name="error_validating_gitabase">Error validating Gitabase file: %1$s</string>
+    <string name="error_gitabases_folder_not_exist">Gitabases folder does not exist</string>
+    <string name="error_gitabase_file_not_exist">Gitabase file does not exist: %1$s</string>
+    <string name="error_path_not_file">Path is not a file: %1$s</string>
+    <string name="error_cannot_delete_file">Cannot delete file: %1$s</string>
+    <string name="error_failed_to_delete_file">Failed to delete file: %1$s</string>
+    <string name="error_failed_to_extract_help_gitabases">Failed to extract help gitabases</string>
+    <string name="error_failed_to_scan_after_extraction">Failed to scan after extraction</string>
+    <string name="error_destination_must_be_directory">Destination must be a directory: %1$s</string>
+    <string name="error_failed_to_extract_gitabase_file">Failed to extract Gitabase file \'%1$s\': %2$s</string>
+    <string name="error_invalid_folder_path">Invalid folder path: %1$s</string>
+    <string name="error_external_files_directory_not_available">External files directory not available</string>
+    <string name="error_network_and_no_cache">Network error and no cache available: %1$s</string>
+
+    <!-- Status Messages -->
+    <string name="message_data_from_cache">Data from cache</string>
 </resources>

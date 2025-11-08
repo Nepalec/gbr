@@ -18,7 +18,7 @@ import com.gbr.designsystem.theme.SemestaUIKitTheme
 fun OutlinedIconButtonView() {
 
     OutlinedIconButton(
-        onClick = {  }
+        onClick = { }
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.call_24px),

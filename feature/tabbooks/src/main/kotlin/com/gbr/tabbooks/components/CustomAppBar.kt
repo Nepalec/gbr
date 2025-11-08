@@ -10,8 +10,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.gbr.designsystem.R
+import com.gbr.tabbooks.R as BooksR
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +45,7 @@ fun CustomAppBar(
             IconButton(onClick = onNavigationClick) {
                 Icon(
                     imageVector = ImageVector.vectorResource(navigationIcon),
-                    contentDescription = "Navigation"
+                    contentDescription = stringResource(BooksR.string.cd_navigation)
                 )
             }
         },
@@ -51,7 +53,7 @@ fun CustomAppBar(
             IconButton(onClick = onActionClick) {
                 Icon(
                     imageVector = ImageVector.vectorResource(actionIcon),
-                    contentDescription = "Settings"
+                    contentDescription = stringResource(BooksR.string.cd_settings)
                 )
             }
         },

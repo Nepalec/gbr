@@ -8,8 +8,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
 @Composable
@@ -26,14 +28,14 @@ fun NavigationBarContent(
             onClick = onIconOnlyClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Icon Only")
+            Text(text = stringResource(R.string.preview_icon_only))
         }
 
         OutlinedButton(
             onClick = onTextAndIconClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "With Text & Icon")
+            Text(text = stringResource(R.string.preview_with_text_and_icon))
         }
     }
 }

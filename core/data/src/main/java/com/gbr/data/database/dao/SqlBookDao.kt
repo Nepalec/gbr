@@ -5,12 +5,12 @@ import android.database.sqlite.SQLiteDatabase
 import com.gbr.model.book.BookPreview
 import com.gbr.model.book.BookStructure
 import com.gbr.model.book.ChapterContentsItem
+import com.gbr.model.book.ImageFileItem
 import com.gbr.model.book.TextContentsItem
 import com.gbr.model.book.TextItem
-import com.gbr.model.book.ImageFileItem
-import com.gbr.model.gitabase.ImageType
-import com.gbr.model.gitabase.ImageFormat
 import com.gbr.model.gitabase.GitabaseID
+import com.gbr.model.gitabase.ImageFormat
+import com.gbr.model.gitabase.ImageType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -201,13 +201,12 @@ class SqlBookDao(
 
     suspend fun getBookCoverImageBitmap(book: BookPreview): String? = withContext(Dispatchers.IO) {
         try {
-            val debugQuery = if(book.isVolume) {
+            val debugQuery = if (book.isVolume) {
                 "select * from image_nums nums LEFT JOIN images imgs " +
                     "on nums.image_id=imgs.image_id  " +
                     "LEFT JOIN textnums txt on txt.text_id=nums.text_id " +
                     "WHERE nums.bid='${book.volumeGroupId}' AND nums.sid='${book.volumeNumber}' AND kind='11'"
-            }
-            else{
+            } else {
                 "select * from image_nums nums LEFT JOIN images imgs on nums.image_id=imgs.image_id  " +
                     "LEFT JOIN textnums txt on txt.text_id=nums.text_id " +
                     "WHERE nums.bid='${book.id}' AND kind='10'"
@@ -308,7 +307,11 @@ class SqlBookDao(
     }
 
 
-    fun getBookImagesFileNames(book: BookPreview, gitabaseId: GitabaseID, extractImages: Boolean): Flow<Map<Int, List<ImageFileItem>>?> = flow {
+    fun getBookImagesFileNames(
+        book: BookPreview,
+        gitabaseId: GitabaseID,
+        extractImages: Boolean
+    ): Flow<Map<Int, List<ImageFileItem>>?> = flow {
         val images = withContext(Dispatchers.IO) {
             val imageList = mutableListOf<Pair<Int, ImageFileItem>>()
 

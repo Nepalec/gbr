@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class GitabaseID(val type: GitabaseType, val lang:GitabaseLang) : Parcelable {
+data class GitabaseID(val type: GitabaseType, val lang: GitabaseLang) : Parcelable {
     val key: String
         get() = "${type.value}_${lang.value}"
 
@@ -12,6 +12,7 @@ data class GitabaseID(val type: GitabaseType, val lang:GitabaseLang) : Parcelabl
         return "$gitabaseFolderPath/gitabase_${key}.db"
     }
 }
+
 fun String.parseGitabaseID(): GitabaseID? {
     return try {
         val parts = this.split("_")

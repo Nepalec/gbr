@@ -1,3 +1,75 @@
 <resources>
     <string name="app_name">gbr</string>
+
+    <!-- Error Messages -->
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_failed_to_load_book_detail">Failed to load book detail</string>
+    <string name="error_failed_to_load_book_preview">Failed to load book preview</string>
+    <string name="error_chapter_not_found">Chapter not found</string>
+    <string name="error_failed_to_load_gitabases">Failed to load gitabases</string>
+    <string name="error_failed_to_load_books">Failed to load books: %1$s</string>
+    <string name="error_loading_books">Error loading books: %1$s</string>
+    <string name="error_failed_to_copy_file">Failed to copy file: %1$s</string>
+    <string name="error_copying_file">Error copying file: %1$s</string>
+    <string name="error_failed_to_validate_file">Failed to validate copied file: %1$s</string>
+    <string name="error_validating_file">Error validating copied file: %1$s</string>
+    <string name="error_failed_to_remove_file">Failed to remove file: %1$s</string>
+    <string name="error_removing_gitabase">Error removing Gitabase: %1$s</string>
+    <string name="error_failed_to_load_languages">Failed to load languages</string>
+    <string name="error_failed_to_download">Failed to download %1$s: %2$s</string>
+    <string name="error_failed_to_load_settings">Failed to load settings: %1$s</string>
+    <string name="error_failed_to_save_theme">Failed to save theme: %1$s</string>
+    <string name="error_prefix">Error: %1$s</string>
+
+    <!-- UI Labels -->
+    <string name="loading">Loading…</string>
+    <string name="chapter">Chapter %1$d</string>
+    <string name="text">Text %1$s</string>
+    <string name="no_chapters_available">No chapters available</string>
+    <string name="no_contents_available">No contents available</string>
+    <string name="gitabase_packages">Gitabase Texts</string>
+    <string name="no_gitabase_files_found">No Gitabase files found</string>
+    <string name="no_books_found">No books found in %1$s</string>
+    <string name="found_gitabase_files">Found %1$d Gitabase files</string>
+    <string name="select_gitabase_from_menu">Select a Gitabase from the menu to view its books</string>
+    <string name="download_gitabase_pack">Download Gitabase pack</string>
+    <string name="error">Error</string>
+    <string name="select_language">Select Language</string>
+    <string name="available_gitabases">Available Gitabases</string>
+    <string name="profile_content">Profile Content</string>
+    <string name="notes_content">Notes Content</string>
+    <string name="reading_content">Reading Content</string>
+    <string name="discuss_content">Discuss Content</string>
+    <string name="settings">Settings</string>
+    <string name="application_theme">Application theme</string>
+    <string name="columns">Columns</string>
+    <string name="group_by_chapters">Group by chapters</string>
+    <string name="text_size">Text size:</string>
+
+    <!-- Content Descriptions -->
+    <string name="cd_open_drawer">Open drawer</string>
+    <string name="cd_more_options">More options</string>
+    <string name="cd_download_from_internet">Download from internet</string>
+    <string name="cd_add_from_local_storage">Add from local storage</string>
+    <string name="cd_delete">Delete %1$s</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_downloaded">Downloaded</string>
+    <string name="cd_search">Search</string>
+    <string name="cd_navigation">Navigation</string>
+    <string name="cd_settings">Settings</string>
+    <string name="cd_book_cover">Book cover</string>
+
+    <!-- Placeholders -->
+    <string name="image_placeholder">🖼️</string>
+    <string name="warning_emoji">⚠️</string>
+
+    <!-- Top Level Navigation -->
+    <string name="nav_books">Books</string>
+    <string name="nav_reading">Reading</string>
+    <string name="nav_discuss">Discuss</string>
+    <string name="nav_notes">Notes</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Status Messages -->
+    <string name="message_scanning_for_gitabase_files">Scanning for Gitabase files…</string>
 </resources>

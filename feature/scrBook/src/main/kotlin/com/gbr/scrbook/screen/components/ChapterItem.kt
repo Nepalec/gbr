@@ -1,14 +1,23 @@
 package com.gbr.scrbook.screen.components
 
 import android.text.Html
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.gbr.model.book.ChapterContentsItem
+import com.gbr.scrbook.R
 
 @Composable
 fun ChapterItem(
@@ -27,7 +36,7 @@ fun ChapterItem(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Chapter ${chapter.number}",
+                text = stringResource(R.string.chapter, chapter.number),
                 style = MaterialTheme.typography.bodySmall.copy(
                     fontSize = MaterialTheme.typography.bodySmall.fontSize * textSizeMultiplier
                 ),

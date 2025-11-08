@@ -1,7 +1,6 @@
 package com.gbr.scrDownloader.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,16 +22,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import components.buttons.FilledButtonView
-import components.buttons.OutlinedButtonView
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +39,9 @@ import com.gbr.designsystem.R
 import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.scrDownloader.viewmodel.DownloaderViewModel
+import components.buttons.FilledButtonView
+import components.buttons.OutlinedButtonView
+import com.gbr.scrDownloader.R as DownloaderR
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +56,7 @@ fun DownloaderScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Download Gitabase pack",
+                        text = stringResource(DownloaderR.string.download_gitabase_pack),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -65,7 +65,7 @@ fun DownloaderScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.arrow_back_24px),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(DownloaderR.string.cd_back)
                         )
                     }
                 },
@@ -102,7 +102,7 @@ fun DownloaderScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Text(
-                            text = "Error",
+                            text = stringResource(DownloaderR.string.error),
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -153,7 +153,7 @@ private fun LanguageSelector(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "Select Language",
+            text = stringResource(DownloaderR.string.select_language),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -207,7 +207,7 @@ private fun GitabaseList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
-            text = "Available Gitabases",
+            text = stringResource(DownloaderR.string.available_gitabases),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -287,7 +287,7 @@ private fun GitabaseItem(
             } else if (isDownloaded) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.check_24px),
-                    contentDescription = "Downloaded",
+                    contentDescription = stringResource(DownloaderR.string.cd_downloaded),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }

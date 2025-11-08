@@ -4,19 +4,19 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gbr.data.usecase.InitializeGitabasesUseCase
-import com.gbr.data.repository.GitabasesRepository
+import com.gbr.common.strings.StringProvider
 import com.gbr.data.repository.UserPreferencesRepository
+import com.gbr.data.usecase.InitializeGitabasesUseCase
 import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.util.isSystemInDarkTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +24,8 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val initializeGitabasesUseCase: InitializeGitabasesUseCase,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
 
     private val _isInitialized = MutableStateFlow(false)
@@ -33,13 +34,14 @@ class MainViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val _message = MutableStateFlow<String?>("Scanning for Gitabase files...")
+    private val _message =
+        MutableStateFlow<String?>(stringProvider.getString(R.string.message_scanning_for_gitabase_files))
     val message: StateFlow<String?> = _message.asStateFlow()
 
     // Theme state management
     private var _activity: ComponentActivity? = null
     private val _isSystemDarkTheme = MutableStateFlow(false)
-    
+
     val shouldUseDarkTheme: StateFlow<Boolean> = combine(
         userPreferencesRepository.getAppThemeFlow(),
         _isSystemDarkTheme
@@ -58,7 +60,7 @@ class MainViewModel @Inject constructor(
     init {
         initializeApp()
     }
-    
+
     fun setActivity(activity: ComponentActivity) {
         _activity = activity
         // Start monitoring system theme changes
@@ -73,14 +75,17 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val result = initializeGitabasesUseCase.execute()
-                
+
                 _isInitialized.value = true
                 _isLoading.value = false
                 _message.value = null
             } catch (e: Exception) {
                 _isInitialized.value = true
                 _isLoading.value = false
-                _message.value = "Error: ${e.message}"
+                _message.value = stringProvider.getString(
+                    R.string.error_prefix,
+                    e.message ?: stringProvider.getString(R.string.error_unknown)
+                )
             }
         }
     }

@@ -70,7 +70,7 @@ class ImageFilesRepositoryImpl @Inject constructor(
         imagefiles.forEach { imageFile ->
             val fileName = "${imageFile.id}.${imageFile.format.fileExtension}"
             val file = File(gitabaseFolder, fileName)
-            
+
             // Skip if file already exists and has size > 0
             if (file.exists() && file.length() > 0) {
                 return@forEach
@@ -96,12 +96,12 @@ class ImageFilesRepositoryImpl @Inject constructor(
                     // For JPEG/PNG/GIF: Decode Base64 → Bitmap → Compress JPEG → Write
                     val bitmapBytes = Base64.decode(bitmap, Base64.DEFAULT)
                     val decodedBitmap = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.size)
-                    
+
                     if (decodedBitmap == null) {
                         allFilesCreated = false
                         return@forEach
                     }
-                    
+
                     FileOutputStream(file).use { outputStream ->
                         decodedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                     }

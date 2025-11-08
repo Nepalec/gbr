@@ -1,6 +1,5 @@
 package com.gbr.data.repository
 
-import com.gbr.data.model.GitabasesDescResponse
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
@@ -48,6 +47,6 @@ class GitabasesDescRepositoryRobolectricTest {
 
         // Then - Should handle 404 error gracefully
         assertEquals("Should have successful response", 1, result.success)
-        assertTrue("Should have texts gitabase", result.gitabases.firstOrNull{it.gbalias == "texts"}!=null)
+        assertTrue("Should have texts gitabase", result.gitabases.firstOrNull { it.gbalias == "texts" } != null)
     }
 }

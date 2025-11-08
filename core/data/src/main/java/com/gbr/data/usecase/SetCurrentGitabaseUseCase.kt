@@ -28,7 +28,7 @@ class SetCurrentGitabaseUseCase @Inject constructor(
     suspend fun execute(gitabaseId: GitabaseID) {
         // Update repository state
         gitabasesRepository.setCurrentGitabase(gitabaseId)
-        
+
         // Persist user preference
         try {
             userPreferencesRepository.setLastUsedGitabase(gitabaseId)

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reading">Reading</string>
+    <string name="reading_content">Reading Content</string>
+    <string name="cd_settings">Settings</string>
+</resources>

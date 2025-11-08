@@ -2,8 +2,8 @@ package com.gbr.data.repository
 
 import android.util.Log
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
-import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.model.gitabase.GitabaseID
+import com.gbr.model.theme.DarkThemeConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map

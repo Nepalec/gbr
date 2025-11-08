@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_chapter_not_found">Chapter not found</string>
+    <string name="error_failed_to_load_book_detail">Failed to load book detail</string>
+    <string name="error_failed_to_load_book_preview">Failed to load book preview</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="chapter">Chapter %1$d</string>
+    <string name="text">Text %1$s</string>
+    <string name="no_chapters_available">No chapters available</string>
+    <string name="cd_open_drawer">Open drawer</string>
+    <string name="cd_more_options">More options</string>
+</resources>
+
+

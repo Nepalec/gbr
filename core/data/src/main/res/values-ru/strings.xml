@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="image_tab_pictures">Картинки</string>
+    <string name="image_tab_cards">Карточки</string>
+    <string name="image_tab_diagrams">Диаграммы</string>
+    <string name="image_tab_frescoes">Фрески</string>
+
+    <!-- Error Messages -->
+    <string name="error_gitabase_not_found">Gitabase не найден: %1$s</string>
+    <string name="error_failed_to_load_book_detail">Не удалось загрузить детали книги</string>
+    <string name="error_failed_to_extract_images">Не удалось извлечь изображения</string>
+    <string name="error_unknown_occurred">Произошла неизвестная ошибка</string>
+    <string name="error_source_file_not_exist">Исходный файл не существует: %1$s</string>
+    <string name="error_source_path_not_file">Исходный путь не является файлом: %1$s</string>
+    <string name="error_cannot_read_source_file">Не удалось прочитать исходный файл: %1$s</string>
+    <string name="error_source_must_be_db">Исходный файл должен быть файлом .db: %1$s</string>
+    <string name="error_source_not_valid_gitabase">Исходный файл не является валидным Gitabase: %1$s</string>
+    <string name="error_file_not_recognized_gitabase">Файл не распознан как валидный Gitabase</string>
+    <string name="error_failed_to_validate_gitabase">Не удалось проверить файл Gitabase: %1$s</string>
+    <string name="error_validating_gitabase">Ошибка проверки файла Gitabase: %1$s</string>
+    <string name="error_gitabases_folder_not_exist">Папка Gitabase не существует</string>
+    <string name="error_gitabase_file_not_exist">Файл Gitabase не существует: %1$s</string>
+    <string name="error_path_not_file">Путь не является файлом: %1$s</string>
+    <string name="error_cannot_delete_file">Не удалось удалить файл: %1$s</string>
+    <string name="error_failed_to_delete_file">Ошибка удаления файла: %1$s</string>
+    <string name="error_failed_to_extract_help_gitabases">Не удалось извлечь справочные Gitabase</string>
+    <string name="error_failed_to_scan_after_extraction">Не удалось просканировать после извлечения</string>
+    <string name="error_destination_must_be_directory">Назначение должно быть директорией: %1$s</string>
+    <string name="error_failed_to_extract_gitabase_file">Не удалось извлечь файл Gitabase \'%1$s\': %2$s</string>
+    <string name="error_invalid_folder_path">Неверный путь к папке: %1$s</string>
+    <string name="error_external_files_directory_not_available">Директория внешних файлов недоступна</string>
+    <string name="error_network_and_no_cache">Ошибка сети и кэш недоступен: %1$s</string>
+
+    <!-- Status Messages -->
+    <string name="message_data_from_cache">Данные из кэша</string>
+</resources>
+
+

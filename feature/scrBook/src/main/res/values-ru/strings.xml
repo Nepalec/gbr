@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_contents_available">Нет доступного содержимого</string>
+    <string name="chapter">Глава %1$d</string>
+    <string name="text">Текст %1$s</string>
+    <string name="columns">Колонки</string>
+    <string name="group_by_chapters">Группировать по главам</string>
+    <string name="text_size">Размер текста:</string>
+    <string name="loading">Загрузка…</string>
+    <string name="error_prefix">Ошибка: %1$s</string>
+    <string name="image_placeholder">🖼️</string>
+    <string name="warning_emoji">⚠️</string>
+    <string name="cd_back">Назад</string>
+    <string name="cd_search">Поиск</string>
+    <string name="cd_book_cover">Обложка книги</string>
+    <string name="no_chapter">Нет главы</string>
+    <string name="chapter_number">Глава %1$d</string>
+    <string name="error_file_not_found">Файл не найден: %1$s</string>
+    <string name="error_file_empty">Файл пуст (0 байт)</string>
+    <string name="error_file_not_readable">Файл не доступен для чтения</string>
+    <string name="error_decode_error">Ошибка декодирования: %1$s</string>
+    <string name="error_bytecode_error">Ошибка байт-кода: %1$s</string>
+    <string name="error_corrupted_file">Повреждённый файл: %1$s</string>
+    <string name="error_invalid_format">Неверный формат: %1$s</string>
+    <string name="error_load_error">Ошибка загрузки: %1$s</string>
+</resources>
+
+

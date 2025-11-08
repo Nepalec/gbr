@@ -3,17 +3,17 @@ package com.gbr.data.mapper
 import com.gbr.data.model.GitabaseDescNetwork
 import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseID
-import com.gbr.model.gitabase.GitabaseType
 import com.gbr.model.gitabase.GitabaseLang
+import com.gbr.model.gitabase.GitabaseType
 
 /**
  * Mapper for converting GitabaseDescNetwork to Gitabase domain model.
  */
 object GitabaseDescMapper {
-    
+
     /**
      * Maps GitabaseDescNetwork to Gitabase domain model.
-     * 
+     *
      * @param gitabaseDescNetwork The network model to convert
      * @return Gitabase domain model
      */
@@ -29,10 +29,10 @@ object GitabaseDescMapper {
             lastModified = gitabaseDescNetwork.lastModified
         )
     }
-    
+
     /**
      * Maps a list of GitabaseDescNetwork to a list of Gitabase domain models.
-     * 
+     *
      * @param gitabaseDescNetworks The list of network models to convert
      * @return List of Gitabase domain models
      */

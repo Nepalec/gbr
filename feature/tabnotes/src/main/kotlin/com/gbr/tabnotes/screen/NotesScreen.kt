@@ -9,9 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.gbr.tabnotes.R
 import com.gbr.tabnotes.components.CustomAppBar
 import com.gbr.tabnotes.viewmodel.NotesViewModel
 
@@ -24,7 +26,7 @@ fun NotesScreen(
     Scaffold(
         topBar = {
             CustomAppBar(
-                title = "Notes",
+                title = stringResource(R.string.notes),
                 onNavigationClick = onNavigateBack,
                 onActionClick = onNavigateToSettings
             )
@@ -38,7 +40,7 @@ fun NotesScreen(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Notes Content",
+                text = stringResource(R.string.notes_content),
                 style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
                 fontSize = 24.sp

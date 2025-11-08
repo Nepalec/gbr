@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_failed_to_load_gitabases">Failed to load gitabases</string>
+    <string name="error_failed_to_load_books">Failed to load books: %1$s</string>
+    <string name="error_loading_books">Error loading books: %1$s</string>
+    <string name="error_failed_to_copy_file">Failed to copy file: %1$s</string>
+    <string name="error_copying_file">Error copying file: %1$s</string>
+    <string name="error_failed_to_validate_file">Failed to validate copied file: %1$s</string>
+    <string name="error_validating_file">Error validating copied file: %1$s</string>
+    <string name="error_failed_to_remove_file">Failed to remove file: %1$s</string>
+    <string name="error_removing_gitabase">Error removing Gitabase: %1$s</string>
+    <string name="error_prefix">Error: %1$s</string>
+    <string name="gitabase_packages">Gitabase Texts</string>
+    <string name="no_gitabase_files_found">No Gitabase files found</string>
+    <string name="no_books_found">No books found in %1$s</string>
+    <string name="found_gitabase_files">Found %1$d Gitabase files</string>
+    <string name="select_gitabase_from_menu">Select a Gitabase from the menu to view its books</string>
+    <string name="cd_download_from_internet">Download from internet</string>
+    <string name="cd_add_from_local_storage">Add from local storage</string>
+    <string name="cd_delete">Delete %1$s</string>
+    <string name="cd_navigation">Navigation</string>
+    <string name="cd_settings">Settings</string>
+    <string name="books">Books</string>
+    <string name="untitled">Untitled</string>
+    <string name="message_copying_gitabase_file">Copying Gitabase file…</string>
+    <string name="message_validating_copied_gitabase">Validating copied Gitabase…</string>
+    <string name="message_removing_gitabase">Removing Gitabase…</string>
+    <string name="error_file_not_recognized_gitabase">Copied file was not recognized as a valid Gitabase</string>
+    <string name="status_copying">Copying…</string>
+    <string name="message_scanning_for_gitabase_files">Scanning for Gitabase files…</string>
+    <string name="loading">Loading…</string>
+</resources>
+

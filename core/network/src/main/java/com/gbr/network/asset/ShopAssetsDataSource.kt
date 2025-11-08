@@ -19,7 +19,7 @@ class ShopAssetsDataSource @Inject constructor(
     @Dispatcher(IO) private val ioDispatcher: CoroutineDispatcher,
     private val networkJson: Json,
     private val assets: AssetManager = JvmUnitTestAssetManager,
-): IShopDataSource {
+) : IShopDataSource {
     override suspend fun getShopContents(lang: String): NetworkShopContentResp {
         return getDataFromJsonFile(SHOP_ROOT)
     }

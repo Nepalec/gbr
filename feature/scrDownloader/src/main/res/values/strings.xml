@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_failed_to_load_languages">Failed to load languages</string>
+    <string name="error_failed_to_download">Failed to download %1$s: %2$s</string>
+    <string name="error">Error</string>
+    <string name="download_gitabase_pack">Download Gitabase pack</string>
+    <string name="select_language">Select Language</string>
+    <string name="available_gitabases">Available Gitabases</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_downloaded">Downloaded</string>
+</resources>
+
+

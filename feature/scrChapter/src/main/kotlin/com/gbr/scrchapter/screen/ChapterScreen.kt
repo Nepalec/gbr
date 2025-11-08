@@ -2,13 +2,27 @@ package com.gbr.scrchapter.screen
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.model.book.BookPreview
 import com.gbr.model.gitabase.GitabaseID
+import com.gbr.scrchapter.R
 import com.gbr.scrchapter.screen.components.ChapterBottomSheet
 import com.gbr.scrchapter.screen.components.ChapterContents
 import com.gbr.scrchapter.screen.components.ChapterTitleBar
@@ -44,7 +58,7 @@ fun ChapterScreen(
     }
 
     // Get chapter title from state
-    val chapterTitle = uiState.chapter?.title ?: "Chapter $currentChapterNumber"
+    val chapterTitle = uiState.chapter?.title ?: stringResource(R.string.chapter, currentChapterNumber)
     val bookTitle = uiState.bookDetail?.book?.title ?: bookPreview.title
     val chapters = uiState.bookDetail?.chapters
 

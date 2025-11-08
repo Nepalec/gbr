@@ -4,14 +4,14 @@ import android.content.Context
 import com.gbr.data.usecase.ExtractGitabasesUseCase.Companion.ALL_GITABASE_FILES
 import io.mockk.every
 import io.mockk.mockk
-import java.io.ByteArrayInputStream
-import java.io.File
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.io.ByteArrayInputStream
+import java.io.File
 
 class ExtractGitabasesUseCaseTest {
 
@@ -90,7 +90,10 @@ class ExtractGitabasesUseCaseTest {
 
         // Verify
         assertFalse("Should fail", result.isSuccess)
-        assertTrue("Should contain error message", result.exceptionOrNull()?.message?.contains("Failed to extract") == true)
+        assertTrue(
+            "Should contain error message",
+            result.exceptionOrNull()?.message?.contains("Failed to extract") == true
+        )
     }
 
     @Test

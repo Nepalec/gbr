@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +28,7 @@ import androidx.compose.ui.unit.dp
 /**
  * A shimmer effect component that displays an animated loading placeholder.
  * Useful for showing loading states while content is being fetched or processed.
- * 
+ *
  * @param modifier Modifier to be applied to the shimmer effect
  */
 @Composable
@@ -78,7 +77,7 @@ fun ShimmerEffect(
                     .clip(RoundedCornerShape(4.dp))
                     .background(brush)
             )
-            
+
             // Subtitle shimmer
             Box(
                 modifier = Modifier
@@ -88,7 +87,7 @@ fun ShimmerEffect(
                     .background(brush)
                     .align(Alignment.BottomStart)
             )
-            
+
             // Delete button shimmer
             Box(
                 modifier = Modifier

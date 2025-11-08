@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.tracing.trace
 import coil.ImageLoader
 import coil.util.DebugLogger
-import com.gbr.network.IGitabasesDescDataSource
 import com.gbr.network.GitabasesDescRetrofitDataSource
+import com.gbr.network.IGitabasesDescDataSource
 import com.gbr.network.IShopDataSource
 import com.gbr.network.ShopRetrofitDataSource
 import dagger.Binds
@@ -50,7 +50,7 @@ public object NetworkModule {
     fun imageLoader(
         okHttpCallFactory: dagger.Lazy<Call.Factory>,
         @ApplicationContext application: Context,
-    ): ImageLoader =  trace("ImageLoader") {
+    ): ImageLoader = trace("ImageLoader") {
         ImageLoader.Builder(application)
             .callFactory { okHttpCallFactory.get() }
             // Assume most content images are versioned urls
@@ -70,7 +70,7 @@ public abstract class NetworkBindingsModule {
     @Binds
     @Singleton
     abstract fun bindShopDataSource(shopRetrofitDataSource: ShopRetrofitDataSource): IShopDataSource
-    
+
     @Binds
     @Singleton
     abstract fun bindGitabasesDescDataSource(gitabasesDescRetrofitDataSource: GitabasesDescRetrofitDataSource): IGitabasesDescDataSource

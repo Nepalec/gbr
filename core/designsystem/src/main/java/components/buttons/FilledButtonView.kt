@@ -5,7 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
 
@@ -16,7 +18,7 @@ fun FilledButtonView() {
         onClick = {},
     ) {
         Text(
-            text = "Save",
+            text = stringResource(R.string.preview_save),
             style = MaterialTheme.typography.labelLarge
         )
     }

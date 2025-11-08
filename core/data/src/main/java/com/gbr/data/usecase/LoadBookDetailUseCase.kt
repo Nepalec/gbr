@@ -1,5 +1,7 @@
 package com.gbr.data.usecase
 
+import com.gbr.common.strings.StringProvider
+import com.gbr.data.R
 import com.gbr.data.repository.ImageFilesRepository
 import com.gbr.data.repository.TextsRepository
 import com.gbr.model.book.BookDetail
@@ -17,7 +19,8 @@ import javax.inject.Inject
  */
 class LoadBookDetailUseCase @Inject constructor(
     private val textsRepository: TextsRepository,
-    private val imageFilesRepository: ImageFilesRepository
+    private val imageFilesRepository: ImageFilesRepository,
+    private val stringProvider: StringProvider
 ) {
     /**
      * Executes the book detail loading process with progressive state emission.
@@ -34,9 +37,12 @@ class LoadBookDetailUseCase @Inject constructor(
             val result = textsRepository.getBookDetail(gitabaseId, bookPreview, extractImages = false)
 
             if (result.isFailure) {
-                emit(LoadBookDetailState(
-                    error = result.exceptionOrNull()?.message ?: "Failed to load book detail"
-                ))
+                emit(
+                    LoadBookDetailState(
+                        error = result.exceptionOrNull()?.message
+                            ?: stringProvider.getString(R.string.error_failed_to_load_book_detail)
+                    )
+                )
                 return@flow
             }
 
@@ -47,10 +53,12 @@ class LoadBookDetailUseCase @Inject constructor(
 
             // Handle edge case: no images
             if (allImages.isEmpty()) {
-                emit(LoadBookDetailState(
-                    bookDetail = bookDetail,
-                    imageLoadingState = ImageLoadingState.Ready(imageFilesExtracted = true)
-                ))
+                emit(
+                    LoadBookDetailState(
+                        bookDetail = bookDetail,
+                        imageLoadingState = ImageLoadingState.Ready(imageFilesExtracted = true)
+                    )
+                )
                 return@flow
             }
 
@@ -59,26 +67,33 @@ class LoadBookDetailUseCase @Inject constructor(
 
             if (imageFilesExtracted) {
                 // Images already extracted, emit ready state
-                emit(LoadBookDetailState(
-                    bookDetail = bookDetail,
-                    imageLoadingState = ImageLoadingState.Ready(imageFilesExtracted = true)
-                ))
+                emit(
+                    LoadBookDetailState(
+                        bookDetail = bookDetail,
+                        imageLoadingState = ImageLoadingState.Ready(imageFilesExtracted = true)
+                    )
+                )
             } else {
                 // Images need extraction
-                emit(LoadBookDetailState(
-                    bookDetail = bookDetail,
-                    imageLoadingState = ImageLoadingState.MetadataReady
-                ))
+                emit(
+                    LoadBookDetailState(
+                        bookDetail = bookDetail,
+                        imageLoadingState = ImageLoadingState.MetadataReady
+                    )
+                )
 
                 // Stage 2: Extract images
                 val extractResult = textsRepository.getBookDetail(gitabaseId, bookPreview, extractImages = true)
 
                 if (extractResult.isFailure) {
-                    emit(LoadBookDetailState(
-                        bookDetail = bookDetail,
-                        imageLoadingState = ImageLoadingState.Ready(imageFilesExtracted = false),
-                        error = extractResult.exceptionOrNull()?.message ?: "Failed to extract images"
-                    ))
+                    emit(
+                        LoadBookDetailState(
+                            bookDetail = bookDetail,
+                            imageLoadingState = ImageLoadingState.Ready(imageFilesExtracted = false),
+                            error = extractResult.exceptionOrNull()?.message
+                                ?: stringProvider.getString(R.string.error_failed_to_extract_images)
+                        )
+                    )
                     return@flow
                 }
 
@@ -86,19 +101,23 @@ class LoadBookDetailUseCase @Inject constructor(
 
                 // Extract images from the new bookDetail (which now has bitmaps)
                 val extractedImages = bookDetail.imageTabs?.flatMap { it.images } ?: emptyList()
-                
+
                 // checkImageFilesExtracted will actually save the files to disk
                 val filesExtracted = imageFilesRepository.checkImageFilesExtracted(gitabaseId, extractedImages).first()
 
-                emit(LoadBookDetailState(
-                    bookDetail = bookDetail,
-                    imageLoadingState = ImageLoadingState.Ready(imageFilesExtracted = filesExtracted)
-                ))
+                emit(
+                    LoadBookDetailState(
+                        bookDetail = bookDetail,
+                        imageLoadingState = ImageLoadingState.Ready(imageFilesExtracted = filesExtracted)
+                    )
+                )
             }
         } catch (e: Exception) {
-            emit(LoadBookDetailState(
-                error = e.message ?: "Unknown error occurred"
-            ))
+            emit(
+                LoadBookDetailState(
+                    error = e.message ?: stringProvider.getString(R.string.error_unknown_occurred)
+                )
+            )
         }
     }
 }

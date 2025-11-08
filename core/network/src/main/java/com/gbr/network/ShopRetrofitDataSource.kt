@@ -1,4 +1,3 @@
-
 package com.gbr.network
 
 import androidx.tracing.trace
@@ -45,6 +44,6 @@ public class ShopRetrofitDataSource @Inject constructor(
             .create(RetrofitShopNetworkApi::class.java)
     }
 
-    override suspend fun getShopContents(lang:String): NetworkShopContentResp = networkApi.getShopRoot(lang)
+    override suspend fun getShopContents(lang: String): NetworkShopContentResp = networkApi.getShopRoot(lang)
 
 }

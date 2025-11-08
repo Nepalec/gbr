@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_failed_to_load_settings">Не удалось загрузить настройки: %1$s</string>
+    <string name="error_failed_to_save_theme">Не удалось сохранить тему: %1$s</string>
+    <string name="settings">Настройки</string>
+    <string name="application_theme">Тема приложения</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="theme_system">Системная</string>
+    <string name="cd_back">Назад</string>
+    <string name="cd_settings">Настройки</string>
+</resources>
+
+

@@ -11,7 +11,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class BooksModule {
-    
+
     @Binds
     @Singleton
     abstract fun bindBooksFeature(impl: BooksFeatureImpl): BooksFeature

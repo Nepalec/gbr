@@ -1,7 +1,7 @@
 package com.gbr.data.model
 
-import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.model.gitabase.GitabaseID
+import com.gbr.model.theme.DarkThemeConfig
 
 /**
  * Represents the user's app data and preferences.

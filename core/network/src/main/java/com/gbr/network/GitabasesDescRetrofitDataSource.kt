@@ -1,6 +1,7 @@
 package com.gbr.network
 
 import androidx.tracing.trace
+import com.gbr.common.strings.StringProvider
 import com.gbr.network.model.NetworkGitabasesDescResp
 import kotlinx.serialization.json.Json
 import okhttp3.Call
@@ -26,6 +27,7 @@ private const val BASE_URL = BuildConfig.BASE_URL
 public class GitabasesDescRetrofitDataSource @Inject constructor(
     networkJson: Json,
     okhttpCallFactory: dagger.Lazy<Call.Factory>,
+    private val stringProvider: StringProvider
 ) : IGitabasesDescDataSource {
 
     private val networkApi = trace("RetrofitGitabasesDescNetwork") {
@@ -50,12 +52,13 @@ public class GitabasesDescRetrofitDataSource @Inject constructor(
                 404 -> NetworkGitabasesDescResp(
                     gitabases = emptyList(),
                     success = 0,
-                    message = "API endpoint not found (404). Please check the URL configuration."
+                    message = stringProvider.getString(R.string.error_api_endpoint_not_found)
                 )
+
                 else -> NetworkGitabasesDescResp(
                     gitabases = emptyList(),
                     success = 0,
-                    message = "HTTP error ${e.code()}: ${e.message()}"
+                    message = stringProvider.getString(R.string.error_http_error, e.code(), e.message() ?: "")
                 )
             }
         } catch (e: Exception) {
@@ -63,7 +66,7 @@ public class GitabasesDescRetrofitDataSource @Inject constructor(
             NetworkGitabasesDescResp(
                 gitabases = emptyList(),
                 success = 0,
-                message = "Network error: ${e.message}"
+                message = stringProvider.getString(R.string.error_network_error, e.message ?: "")
             )
         }
     }

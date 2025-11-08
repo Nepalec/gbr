@@ -20,14 +20,13 @@ fun DiscreteSliderView() {
 
     Slider(
         value = sliderPositionWithStep,
-        onValueChange = {sliderPositionWithStep = it},
+        onValueChange = { sliderPositionWithStep = it },
         steps = 5,
         valueRange = 0f..50f,
         modifier = Modifier.fillMaxWidth()
     )
 
 }
-
 
 
 @Preview

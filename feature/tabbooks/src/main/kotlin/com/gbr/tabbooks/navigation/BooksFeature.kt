@@ -5,12 +5,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.gbr.common.navigation.Dest
+import com.gbr.common.navigation.FullscreenDest
 import com.gbr.common.navigation.SubGraphDest
 import com.gbr.common.network.Feature
 import com.gbr.tabbooks.screen.BooksScreen
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.gbr.common.navigation.FullscreenDest
 
 
 interface BooksFeature : Feature {

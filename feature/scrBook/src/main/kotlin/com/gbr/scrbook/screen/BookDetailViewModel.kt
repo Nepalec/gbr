@@ -79,6 +79,7 @@ class BookDetailViewModel @Inject constructor(
                             error = null
                         )
                     }
+
                     is ImageLoadingState.MetadataReady -> {
                         _uiState.value = BookDetailUiState(
                             isLoading = false,
@@ -87,6 +88,7 @@ class BookDetailViewModel @Inject constructor(
                             error = null
                         )
                     }
+
                     is ImageLoadingState.Ready -> {
                         _uiState.value = BookDetailUiState(
                             isLoading = false,

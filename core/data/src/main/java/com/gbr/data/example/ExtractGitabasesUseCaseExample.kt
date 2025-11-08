@@ -17,7 +17,7 @@ class ExtractGitabasesUseCaseExample @Inject constructor(
      */
     suspend fun extractDefaultGitabases(destinationFolder: File) {
         val result = extractGitabasesUseCase.execute(destinationFolder)
-        
+
         if (result.isSuccess) {
             val extractedFiles = result.getOrThrow()
             println("✅ Extracted ${extractedFiles.size} Gitabase files:")
@@ -38,9 +38,9 @@ class ExtractGitabasesUseCaseExample @Inject constructor(
             "gitabase_help_eng.db",
             "gitabase_help_rus.db"
         )
-        
+
         val result = extractGitabasesUseCase.execute(destinationFolder, specificFiles)
-        
+
         if (result.isSuccess) {
             val extractedFiles = result.getOrThrow()
             println("✅ Extracted specific Gitabase files:")
@@ -70,7 +70,7 @@ class ExtractGitabasesUseCaseExample @Inject constructor(
     fun checkSpecificFileAvailability() {
         val fileName = "gitabase_help_eng.db"
         val isAvailable = extractGitabasesUseCase.isGitabaseFileAvailable(fileName)
-        
+
         if (isAvailable) {
             println("✅ $fileName is available in resources")
         } else {
@@ -84,9 +84,9 @@ class ExtractGitabasesUseCaseExample @Inject constructor(
     suspend fun extractToExternalFiles(context: android.content.Context) {
         val externalFilesDir = context.getExternalFilesDir(null)
         val gitabaseFolder = File(externalFilesDir, "gitabases")
-        
+
         val result = extractGitabasesUseCase.execute(gitabaseFolder)
-        
+
         if (result.isSuccess) {
             println("✅ Gitabase files extracted to: ${gitabaseFolder.absolutePath}")
         } else {

@@ -21,21 +21,21 @@ fun ComponentActivity.isSystemInDarkTheme(): Flow<Boolean> {
                 val isDark = nightMode == Configuration.UI_MODE_NIGHT_YES
                 trySend(isDark)
             }
-            
+
             override fun onLowMemory() {}
             override fun onTrimMemory(level: Int) {}
         }
-        
+
         // Register the listener
         registerComponentCallbacks(listener)
-        
+
         // Send initial value
         val nightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         val isDark = nightMode == Configuration.UI_MODE_NIGHT_YES
         trySend(isDark)
-        
+
         // Clean up when the flow is cancelled
-        awaitClose { 
+        awaitClose {
             unregisterComponentCallbacks(listener)
         }
     }.conflate().distinctUntilChanged()

@@ -1,6 +1,5 @@
 package com.gbr.network
 
-import javax.inject.Inject
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
@@ -8,6 +7,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
 
 // core/network/src/androidTest/java/com/gbr/network/RetrofitShopNetworkTest.kt
 @HiltAndroidTest

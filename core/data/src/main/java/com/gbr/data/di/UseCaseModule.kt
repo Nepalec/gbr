@@ -1,18 +1,19 @@
 package com.gbr.data.di
 
 import android.content.Context
-import com.gbr.data.repository.GitabasesRepository
+import com.gbr.common.strings.StringProvider
 import com.gbr.data.repository.GitabasesDescRepository
+import com.gbr.data.repository.GitabasesRepository
 import com.gbr.data.repository.ImageFilesRepository
 import com.gbr.data.repository.TextsRepository
 import com.gbr.data.repository.UserPreferencesRepository
 import com.gbr.data.repository.UserPreferencesRepositoryImpl
 import com.gbr.data.usecase.CopyGitabaseUseCase
 import com.gbr.data.usecase.ExtractGitabasesUseCase
+import com.gbr.data.usecase.InitializeGitabasesUseCase
 import com.gbr.data.usecase.LoadBookDetailUseCase
 import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
-import com.gbr.data.usecase.InitializeGitabasesUseCase
 import com.gbr.data.usecase.SetCurrentGitabaseUseCase
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
 import dagger.Module
@@ -30,30 +31,38 @@ object UseCaseModule {
     @Singleton
     fun provideScanGitabasesUseCase(
         gitabasesRepository: GitabasesRepository,
-        gitabasesDescRepository: GitabasesDescRepository
+        gitabasesDescRepository: GitabasesDescRepository,
+        stringProvider: StringProvider
     ): ScanGitabaseFilesUseCase {
-        return ScanGitabaseFilesUseCase(gitabasesRepository, gitabasesDescRepository)
+        return ScanGitabaseFilesUseCase(gitabasesRepository, gitabasesDescRepository, stringProvider)
     }
 
     @Provides
     @Singleton
-    fun provideExtractGitabasesUseCase(@ApplicationContext context: Context): ExtractGitabasesUseCase {
-        return ExtractGitabasesUseCase(context)
+    fun provideExtractGitabasesUseCase(
+        @ApplicationContext context: Context,
+        stringProvider: StringProvider
+    ): ExtractGitabasesUseCase {
+        return ExtractGitabasesUseCase(context, stringProvider)
     }
 
     @Provides
     @Singleton
     fun provideCopyGitabaseUseCase(
         @ApplicationContext context: Context,
-        scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase
+        scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase,
+        stringProvider: StringProvider
     ): CopyGitabaseUseCase {
-        return CopyGitabaseUseCase(context, scanGitabaseFilesUseCase)
+        return CopyGitabaseUseCase(context, scanGitabaseFilesUseCase, stringProvider)
     }
 
     @Provides
     @Singleton
-    fun provideRemoveGitabaseUseCase(@ApplicationContext context: Context): RemoveGitabaseUseCase {
-        return RemoveGitabaseUseCase(context)
+    fun provideRemoveGitabaseUseCase(
+        @ApplicationContext context: Context,
+        stringProvider: StringProvider
+    ): RemoveGitabaseUseCase {
+        return RemoveGitabaseUseCase(context, stringProvider)
     }
 
     @Provides
@@ -63,9 +72,17 @@ object UseCaseModule {
         scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase,
         extractGitabasesUseCase: ExtractGitabasesUseCase,
         gitabasesRepository: GitabasesRepository,
-        gbrPreferencesDataSource: GbrPreferencesDataSource
+        gbrPreferencesDataSource: GbrPreferencesDataSource,
+        stringProvider: StringProvider
     ): InitializeGitabasesUseCase {
-        return InitializeGitabasesUseCase(context, scanGitabaseFilesUseCase, extractGitabasesUseCase, gitabasesRepository, gbrPreferencesDataSource)
+        return InitializeGitabasesUseCase(
+            context,
+            scanGitabaseFilesUseCase,
+            extractGitabasesUseCase,
+            gitabasesRepository,
+            gbrPreferencesDataSource,
+            stringProvider
+        )
     }
 
     @Provides
@@ -89,8 +106,9 @@ object UseCaseModule {
     @Singleton
     fun provideLoadBookDetailUseCase(
         textsRepository: TextsRepository,
-        imageFilesRepository: ImageFilesRepository
+        imageFilesRepository: ImageFilesRepository,
+        stringProvider: StringProvider
     ): LoadBookDetailUseCase {
-        return LoadBookDetailUseCase(textsRepository, imageFilesRepository)
+        return LoadBookDetailUseCase(textsRepository, imageFilesRepository, stringProvider)
     }
 }

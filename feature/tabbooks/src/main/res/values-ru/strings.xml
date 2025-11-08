@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_failed_to_load_gitabases">Не удалось загрузить Gitabase</string>
+    <string name="error_failed_to_load_books">Не удалось загрузить книги: %1$s</string>
+    <string name="error_loading_books">Ошибка загрузки книг: %1$s</string>
+    <string name="error_failed_to_copy_file">Не удалось скопировать файл: %1$s</string>
+    <string name="error_copying_file">Ошибка копирования файла: %1$s</string>
+    <string name="error_failed_to_validate_file">Не удалось проверить скопированный файл: %1$s</string>
+    <string name="error_validating_file">Ошибка проверки файла: %1$s</string>
+    <string name="error_failed_to_remove_file">Не удалось удалить файл: %1$s</string>
+    <string name="error_removing_gitabase">Ошибка удаления Gitabase: %1$s</string>
+    <string name="error_prefix">Ошибка: %1$s</string>
+    <string name="gitabase_packages">Тексты Gitabase</string>
+    <string name="no_gitabase_files_found">Файлы Gitabase не найдены</string>
+    <string name="no_books_found">Книги не найдены в %1$s</string>
+    <string name="found_gitabase_files">Найдено файлов Gitabase: %1$d</string>
+    <string name="select_gitabase_from_menu">Выберите Gitabase из меню для просмотра книг</string>
+    <string name="cd_download_from_internet">Загрузить из интернета</string>
+    <string name="cd_add_from_local_storage">Добавить из локального хранилища</string>
+    <string name="cd_delete">Удалить %1$s</string>
+    <string name="cd_navigation">Навигация</string>
+    <string name="cd_settings">Настройки</string>
+    <string name="books">Книги</string>
+    <string name="untitled">Без названия</string>
+    <string name="message_copying_gitabase_file">Копирование файла Gitabase…</string>
+    <string name="message_validating_copied_gitabase">Проверка скопированного Gitabase…</string>
+    <string name="message_removing_gitabase">Удаление Gitabase…</string>
+    <string name="error_file_not_recognized_gitabase">Скопированный файл не распознан как валидный Gitabase</string>
+    <string name="status_copying">Копирование…</string>
+    <string name="message_scanning_for_gitabase_files">Сканирование файлов Gitabase…</string>
+    <string name="loading">Загрузка…</string>
+</resources>
+
+

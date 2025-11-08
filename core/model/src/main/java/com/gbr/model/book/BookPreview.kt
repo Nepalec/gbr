@@ -18,7 +18,7 @@ data class BookPreview(
 
     //for multi-volume book (group of volumes)
     val volumeGroupTitle: String?, //title for group of volumes
-    val volumeGroupAbbrev:String?, //abbreviation for group of volumes
+    val volumeGroupAbbrev: String?, //abbreviation for group of volumes
     val volumeGroupSort: Int?,   //sort for group of volumes
     val volumeGroupId: Int?,     //id for group of volumes
 
@@ -27,9 +27,9 @@ data class BookPreview(
     val hasSanskrit: Boolean = false,
     val isSimple: Boolean = false,
     val code: String = "",
-){
+) {
     val isVolume: Boolean
-    get() = volumeGroupId!=null
-    val hasChapters:Boolean
+        get() = volumeGroupId != null
+    val hasChapters: Boolean
         get() = structure == BookStructure.CHAPTERS
 }

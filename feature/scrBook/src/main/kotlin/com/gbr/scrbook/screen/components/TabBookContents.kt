@@ -1,21 +1,24 @@
 package com.gbr.scrbook.screen.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.gbr.model.book.BookDetail
-import kotlin.random.Random
+import com.gbr.scrbook.R
 
 @Composable
 fun TabBookContents(
@@ -33,7 +36,7 @@ fun TabBookContents(
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
-              //  .background(Color(Random.nextLong() or 0xFF000000)),
+            //  .background(Color(Random.nextLong() or 0xFF000000)),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(8.dp)
         ) {
@@ -47,6 +50,7 @@ fun TabBookContents(
                         )
                     }
                 }
+
                 texts != null -> {
                     items(texts.size) { text ->
                         TextItem(
@@ -55,10 +59,11 @@ fun TabBookContents(
                         )
                     }
                 }
+
                 else -> {
                     item {
                         Text(
-                            text = "No contents available",
+                            text = stringResource(R.string.no_contents_available),
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
@@ -84,6 +89,7 @@ fun TabBookContents(
                         )
                     }
                 }
+
                 texts != null -> {
                     items(texts) { text ->
                         TextItem(
@@ -92,10 +98,11 @@ fun TabBookContents(
                         )
                     }
                 }
+
                 else -> {
                     item(span = { GridItemSpan(columns) }) {
                         Text(
-                            text = "No contents available",
+                            text = stringResource(R.string.no_contents_available),
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()

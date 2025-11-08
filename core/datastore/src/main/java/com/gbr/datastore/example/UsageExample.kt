@@ -1,11 +1,10 @@
 package com.gbr.datastore.example
 
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
-import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType
-import kotlinx.coroutines.flow.collect
+import com.gbr.model.theme.DarkThemeConfig
 import javax.inject.Inject
 
 /**
@@ -26,10 +25,12 @@ class UsageExample @Inject constructor(
                     // Apply system theme
                     println("Using system theme")
                 }
+
                 DarkThemeConfig.LIGHT -> {
                     // Apply light theme
                     println("Using light theme")
                 }
+
                 DarkThemeConfig.DARK -> {
                     // Apply dark theme
                     println("Using dark theme")

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_chapter_not_found">Глава не найдена</string>
+    <string name="error_failed_to_load_book_detail">Не удалось загрузить детали книги</string>
+    <string name="error_failed_to_load_book_preview">Не удалось загрузить превью книги</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="chapter">Глава %1$d</string>
+    <string name="text">Текст %1$s</string>
+    <string name="no_chapters_available">Нет доступных глав</string>
+    <string name="cd_open_drawer">Открыть меню</string>
+    <string name="cd_more_options">Дополнительные опции</string>
+</resources>
+
+

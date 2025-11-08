@@ -34,7 +34,7 @@ dependencies {
 
     // DataStore dependencies
     implementation(libs.androidx.datastore.preferences)
-    
+
     // Serialization dependencies
     implementation(libs.kotlinx.serialization.json)
 }

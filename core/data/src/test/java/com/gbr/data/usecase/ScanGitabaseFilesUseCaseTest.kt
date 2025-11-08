@@ -11,7 +11,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -77,18 +76,18 @@ class ScanGitabaseFilesUseCaseTest {
 
         // Should find at least 3 valid Gitabases (help files + songs file, excluding invalid)
         assertTrue("Should find valid Gitabases", gitabases.size >= 3)
-        
+
         // Verify that we have help gitabases
-        assertTrue("Should have help gitabases", gitabases.any { 
-            it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.ENG 
+        assertTrue("Should have help gitabases", gitabases.any {
+            it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.ENG
         })
-        assertTrue("Should have help gitabases", gitabases.any { 
-            it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.RUS 
+        assertTrue("Should have help gitabases", gitabases.any {
+            it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.RUS
         })
-        
+
         // Verify that we have songs gitabase
-        assertTrue("Should have songs gitabase", gitabases.any { 
-            it.id.type == GitabaseType("songs") && it.id.lang == GitabaseLang.RUS 
+        assertTrue("Should have songs gitabase", gitabases.any {
+            it.id.type == GitabaseType("songs") && it.id.lang == GitabaseLang.RUS
         })
     }
 
@@ -96,17 +95,19 @@ class ScanGitabaseFilesUseCaseTest {
     fun execute_should_add_Gitabases_to_repository() = runTest {
         // Clear repository first
         val initialGitabases = gitabasesRepository.getAllGitabases()
-        
+
         // Execute the use case
         val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
-        
+
         // Verify success
         assertTrue("Scan should succeed", result.isSuccess)
-        
+
         // Check that Gitabases were added to repository
         val availableGitabases = gitabasesRepository.getAllGitabases()
-        assertTrue("Repository should have more Gitabases than initially", 
-            availableGitabases.size > initialGitabases.size)
+        assertTrue(
+            "Repository should have more Gitabases than initially",
+            availableGitabases.size > initialGitabases.size
+        )
     }
 
     @Test
@@ -120,9 +121,10 @@ class ScanGitabaseFilesUseCaseTest {
 
         // All returned Gitabases should be valid (invalid database should be filtered out)
         assertTrue("All returned Gitabases should be valid", gitabases.isNotEmpty())
-        
+
         // Verify that invalid database is not included
-        assertTrue("Invalid database should not be included", 
+        assertTrue(
+            "Invalid database should not be included",
             gitabases.none { it.title.contains("invaliddb") })
     }
 
@@ -158,7 +160,7 @@ class ScanGitabaseFilesUseCaseTest {
         // Verify we can access the test folder
         assertTrue("Test folder should exist", testFolder.exists())
         assertTrue("Test folder should be a directory", testFolder.isDirectory)
-        
+
         // Verify test files exist
         val testFiles = testFolder.listFiles()
         assertNotNull("Test files should exist", testFiles)
@@ -169,24 +171,26 @@ class ScanGitabaseFilesUseCaseTest {
     fun test_should_handle_concurrent_scanning() = runTest {
         // Test concurrent scanning of the same folder
         val results = mutableListOf<Result<List<com.gbr.model.gitabase.Gitabase>>>()
-        
+
         // Run multiple scans concurrently
         repeat(3) {
             val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
             results.add(result)
         }
-        
+
         // All should succeed
         results.forEach { result ->
             assertTrue("All concurrent scans should succeed", result.isSuccess)
         }
-        
+
         // All should return similar results
         val firstResult = results.first().getOrThrow()
         results.forEach { result ->
             val gitabases = result.getOrThrow()
-            assertEquals("Concurrent scans should return same number of Gitabases", 
-                firstResult.size, gitabases.size)
+            assertEquals(
+                "Concurrent scans should return same number of Gitabases",
+                firstResult.size, gitabases.size
+            )
         }
     }
 
@@ -198,7 +202,7 @@ class ScanGitabaseFilesUseCaseTest {
         try {
             // Extract all 4 files (2 help + 2 test) from resources
             val result = extractGitabasesUseCase.execute(testFolder, ExtractGitabasesUseCase.ALL_GITABASE_FILES)
-            
+
             if (result.isSuccess) {
                 val extractedFiles = result.getOrThrow()
                 println("✅ Extracted ${extractedFiles.size} database files from resources:")

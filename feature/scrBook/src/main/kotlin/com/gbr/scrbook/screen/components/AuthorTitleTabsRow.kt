@@ -1,9 +1,18 @@
 package com.gbr.scrbook.screen.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,8 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import com.gbr.model.book.BookDetail
 
 @Composable
@@ -95,15 +102,15 @@ private fun BookTab(
     selectedTabIndex: Int,
     onTabSelected: (Int) -> Unit
 ) {
-        Tab(
-            selected = selectedTabIndex == index,
-            onClick = { onTabSelected(index) },
-            text = { Text(title, fontSize = 12.sp) },
-            modifier = Modifier
-                .wrapContentWidth()
-                //.background(Color(Random.nextLong() or 0xFF000000)),
+    Tab(
+        selected = selectedTabIndex == index,
+        onClick = { onTabSelected(index) },
+        text = { Text(title, fontSize = 12.sp) },
+        modifier = Modifier
+            .wrapContentWidth()
+        //.background(Color(Random.nextLong() or 0xFF000000)),
 
-            )
+    )
 
 }
 
