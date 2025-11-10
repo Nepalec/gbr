@@ -25,10 +25,10 @@ class GitabasesDescRepositoryImpl @Inject constructor(
         private const val TAG = "GitabasesDescRepository"
     }
 
-    override suspend fun getGitabasesDesc(): GitabasesDescResponse {
+    override suspend fun getGitabasesDesc(is4Download: Boolean): GitabasesDescResponse {
         return try {
             // Try to get fresh data from network
-            val networkResponse = gitabasesDescDataSource.getGitabasesDesc()
+            val networkResponse = gitabasesDescDataSource.getGitabasesDesc(is4Download)
 
             // If successful, cache the gitabases list
             if (networkResponse.success == 1) {
@@ -62,7 +62,11 @@ class GitabasesDescRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllGitabases(): List<Gitabase> {
-        val descResponse = getGitabasesDesc()
+        val descResponse = getGitabasesDesc(false)
+        return GitabaseDescMapper.toGitabaseList(descResponse.gitabases)
+    }
+    override suspend fun getDownloadableGitabases(): List<Gitabase> {
+        val descResponse = getGitabasesDesc(true)
         return GitabaseDescMapper.toGitabaseList(descResponse.gitabases)
     }
 

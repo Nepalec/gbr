@@ -194,7 +194,7 @@ class ScanGitabaseFilesUseCase @Inject constructor(
     private suspend fun enrichGitabasesWithDescData(gitabases: Set<Gitabase>): Set<Gitabase> {
         return try {
             // Fetch GitabaseDescNetwork data
-            val descResponse = gitabasesDescRepository.getGitabasesDesc()
+            val descResponse = gitabasesDescRepository.getGitabasesDesc(false)
 
             if (descResponse.success != 1) {
                 // If we can't get desc data, return original gitabases

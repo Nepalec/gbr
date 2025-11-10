@@ -1,5 +1,6 @@
 package com.gbr.tabdiscuss.components
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,5 +47,6 @@ fun CustomAppBar(
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
             actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
         ),
+        windowInsets = WindowInsets(0),
     )
 }

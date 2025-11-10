@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,7 +39,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.designsystem.R
 import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseLang
-import com.gbr.scrDownloader.viewmodel.DownloaderViewModel
 import components.buttons.FilledButtonView
 import components.buttons.OutlinedButtonView
 import com.gbr.scrDownloader.R as DownloaderR
@@ -73,7 +73,8 @@ fun DownloaderScreen(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                ),
+                windowInsets = WindowInsets(0),
             )
         }
     ) { paddingValues ->

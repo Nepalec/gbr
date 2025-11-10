@@ -17,8 +17,11 @@ import javax.inject.Singleton
  * Retrofit API declaration for GitabasesDesc Network API
  */
 private interface RetrofitGitabasesDescNetworkApi {
-    @GET(value = "gb/json/droid/get_gitabases_all.php")
+    @GET(value = "gb/json/droid/gbr/get_gitabases_description.php")
     suspend fun getGitabasesDesc(): NetworkGitabasesDescResp
+
+    @GET(value = "gb/json/droid/gbr/get_gitabases_4download.php")
+    suspend fun getGitabases4Download(): NetworkGitabasesDescResp
 }
 
 private const val BASE_URL = BuildConfig.BASE_URL
@@ -43,9 +46,9 @@ public class GitabasesDescRetrofitDataSource @Inject constructor(
             .create(RetrofitGitabasesDescNetworkApi::class.java)
     }
 
-    override suspend fun getGitabasesDesc(): NetworkGitabasesDescResp {
+    override suspend fun getGitabasesDesc(is4Download: Boolean): NetworkGitabasesDescResp {
         return try {
-            networkApi.getGitabasesDesc()
+            if (is4Download) networkApi.getGitabases4Download() else networkApi.getGitabasesDesc()
         } catch (e: HttpException) {
             // Handle HTTP errors in network layer
             when (e.code()) {

@@ -1,4 +1,4 @@
-package com.gbr.scrDownloader.viewmodel
+package com.gbr.scrDownloader.screen
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -10,6 +10,7 @@ import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.scrDownloader.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,8 +47,9 @@ class DownloaderViewModel @Inject constructor(
     private fun loadLanguages() {
         viewModelScope.launch {
             try {
-                val gitabases = gitabasesDescRepository.getAllGitabases()
-                val languages = gitabases.map { it.id.lang }.distinct().sortedBy { it.value }
+                val gitabases = gitabasesDescRepository.getDownloadableGitabases()
+                val languages = gitabases.map { it.id.lang }.distinct().sortedWith(compareBy<GitabaseLang> { it.value == "eng" || it.value=="rus"}.thenBy { it.value }).reversed()
+
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -81,7 +83,7 @@ class DownloaderViewModel @Inject constructor(
 
                 // TODO: Implement actual download logic
                 // For now, just simulate download
-                kotlinx.coroutines.delay(2000)
+                delay(2000)
 
                 _uiState.value = _uiState.value.copy(
                     downloadingGitabase = null,
