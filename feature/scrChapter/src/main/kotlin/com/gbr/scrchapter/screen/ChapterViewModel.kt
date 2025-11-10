@@ -17,6 +17,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class ScrollPosition(
+    val firstVisibleItemIndex: Int,
+    val firstVisibleItemScrollOffset: Int
+)
+
 @HiltViewModel
 class ChapterViewModel @Inject constructor(
     private val textsRepository: TextsRepository,
@@ -25,6 +30,19 @@ class ChapterViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ChapterUiState())
     val uiState: StateFlow<ChapterUiState> = _uiState.asStateFlow()
+
+    private val _scrollPositions = MutableStateFlow<Map<Int, ScrollPosition>>(emptyMap())
+
+    fun saveScrollPosition(chapterNumber: Int, firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) {
+        _scrollPositions.value = _scrollPositions.value + (chapterNumber to ScrollPosition(
+            firstVisibleItemIndex = firstVisibleItemIndex,
+            firstVisibleItemScrollOffset = firstVisibleItemScrollOffset
+        ))
+    }
+
+    fun getScrollPosition(chapterNumber: Int): ScrollPosition? {
+        return _scrollPositions.value[chapterNumber]
+    }
 
     fun loadChapter(gitabaseId: GitabaseID, bookPreview: BookPreview, chapterNumber: Int) {
         viewModelScope.launch {

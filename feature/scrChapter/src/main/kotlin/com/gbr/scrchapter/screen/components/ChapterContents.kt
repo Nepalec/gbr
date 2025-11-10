@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,6 +22,7 @@ import com.gbr.model.book.BookDetail
 import com.gbr.model.book.ChapterContentsItem
 import com.gbr.model.book.TextItem
 import com.gbr.model.gitabase.ImageType
+import com.gbr.scrchapter.screen.ScrollPosition
 
 @Composable
 fun ChapterContents(
@@ -27,6 +31,9 @@ fun ChapterContents(
     chapter: ChapterContentsItem?,
     bookDetail: BookDetail?,
     chapterTexts: List<TextItem>,
+    chapterNumber: Int,
+    savedScrollPosition: ScrollPosition?,
+    onListStateReady: (LazyListState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -64,7 +71,32 @@ fun ChapterContents(
                     ?.filter { it.chapterNumber == chapter.number }
                     ?: emptyList()
 
+                val listState = rememberLazyListState(
+                    initialFirstVisibleItemIndex = savedScrollPosition?.firstVisibleItemIndex ?: 0,
+                    initialFirstVisibleItemScrollOffset = savedScrollPosition?.firstVisibleItemScrollOffset ?: 0
+                )
+
+                // Expose listState to parent
+                LaunchedEffect(listState) {
+                    onListStateReady(listState)
+                }
+
+                // Restore scroll position when chapter loads
+                LaunchedEffect(chapterNumber, chapterTexts.isNotEmpty()) {
+                    savedScrollPosition?.let { position ->
+                        if (listState.firstVisibleItemIndex != position.firstVisibleItemIndex ||
+                            listState.firstVisibleItemScrollOffset != position.firstVisibleItemScrollOffset
+                        ) {
+                            listState.scrollToItem(
+                                index = position.firstVisibleItemIndex,
+                                scrollOffset = position.firstVisibleItemScrollOffset
+                            )
+                        }
+                    }
+                }
+
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 8.dp),

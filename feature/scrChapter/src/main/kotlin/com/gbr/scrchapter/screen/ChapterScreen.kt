@@ -2,6 +2,7 @@ package com.gbr.scrchapter.screen
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -49,18 +50,26 @@ fun ChapterScreen(
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    // Track current selected chapter number
-    var currentChapterNumber by remember { mutableStateOf(chapterNumber) }
+    // Get current chapter number from state, fallback to parameter
+    val currentChapterNumber = uiState.chapter?.number ?: chapterNumber
 
-    // Update current chapter when chapterNumber parameter changes
-    LaunchedEffect(chapterNumber) {
-        currentChapterNumber = chapterNumber
+    // Get saved scroll position for current chapter
+    val savedScrollPosition = remember(currentChapterNumber) {
+        viewModel.getScrollPosition(currentChapterNumber)
     }
 
     // Get chapter title from state
-    val chapterTitle = uiState.chapter?.title ?: stringResource(R.string.chapter, currentChapterNumber)
+    val chapterTitle = uiState.chapter?.title ?: stringResource(R.string.chapter, chapterNumber)
     val bookTitle = uiState.bookDetail?.book?.title ?: bookPreview.title
     val chapters = uiState.bookDetail?.chapters
+
+    // Store reference to LazyListState
+    var listState by remember { mutableStateOf<LazyListState?>(null) }
+
+    // Callback to receive LazyListState from ChapterContents
+    val onListStateReady = { state: LazyListState ->
+        listState = state
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -76,8 +85,18 @@ fun ChapterScreen(
                         scope.launch {
                             drawerState.close()
                         }
-                        // Update current chapter and reload data
-                        currentChapterNumber = selectedChapterNumber
+                        // Save current chapter's scroll position before switching
+                        listState?.let { state ->
+                            val currentChapter = uiState.chapter?.number
+                            if (currentChapter != null) {
+                                viewModel.saveScrollPosition(
+                                    currentChapter,
+                                    state.firstVisibleItemIndex,
+                                    state.firstVisibleItemScrollOffset
+                                )
+                            }
+                        }
+                        // Load new chapter
                         viewModel.loadChapter(gitabaseId, bookPreview, selectedChapterNumber)
                     }
                 )
@@ -105,10 +124,12 @@ fun ChapterScreen(
                 chapter = uiState.chapter,
                 bookDetail = uiState.bookDetail,
                 chapterTexts = uiState.chapterTexts,
+                chapterNumber = currentChapterNumber,
+                savedScrollPosition = savedScrollPosition,
+                onListStateReady = onListStateReady,
                 modifier = Modifier.padding(
                     top = innerPadding.calculateTopPadding()
                 )
-
             )
         }
     }
