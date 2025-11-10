@@ -43,7 +43,7 @@ class MainViewModel @Inject constructor(
     private val _isSystemDarkTheme = MutableStateFlow(false)
 
     val shouldUseDarkTheme: StateFlow<Boolean> = combine(
-        userPreferencesRepository.getAppThemeFlow(),
+        userPreferencesRepository.appTheme,
         _isSystemDarkTheme
     ) { themeConfig, isSystemDark ->
         when (themeConfig) {

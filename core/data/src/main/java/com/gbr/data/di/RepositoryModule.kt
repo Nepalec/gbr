@@ -6,8 +6,6 @@ import com.gbr.data.repository.GitabasesRepository
 import com.gbr.data.repository.GitabasesRepositoryImpl
 import com.gbr.data.repository.ImageFilesRepository
 import com.gbr.data.repository.ImageFilesRepositoryImpl
-import com.gbr.data.repository.UserDataRepository
-import com.gbr.data.repository.UserDataRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,10 +19,6 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindGitabasesRepository(gitabasesRepositoryImpl: GitabasesRepositoryImpl): GitabasesRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindUserDataRepository(userDataRepositoryImpl: UserDataRepositoryImpl): UserDataRepository
 
     @Binds
     @Singleton

@@ -105,7 +105,10 @@ fun ChapterScreen(
                 chapter = uiState.chapter,
                 bookDetail = uiState.bookDetail,
                 chapterTexts = uiState.chapterTexts,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(
+                    top = innerPadding.calculateTopPadding()
+                )
+
             )
         }
     }

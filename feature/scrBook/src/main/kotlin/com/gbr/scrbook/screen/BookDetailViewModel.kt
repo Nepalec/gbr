@@ -2,7 +2,7 @@ package com.gbr.scrbook.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gbr.data.repository.UserDataRepository
+import com.gbr.data.repository.UserPreferencesRepository
 import com.gbr.data.usecase.ImageLoadingState
 import com.gbr.data.usecase.LoadBookDetailUseCase
 import com.gbr.model.book.BookContentsTabOptions
@@ -15,12 +15,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BookDetailViewModel @Inject constructor(
-    private val userDataRepository: UserDataRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     private val loadBookDetailUseCase: LoadBookDetailUseCase
 ) : ViewModel() {
 
@@ -39,7 +40,9 @@ class BookDetailViewModel @Inject constructor(
         // Load contents tab options on ViewModel initialization
         // Image tab options are loaded on-demand when tabs are available
         viewModelScope.launch {
-            _contentsTabOptions.value = userDataRepository.getBookContentsTabOptions()
+            userPreferencesRepository.bookContentsTabOptions.firstOrNull()?.let {
+                _contentsTabOptions.value = it
+            }
         }
     }
 
@@ -50,7 +53,8 @@ class BookDetailViewModel @Inject constructor(
     suspend fun getImageTabOptions(imageType: ImageType): BookImagesTabOptions {
         val currentMap = _imagesTabOptionsMap.value
         return currentMap[imageType] ?: run {
-            val options = userDataRepository.getBookImagesTabOptions(imageType)
+            val options = userPreferencesRepository.getBookImagesTabOptionsFlow(imageType).firstOrNull()
+                ?: BookImagesTabOptions()
             _imagesTabOptionsMap.value = currentMap + (imageType to options)
             options
         }
@@ -105,14 +109,14 @@ class BookDetailViewModel @Inject constructor(
     fun setContentsTabOptions(options: BookContentsTabOptions) {
         viewModelScope.launch {
             _contentsTabOptions.value = options
-            userDataRepository.setBookContentsTabOptions(options)
+            userPreferencesRepository.setBookContentsTabOptions(options)
         }
     }
 
     fun setImageTabOptions(imageType: ImageType, options: BookImagesTabOptions) {
         viewModelScope.launch {
             _imagesTabOptionsMap.value = _imagesTabOptionsMap.value + (imageType to options)
-            userDataRepository.setBookImagesTabOptions(imageType, options)
+            userPreferencesRepository.setBookImagesTabOptions(imageType, options)
         }
     }
 }

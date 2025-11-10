@@ -125,6 +125,38 @@ class GbrPreferencesDataSource @Inject constructor(
         }
     }
 
+    /**
+     * Flow of app theme configuration that emits whenever the preference changes.
+     */
+    val appTheme: Flow<DarkThemeConfig> = userPreferences.data.map { preferences ->
+        getDarkThemeConfig(preferences)
+    }
+
+    /**
+     * Flow of book contents tab options that emits whenever the preference changes.
+     */
+    val bookContentsTabOptions: Flow<BookContentsTabOptions> = userPreferences.data.map { preferences ->
+        BookContentsTabOptions(
+            textSize = preferences[BOOK_CONTENTS_TEXT_SIZE_KEY] ?: 0,
+            columns = preferences[BOOK_CONTENTS_COLUMNS_KEY] ?: 2
+        )
+    }
+
+    /**
+     * Flow of book images tab options for a specific ImageType that emits whenever the preference changes.
+     */
+    fun getBookImagesTabOptionsFlow(imageType: ImageType): Flow<BookImagesTabOptions> {
+        val imageTypeValue = imageType.value
+        val columnsKey = intPreferencesKey("book_images_columns_type_$imageTypeValue")
+        val groupByChapterKey = booleanPreferencesKey("book_images_group_by_chapters_type_$imageTypeValue")
+        return userPreferences.data.map { preferences ->
+            BookImagesTabOptions(
+                columns = preferences[columnsKey] ?: 2,
+                groupByChapter = preferences[groupByChapterKey] ?: true
+            )
+        }
+    }
+
     suspend fun setDarkThemeConfig(darkThemeConfig: DarkThemeConfig) {
         try {
             userPreferences.edit { preferences ->

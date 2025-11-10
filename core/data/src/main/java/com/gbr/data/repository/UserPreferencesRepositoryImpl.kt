@@ -2,18 +2,16 @@ package com.gbr.data.repository
 
 import android.util.Log
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
+import com.gbr.model.book.BookContentsTabOptions
+import com.gbr.model.book.BookImagesTabOptions
 import com.gbr.model.gitabase.GitabaseID
+import com.gbr.model.gitabase.ImageType
 import com.gbr.model.theme.DarkThemeConfig
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Implementation of UserPreferencesRepository that delegates to GbrPreferencesDataSource.
- * This provides a clean abstraction between the domain layer and infrastructure layer.
- */
+
 @Singleton
 class UserPreferencesRepositoryImpl @Inject constructor(
     private val gbrPreferencesDataSource: GbrPreferencesDataSource
@@ -32,14 +30,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getLastUsedGitabase(): GitabaseID? {
-        return try {
-            gbrPreferencesDataSource.getLastUsedGitabase()
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to get last used gitabase", e)
-            null
-        }
-    }
+    override val lastUsedGitabase: Flow<GitabaseID?> = gbrPreferencesDataSource.lastUsedGitabase
 
     override suspend fun setAppTheme(themeConfig: DarkThemeConfig) {
         try {
@@ -50,21 +41,19 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAppTheme(): DarkThemeConfig {
-        return try {
-            // Get the current theme from the userData flow
-            gbrPreferencesDataSource.userData.map { userData ->
-                userData.darkThemeConfig
-            }.firstOrNull() ?: DarkThemeConfig.FOLLOW_SYSTEM
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to get app theme", e)
-            DarkThemeConfig.FOLLOW_SYSTEM // Return default on error
-        }
+    override val appTheme: Flow<DarkThemeConfig> = gbrPreferencesDataSource.appTheme
+
+    override suspend fun setBookContentsTabOptions(options: BookContentsTabOptions) {
+        gbrPreferencesDataSource.setBookContentsTabOptions(options)
     }
 
-    override fun getAppThemeFlow(): Flow<DarkThemeConfig> {
-        return gbrPreferencesDataSource.userData.map { userData ->
-            userData.darkThemeConfig
-        }
+    override val bookContentsTabOptions: Flow<BookContentsTabOptions> = gbrPreferencesDataSource.bookContentsTabOptions
+
+    override suspend fun setBookImagesTabOptions(imageType: ImageType, options: BookImagesTabOptions) {
+        gbrPreferencesDataSource.setBookImagesTabOptions(imageType, options)
+    }
+
+    override fun getBookImagesTabOptionsFlow(imageType: ImageType): Flow<BookImagesTabOptions> {
+        return gbrPreferencesDataSource.getBookImagesTabOptionsFlow(imageType)
     }
 }

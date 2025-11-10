@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +30,7 @@ class SettingsViewModel @Inject constructor(
     private fun loadSettings() {
         viewModelScope.launch {
             try {
-                val currentTheme = userPreferencesRepository.getAppTheme()
+                val currentTheme = userPreferencesRepository.appTheme.firstOrNull() ?: DarkThemeConfig.FOLLOW_SYSTEM
                 val themeOption = when (currentTheme) {
                     DarkThemeConfig.LIGHT -> ThemeOption.LIGHT
                     DarkThemeConfig.DARK -> ThemeOption.DARK
