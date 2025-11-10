@@ -5,6 +5,7 @@ import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.gbr.model.book.BookDetail
 import com.gbr.scrbook.R
 
@@ -75,7 +77,7 @@ fun BookCoverImage(bookDetail: BookDetail) {
     } else {
         // Fallback to title if no cover image
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(

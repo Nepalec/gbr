@@ -1,6 +1,7 @@
 package com.gbr.data.usecase
 
 import android.content.Context
+import com.gbr.common.strings.StringProvider
 import com.gbr.data.usecase.ExtractGitabasesUseCase.Companion.ALL_GITABASE_FILES
 import io.mockk.every
 import io.mockk.mockk
@@ -16,13 +17,17 @@ import java.io.File
 class ExtractGitabasesUseCaseTest {
 
     private lateinit var context: Context
+    private lateinit var stringProvider: StringProvider
     private lateinit var extractGitabasesUseCase: ExtractGitabasesUseCase
     private lateinit var testFolder: File
 
     @Before
     fun setUp() {
         context = mockk()
-        extractGitabasesUseCase = ExtractGitabasesUseCase(context)
+        stringProvider = mockk()
+        every { stringProvider.getString(any()) } returns "Error message"
+        every { stringProvider.getString(any(), *anyVararg<Any>()) } returns "Error message"
+        extractGitabasesUseCase = ExtractGitabasesUseCase(context, stringProvider)
 
         // Create a temporary test folder
         testFolder = File.createTempFile("test_gitabases", "")

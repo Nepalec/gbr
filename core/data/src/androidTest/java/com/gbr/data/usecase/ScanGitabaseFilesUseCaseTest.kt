@@ -129,7 +129,7 @@ class ScanGitabaseFilesUseCaseTest {
         val gitabases = result.getOrThrow()
 
         // Should not include invalid database
-        val invalidGitabase = gitabases.find { it.name == "gitabase_invalid_eng" }
+        val invalidGitabase = gitabases.find { it.id.key == "invalid_eng" }
         assertNull("Should not include invalid database", invalidGitabase)
     }
 
@@ -189,7 +189,7 @@ class ScanGitabaseFilesUseCaseTest {
     @Test
     fun test_should_handle_concurrent_scanning() = runTest {
         // Test multiple concurrent scans
-        val results = mutableListOf<Result<List<com.gbr.model.gitabase.Gitabase>>>()
+        val results = mutableListOf<Result<Set<com.gbr.model.gitabase.Gitabase>>>()
 
         // Launch multiple concurrent scans
         repeat(3) {

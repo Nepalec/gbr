@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.gbr.datastore.model.CachedGitabase
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
@@ -29,34 +28,10 @@ class GitabasesCacheDataSource @Inject constructor(
         private const val TAG = "GitabasesCache"
         private val GITABASES_CACHE_KEY = stringPreferencesKey("gitabases_cache")
         private val CACHE_TIMESTAMP_KEY = stringPreferencesKey("gitabases_cache_timestamp")
+        private const val CACHE_VALIDITY_MS =  7L * 24 * 60 * 60 * 1000 // 1 week in milliseconds
     }
 
-    /**
-     * Flow of cached gitabases that emits whenever the cache changes.
-     */
-    val cachedGitabases: Flow<List<CachedGitabase>?> = userPreferences.data.map { preferences ->
-        preferences[GITABASES_CACHE_KEY]?.let { cachedJson ->
-            try {
-                json.decodeFromString<List<CachedGitabase>>(cachedJson)
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to deserialize cached gitabases", e)
-                null
-            }
-        }
-    }
 
-    /**
-     * Flow of cache timestamp that emits whenever the cache is updated.
-     */
-    val cacheTimestamp: Flow<Long?> = userPreferences.data.map { preferences ->
-        preferences[CACHE_TIMESTAMP_KEY]?.toLongOrNull()
-    }
-
-    /**
-     * Saves the gitabases list to cache.
-     *
-     * @param gitabases The list of gitabases to cache
-     */
     suspend fun saveGitabases(gitabases: List<CachedGitabase>) {
         try {
             val jsonString = json.encodeToString(gitabases)
@@ -74,21 +49,36 @@ class GitabasesCacheDataSource @Inject constructor(
         }
     }
 
-    /**
-     * Gets the cached gitabases list.
-     *
-     * @return The cached list of gitabases, or null if not available
-     */
     suspend fun getCachedGitabases(): List<CachedGitabase>? {
         return try {
             userPreferences.data.map { preferences ->
-                preferences[GITABASES_CACHE_KEY]?.let { cachedJson ->
-                    try {
-                        json.decodeFromString<List<CachedGitabase>>(cachedJson)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Failed to deserialize cached gitabases", e)
-                        null
-                    }
+                val cachedJson = preferences[GITABASES_CACHE_KEY]
+                val timestampString = preferences[CACHE_TIMESTAMP_KEY]
+
+                if (cachedJson == null || timestampString == null) {
+                    return@map null
+                }
+
+                // Check if cache is still valid (within 1 week)
+                val timestamp = timestampString.toLongOrNull()
+                if (timestamp == null) {
+                    Log.w(TAG, "Invalid cache timestamp, treating as expired")
+                    return@map null
+                }
+
+                val currentTime = System.currentTimeMillis()
+                val cacheAge = currentTime - timestamp
+
+                if (cacheAge > CACHE_VALIDITY_MS) {
+                    Log.d(TAG, "Cache expired (age: ${cacheAge / (24 * 60 * 60 * 1000)} days)")
+                    return@map null
+                }
+
+                try {
+                    json.decodeFromString<List<CachedGitabase>>(cachedJson)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to deserialize cached gitabases", e)
+                    null
                 }
             }.firstOrNull()
         } catch (e: Exception) {
@@ -97,51 +87,7 @@ class GitabasesCacheDataSource @Inject constructor(
         }
     }
 
-    /**
-     * Gets the cache timestamp.
-     *
-     * @return The timestamp when the cache was last updated, or null if not available
-     */
-    suspend fun getCacheTimestamp(): Long? {
-        return try {
-            userPreferences.data.map { preferences ->
-                preferences[CACHE_TIMESTAMP_KEY]?.toLongOrNull()
-            }.firstOrNull()
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to get cache timestamp", e)
-            null
-        }
-    }
 
-    /**
-     * Clears the gitabases cache.
-     */
-    suspend fun clearCache() {
-        try {
-            userPreferences.edit { preferences ->
-                preferences.remove(GITABASES_CACHE_KEY)
-                preferences.remove(CACHE_TIMESTAMP_KEY)
-            }
-            Log.d(TAG, "Successfully cleared gitabases cache")
-        } catch (ioException: IOException) {
-            Log.e(TAG, "Failed to clear gitabases cache", ioException)
-        }
-    }
 
-    /**
-     * Checks if the cache is valid based on age.
-     *
-     * @param maxAgeMillis Maximum age of cache in milliseconds (default: 24 hours)
-     * @return true if cache exists and is not expired, false otherwise
-     */
-    suspend fun isCacheValid(maxAgeMillis: Long = 24 * 60 * 60 * 1000): Boolean {
-        return try {
-            val timestamp = getCacheTimestamp()
-            val currentTime = System.currentTimeMillis()
-            timestamp != null && (currentTime - timestamp) <= maxAgeMillis
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to check cache validity", e)
-            false
-        }
-    }
+
 }

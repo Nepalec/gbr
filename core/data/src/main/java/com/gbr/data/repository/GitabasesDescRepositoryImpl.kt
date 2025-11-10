@@ -26,8 +26,18 @@ class GitabasesDescRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getGitabasesDesc(is4Download: Boolean): GitabasesDescResponse {
+        val cachedGitabases = gitabasesCacheDataSource.getCachedGitabases()
+        if (cachedGitabases != null && cachedGitabases.isNotEmpty()) {
+            Log.d(TAG, "Using cached gitabases (${cachedGitabases.size} items)")
+            return GitabasesDescResponse(
+                gitabases = cachedGitabases.map { it.toGitabaseDescNetwork() },
+                success = 1,
+                message = stringProvider.getString(R.string.message_data_from_cache)
+            )
+        }
+
+        // No cache available, try network
         return try {
-            // Try to get fresh data from network
             val networkResponse = gitabasesDescDataSource.getGitabasesDesc(is4Download)
 
             // If successful, cache the gitabases list
@@ -39,25 +49,12 @@ class GitabasesDescRepositoryImpl @Inject constructor(
 
             networkResponse.toGitabasesDescResponse()
         } catch (e: Exception) {
-            Log.w(TAG, "Network request failed, trying cache", e)
-
-            // If network fails, try to get from cache
-            val cachedGitabases = gitabasesCacheDataSource.getCachedGitabases()
-            if (cachedGitabases != null) {
-                Log.d(TAG, "Using cached gitabases (${cachedGitabases.size} items)")
-                GitabasesDescResponse(
-                    gitabases = cachedGitabases.map { it.toGitabaseDescNetwork() },
-                    success = 1,
-                    message = stringProvider.getString(R.string.message_data_from_cache)
-                )
-            } else {
-                Log.e(TAG, "No cached data available")
-                GitabasesDescResponse(
-                    gitabases = emptyList(),
-                    success = 0,
-                    message = stringProvider.getString(R.string.error_network_and_no_cache, e.message ?: "")
-                )
-            }
+            Log.e(TAG, "Network request failed and no cache available", e)
+            GitabasesDescResponse(
+                gitabases = emptyList(),
+                success = 0,
+                message = stringProvider.getString(R.string.error_network_and_no_cache, e.message ?: "")
+            )
         }
     }
 

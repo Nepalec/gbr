@@ -42,7 +42,7 @@ class GitabasesDescRepositoryCacheTest {
     @Test
     fun repository_should_cache_gitabases_after_successful_network_call() = runTest {
         // When - Get data from repository (should make network call and cache)
-        val result = repository.getGitabasesDesc()
+        val result = repository.getGitabasesDesc(false)
 
         // Then - Should have successful response
         assertEquals("Should have successful response", 1, result.success)
@@ -58,7 +58,7 @@ class GitabasesDescRepositoryCacheTest {
     @Test
     fun repository_should_use_cache_when_network_fails() = runTest {
         // Given - First call to populate cache
-        val firstResult = repository.getGitabasesDesc()
+        val firstResult = repository.getGitabasesDesc(false)
         assertEquals("First call should succeed", 1, firstResult.success)
 
         // When - Clear cache and try again (simulating network failure)

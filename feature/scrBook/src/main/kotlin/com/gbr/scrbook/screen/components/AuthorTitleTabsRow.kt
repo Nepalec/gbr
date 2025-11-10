@@ -50,16 +50,20 @@ fun AuthorTitleTabsRow(
             textAlign = TextAlign.Center
         )
 
-        // Title
-        Text(
-            text = bookDetail.book.title,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
+        if(bookDetail.coverImageBitmap!=null)
+        {
+            // only show Title if book has cover
+            Text(
+                text = bookDetail.book.title,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically

@@ -170,7 +170,7 @@ class ScanGitabaseFilesUseCaseTest {
     @Test
     fun test_should_handle_concurrent_scanning() = runTest {
         // Test concurrent scanning of the same folder
-        val results = mutableListOf<Result<List<com.gbr.model.gitabase.Gitabase>>>()
+        val results = mutableListOf<Result<Set<com.gbr.model.gitabase.Gitabase>>>()
 
         // Run multiple scans concurrently
         repeat(3) {

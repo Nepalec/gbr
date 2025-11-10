@@ -43,7 +43,7 @@ class GitabasesDescRepositoryRobolectricTest {
 
     @Test
     fun repository_with_real_NetworkModule_should_return_texts_databases() = runTest {
-        val result = repository.getGitabasesDesc()
+        val result = repository.getGitabasesDesc(false)
 
         // Then - Should handle 404 error gracefully
         assertEquals("Should have successful response", 1, result.success)
