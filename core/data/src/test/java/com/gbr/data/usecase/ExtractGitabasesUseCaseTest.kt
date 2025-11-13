@@ -1,19 +1,26 @@
 package com.gbr.data.usecase
 
 import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import com.gbr.common.strings.StringProvider
+import com.gbr.common.strings.StringProviderImpl
 import com.gbr.data.usecase.ExtractGitabasesUseCase.Companion.ALL_GITABASE_FILES
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.spyk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.io.ByteArrayInputStream
 import java.io.File
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [28])
 class ExtractGitabasesUseCaseTest {
 
     private lateinit var context: Context
@@ -23,10 +30,12 @@ class ExtractGitabasesUseCaseTest {
 
     @Before
     fun setUp() {
-        context = mockk()
-        stringProvider = mockk()
-        every { stringProvider.getString(any()) } returns "Error message"
-        every { stringProvider.getString(any(), *anyVararg<Any>()) } returns "Error message"
+        // Use Robolectric to get a real Android Context with resources
+        context = ApplicationProvider.getApplicationContext()
+        
+        // Use real StringProvider that uses actual resources
+        stringProvider = StringProviderImpl(context)
+        
         extractGitabasesUseCase = ExtractGitabasesUseCase(context, stringProvider)
 
         // Create a temporary test folder
@@ -37,12 +46,16 @@ class ExtractGitabasesUseCaseTest {
 
     @Test
     fun `execute should extract files successfully`() = runTest {
-        // Mock context resources
-        val mockResources = mockk<android.content.res.Resources>()
-        val mockAssets = mockk<android.content.res.AssetManager>()
+        // Use spyk to partially mock the context - keep real resources for StringProvider, mock assets
+        val spiedContext = spyk(context)
+        val mockResources = spyk(context.resources)
+        val mockAssets = io.mockk.mockk<android.content.res.AssetManager>()
 
-        every { context.resources } returns mockResources
+        every { spiedContext.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
+        
+        // Recreate use case with spied context
+        val useCase = ExtractGitabasesUseCase(spiedContext, stringProvider)
 
         // Mock asset files for both directories
         every { mockAssets.list("gitabases") } returns arrayOf(
@@ -61,7 +74,7 @@ class ExtractGitabasesUseCaseTest {
         every { mockAssets.open("test_gitabases/gitabase_invaliddb_eng.db") } returns ByteArrayInputStream("test data".toByteArray())
 
         // Execute
-        val result = extractGitabasesUseCase.execute(testFolder, ALL_GITABASE_FILES)
+        val result = useCase.execute(testFolder, ALL_GITABASE_FILES)
 
         // Verify
         assertTrue("Should succeed", result.isSuccess)
@@ -76,12 +89,13 @@ class ExtractGitabasesUseCaseTest {
     }
 
     @Test
-    fun `execute should handle missing files gracefully`() = runTest {
-        // Mock context resources
-        val mockResources = mockk<android.content.res.Resources>()
-        val mockAssets = mockk<android.content.res.AssetManager>()
+    fun `execute should handle missing resource files gracefully`() = runTest {
+        // Use spyk to partially mock the context - keep real resources for StringProvider, mock assets
+        val spiedContext = spyk(context)
+        val mockResources = spyk(context.resources)
+        val mockAssets = io.mockk.mockk<android.content.res.AssetManager>()
 
-        every { context.resources } returns mockResources
+        every { spiedContext.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
 
         // Mock asset files (empty list)
@@ -90,8 +104,11 @@ class ExtractGitabasesUseCaseTest {
         // Mock asset input streams to throw exception
         every { mockAssets.open("gitabases/gitabase_help_eng.db") } throws Exception("File not found")
 
+        // Recreate use case with spied context
+        val useCase = ExtractGitabasesUseCase(spiedContext, stringProvider)
+
         // Execute
-        val result = extractGitabasesUseCase.execute(testFolder)
+        val result = useCase.execute(testFolder)
 
         // Verify
         assertFalse("Should fail", result.isSuccess)
@@ -103,11 +120,12 @@ class ExtractGitabasesUseCaseTest {
 
     @Test
     fun `getAvailableGitabaseFiles should return list of files`() {
-        // Mock context resources
-        val mockResources = mockk<android.content.res.Resources>()
-        val mockAssets = mockk<android.content.res.AssetManager>()
+        // Use spyk to partially mock the context - keep real resources for StringProvider, mock assets
+        val spiedContext = spyk(context)
+        val mockResources = spyk(context.resources)
+        val mockAssets = io.mockk.mockk<android.content.res.AssetManager>()
 
-        every { context.resources } returns mockResources
+        every { spiedContext.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
 
         // Mock both directories
@@ -120,8 +138,11 @@ class ExtractGitabasesUseCaseTest {
             "gitabase_invaliddb_eng.db"
         )
 
+        // Recreate use case with spied context
+        val useCase = ExtractGitabasesUseCase(spiedContext, stringProvider)
+
         // Execute
-        val availableFiles = extractGitabasesUseCase.getAvailableGitabaseFiles()
+        val availableFiles = useCase.getAvailableGitabaseFiles()
 
         // Verify
         assertEquals("Should return 4 files (2 help + 2 test)", 4, availableFiles.size)
@@ -133,16 +154,20 @@ class ExtractGitabasesUseCaseTest {
 
     @Test
     fun `isGitabaseFileAvailable should return true for existing file`() {
-        // Mock context resources
-        val mockResources = mockk<android.content.res.Resources>()
-        val mockAssets = mockk<android.content.res.AssetManager>()
+        // Use spyk to partially mock the context - keep real resources for StringProvider, mock assets
+        val spiedContext = spyk(context)
+        val mockResources = spyk(context.resources)
+        val mockAssets = io.mockk.mockk<android.content.res.AssetManager>()
 
-        every { context.resources } returns mockResources
+        every { spiedContext.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
         every { mockAssets.open("gitabases/gitabase_help_eng.db") } returns ByteArrayInputStream("test data".toByteArray())
 
+        // Recreate use case with spied context
+        val useCase = ExtractGitabasesUseCase(spiedContext, stringProvider)
+
         // Execute
-        val isAvailable = extractGitabasesUseCase.isGitabaseFileAvailable("gitabase_help_eng.db")
+        val isAvailable = useCase.isGitabaseFileAvailable("gitabase_help_eng.db")
 
         // Verify
         assertTrue("File should be available", isAvailable)
@@ -150,16 +175,20 @@ class ExtractGitabasesUseCaseTest {
 
     @Test
     fun `isGitabaseFileAvailable should return false for non-existing file`() {
-        // Mock context resources
-        val mockResources = mockk<android.content.res.Resources>()
-        val mockAssets = mockk<android.content.res.AssetManager>()
+        // Use spyk to partially mock the context - keep real resources for StringProvider, mock assets
+        val spiedContext = spyk(context)
+        val mockResources = spyk(context.resources)
+        val mockAssets = io.mockk.mockk<android.content.res.AssetManager>()
 
-        every { context.resources } returns mockResources
+        every { spiedContext.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
         every { mockAssets.open("gitabases/nonexistent.db") } throws Exception("File not found")
 
+        // Recreate use case with spied context
+        val useCase = ExtractGitabasesUseCase(spiedContext, stringProvider)
+
         // Execute
-        val isAvailable = extractGitabasesUseCase.isGitabaseFileAvailable("nonexistent.db")
+        val isAvailable = useCase.isGitabaseFileAvailable("nonexistent.db")
 
         // Verify
         assertFalse("File should not be available", isAvailable)
