@@ -50,6 +50,14 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 (this as ExtensionAware).extensions.configure<KotlinJvmOptions>("kotlinOptions") {
                     jvmTarget = "17"
                 }
+
+                // Disable problematic lint detectors due to compatibility issues with Kotlin analysis API
+                lint {
+                    disable += "NullSafeMutableLiveData"
+                    disable += "FrequentlyChangingValue"
+                    disable += "RememberInComposition"
+                    disable += "AutoboxingStateCreation"
+                }
             }
 
             // Add Kotlin BOM aligned to the catalog's kotlin version (prevents stdlib 2.x leaks)

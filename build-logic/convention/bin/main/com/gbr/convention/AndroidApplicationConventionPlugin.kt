@@ -18,6 +18,14 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
                 defaultConfig.targetSdk = AppConfig.targetSdk
+
+                // Disable problematic lint detectors due to compatibility issues with Kotlin analysis API
+                lint {
+                    disable += "NullSafeMutableLiveData"
+                    disable += "FrequentlyChangingValue"
+                    disable += "RememberInComposition"
+                    disable += "AutoboxingStateCreation"
+                }
             }
         }
     }
