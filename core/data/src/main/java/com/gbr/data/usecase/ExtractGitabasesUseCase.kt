@@ -94,7 +94,7 @@ class ExtractGitabasesUseCase @Inject constructor(
             val msg = stringProvider.getString(
                 R.string.error_failed_to_extract_gitabase_file,
                 fileName,
-                e.message ?: ""
+                e.message.orEmpty()
             )
             throw RuntimeException(
                 msg,
@@ -111,8 +111,8 @@ class ExtractGitabasesUseCase @Inject constructor(
      */
     fun getAvailableGitabaseFiles(): List<String> {
         return try {
-            val helpFiles = context.resources.assets.list("gitabases")?.toList() ?: emptyList()
-            val testFiles = context.resources.assets.list("test_gitabases")?.toList() ?: emptyList()
+            val helpFiles = context.resources.assets.list("gitabases")?.toList().orEmpty()
+            val testFiles = context.resources.assets.list("test_gitabases")?.toList().orEmpty()
             helpFiles + testFiles
         } catch (e: Exception) {
             emptyList()

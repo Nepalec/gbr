@@ -81,7 +81,7 @@ class CopyGitabaseUseCase @Inject constructor(
                     IllegalArgumentException(
                         stringProvider.getString(
                             R.string.error_source_not_valid_gitabase,
-                            validationResult.exceptionOrNull()?.message ?: ""
+                            validationResult.exceptionOrNull()?.message.orEmpty()
                         )
                     )
                 )
@@ -143,7 +143,7 @@ class CopyGitabaseUseCase @Inject constructor(
                     IllegalArgumentException(
                         stringProvider.getString(
                             R.string.error_failed_to_validate_gitabase,
-                            scanResult.exceptionOrNull()?.message ?: ""
+                            scanResult.exceptionOrNull()?.message.orEmpty()
                         )
                     )
                 )
@@ -153,7 +153,7 @@ class CopyGitabaseUseCase @Inject constructor(
                 IllegalArgumentException(
                     stringProvider.getString(
                         R.string.error_validating_gitabase,
-                        e.message ?: ""
+                        e.message.orEmpty()
                     )
                 )
             )

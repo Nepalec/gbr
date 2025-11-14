@@ -42,8 +42,8 @@ class GitabasesDescRepositoryImpl @Inject constructor(
 
             // If successful, cache the gitabases list
             if (networkResponse.success == 1) {
-                val cachedGitabases = networkResponse.gitabases.map { it.toCachedGitabase() }
-                gitabasesCacheDataSource.saveGitabases(cachedGitabases)
+                val allCachedGitabases = networkResponse.gitabases.map { it.toCachedGitabase() }
+                gitabasesCacheDataSource.saveGitabases(allCachedGitabases)
                 Log.d(TAG, "Successfully fetched and cached gitabases from network")
             }
 
@@ -53,7 +53,7 @@ class GitabasesDescRepositoryImpl @Inject constructor(
             GitabasesDescResponse(
                 gitabases = emptyList(),
                 success = 0,
-                message = stringProvider.getString(R.string.error_network_and_no_cache, e.message ?: "")
+                message = stringProvider.getString(R.string.error_network_and_no_cache, e.message.orEmpty())
             )
         }
     }
