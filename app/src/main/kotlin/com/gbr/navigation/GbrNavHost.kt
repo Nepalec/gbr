@@ -17,11 +17,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.gbr.common.navigation.FullscreenDest
-import com.gbr.common.navigation.SubGraphDest
 import com.gbr.designsystem.components.navigationbar.textandicon.NavigationBarWithTextAndIconView
 
 @Composable
-fun GbrNavHost(
+internal fun GbrNavHost(
     defaultNavigator: DefaultNavigator
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
@@ -76,63 +75,16 @@ fun GbrNavHost(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
             // Tab content (rendered first, behind fullscreen)
-            when (selectedTabIndex) {
-                0 -> {
-                    NavHost(
-                        navController = booksNavController,
-                        startDestination = SubGraphDest.Books,
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        navigator.booksFeature.registerGraph(booksNavController, this)
-                        navigator.downloaderFeature.registerGraph(booksNavController, this)
-                        navigator.settingsFeature.registerGraph(booksNavController, this)
-                    }
-                }
-
-                1 -> {
-                    NavHost(
-                        navController = readingNavController,
-                        startDestination = SubGraphDest.Reading,
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        navigator.readingFeature.registerGraph(readingNavController, this)
-                        navigator.settingsFeature.registerGraph(readingNavController, this)
-                    }
-                }
-
-                2 -> {
-                    NavHost(
-                        navController = discussNavController,
-                        startDestination = SubGraphDest.Discuss,
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        navigator.discussFeature.registerGraph(discussNavController, this)
-                        navigator.settingsFeature.registerGraph(discussNavController, this)
-                    }
-                }
-
-                3 -> {
-                    NavHost(
-                        navController = notesNavController,
-                        startDestination = SubGraphDest.Notes,
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        navigator.notesFeature.registerGraph(notesNavController, this)
-                        navigator.settingsFeature.registerGraph(notesNavController, this)
-                    }
-                }
-
-                4 -> {
-                    NavHost(
-                        navController = profileNavController,
-                        startDestination = SubGraphDest.Profile,
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        navigator.profileFeature.registerGraph(profileNavController, this)
-                        navigator.settingsFeature.registerGraph(profileNavController, this)
-                    }
-                }
-            }
+            TabsNavigation(
+                selectedTabIndex,
+                booksNavController,
+                innerPadding,
+                navigator,
+                readingNavController,
+                discussNavController,
+                notesNavController,
+                profileNavController
+            )
 
             // Fullscreen content (overlays when active, rendered on top)
             // Only render NavHost when fullscreen is active to avoid intercepting touches

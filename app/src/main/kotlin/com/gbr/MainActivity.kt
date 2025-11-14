@@ -4,10 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.designsystem.theme.SemestaUIKitTheme
+import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.navigation.DefaultNavigator
 import com.gbr.navigation.GbrNavHost
 import com.gbr.tabbooks.screen.SplashScreen
@@ -29,10 +32,9 @@ class MainActivity : ComponentActivity() {
             val mainViewModel: MainViewModel = hiltViewModel()
             val isLoading by mainViewModel.isLoading.collectAsState()
             val message by mainViewModel.message.collectAsState()
-            val shouldUseDarkTheme by mainViewModel.shouldUseDarkTheme.collectAsState()
+            val appTheme by mainViewModel.appTheme.collectAsState()
 
-            // Set the activity reference for theme monitoring
-            mainViewModel.setActivity(this)
+            val shouldUseDarkTheme = rememberDarkTheme(appTheme)
 
             SemestaUIKitTheme(darkTheme = shouldUseDarkTheme) {
                 if (isLoading) {
@@ -44,5 +46,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun rememberDarkTheme(themeConfig: DarkThemeConfig): Boolean {
+    val isSystemDark = isSystemInDarkTheme()
+
+    return when (themeConfig) {
+        DarkThemeConfig.DARK -> true
+        DarkThemeConfig.LIGHT -> false
+        DarkThemeConfig.FOLLOW_SYSTEM -> isSystemDark
     }
 }

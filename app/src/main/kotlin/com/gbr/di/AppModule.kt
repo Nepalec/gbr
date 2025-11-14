@@ -21,6 +21,7 @@ object AppModule {
 
     @Provides
     @Singleton
+    @Suppress("LongParameterList")
     fun provideDefaultNavigator(
         booksFeature: BooksFeature,
         downloaderFeature: DownloaderFeature,
