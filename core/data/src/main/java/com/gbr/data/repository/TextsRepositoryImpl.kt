@@ -10,6 +10,7 @@ import com.gbr.model.book.BookPreview
 import com.gbr.model.book.BookStructure
 import com.gbr.model.book.TextItem
 import com.gbr.model.gitabase.GitabaseID
+import com.gbr.model.gitabase.ImageType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -160,19 +161,13 @@ class TextsRepositoryImpl @Inject constructor(
 
                 // Convert Map<Int, List<ImageFileItem>> to List<BookImageTab>
                 val imageTabs = imagesMap?.map { (kind, imageList) ->
-                    val imageType = when (kind) {
-                        1 -> com.gbr.model.gitabase.ImageType.PICTURE
-                        2 -> com.gbr.model.gitabase.ImageType.CARD
-                        3 -> com.gbr.model.gitabase.ImageType.DIAGRAM
-                        4 -> com.gbr.model.gitabase.ImageType.FRESCO
-                        else -> com.gbr.model.gitabase.ImageType.PICTURE
-                    }
+                    val imageType = ImageType.fromValue(kind)
 
                     val tabTitleResId = when (imageType) {
-                        com.gbr.model.gitabase.ImageType.PICTURE -> R.string.image_tab_pictures
-                        com.gbr.model.gitabase.ImageType.CARD -> R.string.image_tab_cards
-                        com.gbr.model.gitabase.ImageType.DIAGRAM -> R.string.image_tab_diagrams
-                        com.gbr.model.gitabase.ImageType.FRESCO -> R.string.image_tab_frescoes
+                        ImageType.PICTURE -> R.string.image_tab_pictures
+                        ImageType.CARD -> R.string.image_tab_cards
+                        ImageType.DIAGRAM -> R.string.image_tab_diagrams
+                        ImageType.FRESCO -> R.string.image_tab_frescoes
                     }
 
                     val tabTitle = context.getString(tabTitleResId)

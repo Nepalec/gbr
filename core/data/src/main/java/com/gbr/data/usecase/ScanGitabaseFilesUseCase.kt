@@ -73,7 +73,7 @@ class ScanGitabaseFilesUseCase @Inject constructor(
         return withContext(Dispatchers.IO) {
             folder.listFiles { file ->
                 file.isFile && file.extension.lowercase() == "db"
-            }?.toList() ?: emptyList()
+            }?.toList().orEmpty()
         }
     }
 

@@ -53,7 +53,7 @@ class SqlBookDao(
                                 id = c.getIntOrNull("_id") ?: 0,
                                 book = book,
                                 number = c.getIntOrNull("number") ?: 0,
-                                title = c.getStringOrNull("title") ?: "",
+                                title = c.getStringOrNull("title").orEmpty(),
                                 intro = c.getStringOrNull("desc")
                             )
                             chapterList.add(chapter)
@@ -90,8 +90,8 @@ class SqlBookDao(
                             val textContentsItem = TextContentsItem(
                                 id = c.getIntOrNull("_id") ?: 0,
                                 book = book,
-                                textNumber = c.getStringOrNull("txt_no") ?: "",
-                                title = c.getStringOrNull("preview") ?: ""
+                                textNumber = c.getStringOrNull("txt_no").orEmpty(),
+                                title = c.getStringOrNull("preview").orEmpty()
                             )
                             textList.add(textContentsItem)
                         } catch (e: Exception) {
@@ -141,9 +141,9 @@ class SqlBookDao(
                                 id = c.getIntOrNull("_id") ?: 0,
                                 book = book,
                                 chapterNumber = c.getIntOrNull("ch_no") ?: chapterNumber,
-                                textNumber = c.getStringOrNull("txt_no") ?: "",
-                                title = c.getStringOrNull("preview") ?: "",
-                                titleSanskrit = c.getStringOrNull("title_sanskrit") ?: ""
+                                textNumber = c.getStringOrNull("txt_no").orEmpty(),
+                                title = c.getStringOrNull("preview").orEmpty(),
+                                titleSanskrit = c.getStringOrNull("title_sanskrit").orEmpty()
                             )
                             textList.add(textItem)
                         } catch (e: Exception) {
@@ -237,10 +237,10 @@ class SqlBookDao(
         val songId = cursor.getIntOrNull("song_id")
         // Since query uses b.*, column names are the actual table column names (not aliased)
         val bookId = cursor.getIntOrNull("_id") ?: 0
-        val bookTitle = cursor.getStringOrNull("title") ?: ""
-        val bookAuthor = cursor.getStringOrNull("author") ?: ""
+        val bookTitle = cursor.getStringOrNull("title").orEmpty()
+        val bookAuthor = cursor.getStringOrNull("author").orEmpty()
         val bookDescription = cursor.getStringOrNull("desc")
-        val bookType = cursor.getStringOrNull("type") ?: ""
+        val bookType = cursor.getStringOrNull("type").orEmpty()
         val bookLevel = cursor.getIntOrNull("levels") ?: 3
         val bookSort = cursor.getIntOrNull("sort") ?: 0
         val bookWebAbbrev = cursor.getStringOrNull("web_abbrev")
@@ -248,11 +248,11 @@ class SqlBookDao(
         // Get additional metadata fields
         val hasSanskrit = cursor.getIntOrNull("hasSanskrit") == 1
         val isSimple = cursor.getIntOrNull("isSimple") == 1
-        val code = cursor.getStringOrNull("compare_code") ?: ""
+        val code = cursor.getStringOrNull("compare_code").orEmpty()
 
         return if (songId != null) {
             // Book WITH volumes - create BookPreview for the volume
-            val songName = cursor.getStringOrNull("songname") ?: ""
+            val songName = cursor.getStringOrNull("songname").orEmpty()
             val songSort = cursor.getIntOrNull("song_sort") ?: 0
             val songNumber = cursor.getStringOrNull("song_number")?.toIntOrNull()
             val colorBack = cursor.getStringOrNull("colorBackgnd")?.takeIf { it.isNotEmpty() }
@@ -417,7 +417,7 @@ class SqlBookDao(
 
                             // Construct full image path: gitabaseId.key/imageId.format.fileExtension
                             // This will be combined with context.filesDir in the repository layer
-                            val imageId = c.getStringOrNull("image_id") ?: ""
+                            val imageId = c.getStringOrNull("image_id").orEmpty()
                             val fullImagePath = if (imageId.isNotEmpty()) {
                                 "${gitabaseId.key}/$imageId.${imageFormat.fileExtension}"
                             } else {
@@ -431,7 +431,7 @@ class SqlBookDao(
                                 fullImagePath = fullImagePath,
                                 type = imageType,
                                 chapterNumber = c.getIntOrNull("cid"),
-                                textNumber = c.getStringOrNull("text_number") ?: "",
+                                textNumber = c.getStringOrNull("text_number").orEmpty(),
                                 chapterTitle = c.getStringOrNull("chapter_title"),
                                 imageDescription = imageDescription
                             )

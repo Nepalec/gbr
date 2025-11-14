@@ -15,55 +15,7 @@ data class TextImage(
     val filePath: String = "",
     val sortIndex: Int = 0,
     val randomIndex: Int = 0
-) {
-
-    /**
-     * Get file extension based on format
-     */
-    fun getFileExtension(): String {
-        return when (format) {
-            ImageFormat.GIF -> "gif"
-            ImageFormat.PNG -> "png"
-            ImageFormat.SVG -> "svg"
-            ImageFormat.JPEG -> "jpg"
-        }
-    }
-
-    /**
-     * Get full file path with protocol
-     */
-    fun getFullPathWithProtocol(): String {
-        return if (filePath.startsWith("/")) "file://$filePath" else "file:///$filePath"
-    }
-
-    /**
-     * Get formatted description for HTML display
-     */
-    fun getFormattedDescription(): String {
-        return description.replace("\"", "&quot;").replace("'", "&lsquo;")
-    }
-
-    /**
-     * Get chapter and text number in format "chapter.text"
-     */
-    fun getNumber(): String {
-        return "$chapterId.$textNumber"
-    }
-
-    /**
-     * Get display name for the image
-     */
-    fun getDisplayName(): String {
-        return if (description.isNotBlank()) description else "Image $id"
-    }
-
-    /**
-     * Check if image has content (not just a reference)
-     */
-    fun hasContent(): Boolean {
-        return content.isNotBlank()
-    }
-}
+)
 
 /**
  * Image type enumeration
@@ -74,7 +26,15 @@ enum class ImageType(
     PICTURE(1),
     CARD(2),
     DIAGRAM(3),
-    FRESCO(4)
+    FRESCO(4);
+
+
+    companion object {
+        private val map = entries.associateBy(ImageType::value)
+
+        fun fromValue(value: Int): ImageType =
+            map[value] ?: error("Unknown ImageType value: $value")
+    }
 }
 
 /**

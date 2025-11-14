@@ -49,7 +49,7 @@ class LoadBookDetailUseCase @Inject constructor(
             var bookDetail = result.getOrThrow()
 
             // Extract image list
-            val allImages = bookDetail.imageTabs?.flatMap { it.images } ?: emptyList()
+            val allImages = bookDetail.imageTabs?.flatMap { it.images }.orEmpty()
 
             // Handle edge case: no images
             if (allImages.isEmpty()) {
@@ -100,7 +100,7 @@ class LoadBookDetailUseCase @Inject constructor(
                 bookDetail = extractResult.getOrThrow()
 
                 // Extract images from the new bookDetail (which now has bitmaps)
-                val extractedImages = bookDetail.imageTabs?.flatMap { it.images } ?: emptyList()
+                val extractedImages = bookDetail.imageTabs?.flatMap { it.images }.orEmpty()
 
                 // checkImageFilesExtracted will actually save the files to disk
                 val filesExtracted = imageFilesRepository.checkImageFilesExtracted(gitabaseId, extractedImages).first()
