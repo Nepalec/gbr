@@ -38,4 +38,3 @@ dependencies {
     // Coil for image loading
     implementation(libs.coil.kt.compose)
 }
-

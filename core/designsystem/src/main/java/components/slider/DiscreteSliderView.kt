@@ -12,10 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
-
 @Composable
 fun DiscreteSliderView() {
-
     var sliderPositionWithStep by remember { mutableFloatStateOf(0f) }
 
     Slider(
@@ -25,9 +23,7 @@ fun DiscreteSliderView() {
         valueRange = 0f..50f,
         modifier = Modifier.fillMaxWidth()
     )
-
 }
-
 
 @Preview
 @Composable

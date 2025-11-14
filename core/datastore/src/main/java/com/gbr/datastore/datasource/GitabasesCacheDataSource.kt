@@ -28,9 +28,8 @@ class GitabasesCacheDataSource @Inject constructor(
         private const val TAG = "GitabasesCache"
         private val GITABASES_CACHE_KEY = stringPreferencesKey("gitabases_cache")
         private val CACHE_TIMESTAMP_KEY = stringPreferencesKey("gitabases_cache_timestamp")
-        private const val CACHE_VALIDITY_MS =  7L * 24 * 60 * 60 * 1000 // 1 week in milliseconds
+        private const val CACHE_VALIDITY_MS = 7L * 24 * 60 * 60 * 1000 // 1 week in milliseconds
     }
-
 
     suspend fun saveGitabases(gitabases: List<CachedGitabase>) {
         try {
@@ -86,8 +85,4 @@ class GitabasesCacheDataSource @Inject constructor(
             null
         }
     }
-
-
-
-
 }

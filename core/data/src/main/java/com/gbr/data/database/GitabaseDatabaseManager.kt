@@ -29,8 +29,8 @@ class GitabaseDatabaseManager @Inject constructor(
     // The first entry is always the least recently used
     private val databaseCache = LinkedHashMap<GitabaseID, GitabaseSqlDatabase>(
         maxCacheSize,
-        0.75f,  // load factor
-        true     // access-order mode (vs insertion-order)
+        0.75f, // load factor
+        true // access-order mode (vs insertion-order)
     )
 
     /**
@@ -87,7 +87,6 @@ class GitabaseDatabaseManager @Inject constructor(
             throw e
         }
     }
-
 
     /**
      * Evicts the least recently used database from the cache.

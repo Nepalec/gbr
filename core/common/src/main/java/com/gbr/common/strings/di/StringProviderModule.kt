@@ -15,5 +15,3 @@ abstract class StringProviderModule {
     @Singleton
     abstract fun bindStringProvider(impl: StringProviderImpl): StringProvider
 }
-
-

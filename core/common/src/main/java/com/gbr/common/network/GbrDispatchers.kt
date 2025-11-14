@@ -9,5 +9,5 @@ annotation class Dispatcher(val gbrDispatcher: GbrDispatchers)
 
 enum class GbrDispatchers {
     Default,
-    IO,
+    IO
 }

@@ -92,7 +92,6 @@ class InitializeGitabasesUseCase @Inject constructor(
                             ?: Exception(stringProvider.getString(R.string.error_failed_to_scan_after_extraction))
                     )
                 }
-
             } catch (e: Exception) {
                 Result.failure(e)
             }

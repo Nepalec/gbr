@@ -15,10 +15,7 @@ import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
 @Composable
-fun NavigationBarContent(
-    onIconOnlyClick: () -> Unit = {},
-    onTextAndIconClick: () -> Unit = {}
-) {
+fun NavigationBarContent(onIconOnlyClick: () -> Unit = {}, onTextAndIconClick: () -> Unit = {}) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
@@ -47,4 +44,3 @@ private fun NavigationBarContentPreview() {
         NavigationBarContent()
     }
 }
-

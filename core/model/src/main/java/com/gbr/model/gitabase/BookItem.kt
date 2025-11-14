@@ -1,6 +1,5 @@
 package com.gbr.model.gitabase
 
-
 /**
  * Represents a book in the Gitabase system
  */

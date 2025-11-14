@@ -1,8 +1,6 @@
 package com.gbr.designsystem.theme
 
-
 import androidx.compose.ui.graphics.Color
-
 
 val primaryLight = Color(0xFF67558E)
 val onPrimaryLight = Color(0xFFFFFFFF)
@@ -219,11 +217,3 @@ val surfaceContainerLowDarkHighContrast = Color(0xFF1D1B20)
 val surfaceContainerDarkHighContrast = Color(0xFF211F24)
 val surfaceContainerHighDarkHighContrast = Color(0xFF2B292F)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF36343A)
-
-
-
-
-
-
-
-

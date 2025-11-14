@@ -134,7 +134,9 @@ class CopyGitabaseUseCase @Inject constructor(
                 if (gitabases.any { it.filePath == tempFile.absolutePath }) {
                     Result.success(Unit)
                 } else {
-                    Result.failure(IllegalArgumentException(stringProvider.getString(R.string.error_file_not_recognized_gitabase)))
+                    Result.failure(
+                        IllegalArgumentException(stringProvider.getString(R.string.error_file_not_recognized_gitabase))
+                    )
                 }
             } else {
                 Result.failure(

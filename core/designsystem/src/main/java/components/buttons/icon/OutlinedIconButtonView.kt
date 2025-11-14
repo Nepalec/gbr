@@ -13,10 +13,8 @@ import androidx.compose.ui.unit.dp
 import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
-
 @Composable
 fun OutlinedIconButtonView() {
-
     OutlinedIconButton(
         onClick = { }
     ) {
@@ -27,7 +25,6 @@ fun OutlinedIconButtonView() {
         )
     }
 }
-
 
 @Preview
 @Composable

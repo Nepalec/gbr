@@ -138,7 +138,7 @@ data class LoadBookDetailState(
  */
 sealed class ImageLoadingState {
     object LoadingMetadata : ImageLoadingState()
-    object MetadataReady : ImageLoadingState()  // Images need extraction, show placeholders
+    object MetadataReady : ImageLoadingState() // Images need extraction, show placeholders
     data class Ready(val imageFilesExtracted: Boolean) : ImageLoadingState()
 }
 
@@ -150,4 +150,3 @@ sealed class NotesLoadingState {
     object Loading : NotesLoadingState()
     // Future: data class Ready(val notes: List<Note>) : NotesLoadingState()
 }
-

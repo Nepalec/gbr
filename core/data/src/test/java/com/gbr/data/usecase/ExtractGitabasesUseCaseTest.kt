@@ -32,10 +32,10 @@ class ExtractGitabasesUseCaseTest {
     fun setUp() {
         // Use Robolectric to get a real Android Context with resources
         context = ApplicationProvider.getApplicationContext()
-        
+
         // Use real StringProvider that uses actual resources
         stringProvider = StringProviderImpl(context)
-        
+
         extractGitabasesUseCase = ExtractGitabasesUseCase(context, stringProvider)
 
         // Create a temporary test folder
@@ -53,7 +53,7 @@ class ExtractGitabasesUseCaseTest {
 
         every { spiedContext.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
-        
+
         // Recreate use case with spied context
         val useCase = ExtractGitabasesUseCase(spiedContext, stringProvider)
 
@@ -68,10 +68,18 @@ class ExtractGitabasesUseCaseTest {
         )
 
         // Mock asset input streams for all 4 files
-        every { mockAssets.open("gitabases/gitabase_help_eng.db") } returns ByteArrayInputStream("test data".toByteArray())
-        every { mockAssets.open("gitabases/gitabase_help_rus.db") } returns ByteArrayInputStream("test data".toByteArray())
-        every { mockAssets.open("test_gitabases/gitabase_songs_rus.db") } returns ByteArrayInputStream("test data".toByteArray())
-        every { mockAssets.open("test_gitabases/gitabase_invaliddb_eng.db") } returns ByteArrayInputStream("test data".toByteArray())
+        every { mockAssets.open("gitabases/gitabase_help_eng.db") } returns ByteArrayInputStream(
+            "test data".toByteArray()
+        )
+        every { mockAssets.open("gitabases/gitabase_help_rus.db") } returns ByteArrayInputStream(
+            "test data".toByteArray()
+        )
+        every { mockAssets.open("test_gitabases/gitabase_songs_rus.db") } returns ByteArrayInputStream(
+            "test data".toByteArray()
+        )
+        every { mockAssets.open("test_gitabases/gitabase_invaliddb_eng.db") } returns ByteArrayInputStream(
+            "test data".toByteArray()
+        )
 
         // Execute
         val result = useCase.execute(testFolder, ALL_GITABASE_FILES)
@@ -161,7 +169,9 @@ class ExtractGitabasesUseCaseTest {
 
         every { spiedContext.resources } returns mockResources
         every { mockResources.assets } returns mockAssets
-        every { mockAssets.open("gitabases/gitabase_help_eng.db") } returns ByteArrayInputStream("test data".toByteArray())
+        every { mockAssets.open("gitabases/gitabase_help_eng.db") } returns ByteArrayInputStream(
+            "test data".toByteArray()
+        )
 
         // Recreate use case with spied context
         val useCase = ExtractGitabasesUseCase(spiedContext, stringProvider)

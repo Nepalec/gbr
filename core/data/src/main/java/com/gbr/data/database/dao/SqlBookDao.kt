@@ -54,7 +54,7 @@ class SqlBookDao(
                                 book = book,
                                 number = c.getIntOrNull("number") ?: 0,
                                 title = c.getStringOrNull("title") ?: "",
-                                intro = c.getStringOrNull("desc"),
+                                intro = c.getStringOrNull("desc")
                             )
                             chapterList.add(chapter)
                         } catch (e: Exception) {
@@ -113,14 +113,13 @@ class SqlBookDao(
             val textList = mutableListOf<TextItem>()
 
             try {
-
                 val debugQuery = if (book.isVolume) {
                     """
                         SELECT *
                         FROM textnums t
                         WHERE t.book_id = ${book.volumeGroupId}
                         AND t.song = ${book.volumeNumber}
-                        AND t.ch_no = ${chapterNumber}
+                        AND t.ch_no = $chapterNumber
                         ORDER BY t._id
                     """.trimIndent()
                 } else {
@@ -128,7 +127,7 @@ class SqlBookDao(
                    SELECT *
                         FROM textnums t
                         WHERE t.book_id = ${book.id}
-                        AND t.ch_no = ${chapterNumber}
+                        AND t.ch_no = $chapterNumber
                         ORDER BY t._id
                     """.trimIndent()
                 }
@@ -220,7 +219,6 @@ class SqlBookDao(
                     return@withContext c.getStringOrNull("content")
                 }
             }
-
         } catch (e: Exception) {
         }
 
@@ -230,7 +228,6 @@ class SqlBookDao(
 //    fun getBookChapters(book: BookPreview): Flow<List<Chapter>> = flow {}
 //    fun getBookTexts(book: BookPreview): Flow<List<TextItem>> = flow {}
 //    fun getBookImagesFileNames(book: BookPreview): Flow<List<TextImage>> = flow {}
-
 
     /**
      * Creates a domain Book model from a Cursor with joined books and songs data.
@@ -305,7 +302,6 @@ class SqlBookDao(
             )
         }
     }
-
 
     fun getBookImagesFileNames(
         book: BookPreview,
@@ -423,7 +419,7 @@ class SqlBookDao(
                             // This will be combined with context.filesDir in the repository layer
                             val imageId = c.getStringOrNull("image_id") ?: ""
                             val fullImagePath = if (imageId.isNotEmpty()) {
-                                "${gitabaseId.key}/${imageId}.${imageFormat.fileExtension}"
+                                "${gitabaseId.key}/$imageId.${imageFormat.fileExtension}"
                             } else {
                                 null
                             }
@@ -456,7 +452,6 @@ class SqlBookDao(
         }
         emit(images)
     }
-
 }
 
 /**
@@ -466,19 +461,25 @@ private fun Cursor.getIntOrNull(columnName: String): Int? {
     val columnIndex = getColumnIndex(columnName)
     return if (columnIndex >= 0 && !isNull(columnIndex)) {
         getInt(columnIndex)
-    } else null
+    } else {
+        null
+    }
 }
 
 private fun Cursor.getStringOrNull(columnName: String): String? {
     val columnIndex = getColumnIndex(columnName)
     return if (columnIndex >= 0 && !isNull(columnIndex)) {
         getString(columnIndex)
-    } else null
+    } else {
+        null
+    }
 }
 
 private fun Cursor.getBlobOrNull(columnName: String): ByteArray? {
     val columnIndex = getColumnIndex(columnName)
     return if (columnIndex >= 0 && !isNull(columnIndex)) {
         getBlob(columnIndex)
-    } else null
+    } else {
+        null
+    }
 }

@@ -30,7 +30,6 @@ public object NetworkModule {
         ignoreUnknownKeys = true
     }
 
-
     @Provides
     @Singleton
     fun okHttpCallFactory(): Call.Factory {
@@ -39,17 +38,16 @@ public object NetworkModule {
                 HttpLoggingInterceptor()
                     .apply {
                         setLevel(HttpLoggingInterceptor.Level.BODY)
-                    },
+                    }
             )
             .build()
     }
-
 
     @Provides
     @Singleton
     fun imageLoader(
         okHttpCallFactory: dagger.Lazy<Call.Factory>,
-        @ApplicationContext application: Context,
+        @ApplicationContext application: Context
     ): ImageLoader = trace("ImageLoader") {
         ImageLoader.Builder(application)
             .callFactory { okHttpCallFactory.get() }
@@ -61,7 +59,6 @@ public object NetworkModule {
             }
             .build()
     }
-
 }
 
 @Module
@@ -73,5 +70,7 @@ public abstract class NetworkBindingsModule {
 
     @Binds
     @Singleton
-    abstract fun bindGitabasesDescDataSource(gitabasesDescRetrofitDataSource: GitabasesDescRetrofitDataSource): IGitabasesDescDataSource
+    abstract fun bindGitabasesDescDataSource(
+        gitabasesDescRetrofitDataSource: GitabasesDescRetrofitDataSource
+    ): IGitabasesDescDataSource
 }

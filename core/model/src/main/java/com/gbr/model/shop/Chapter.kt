@@ -9,7 +9,7 @@ data class Chapter(
 data class ContentsItem(
     val id: String,
     val number: String,
-    val page: Int, //page number
+    val page: Int, // page number
     val title: String,
-    val indent: Int = 0,
+    val indent: Int = 0
 )

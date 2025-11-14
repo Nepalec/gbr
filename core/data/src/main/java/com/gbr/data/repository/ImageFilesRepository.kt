@@ -16,11 +16,5 @@ interface ImageFilesRepository {
      * @param imagefiles List of image files to check
      * @return Flow<Boolean> that emits true if all files exist, false otherwise
      */
-    suspend fun checkImageFilesExtracted(
-        gitabaseId: GitabaseID,
-        imagefiles: List<ImageFileItem>
-    ): Flow<Boolean>
+    suspend fun checkImageFilesExtracted(gitabaseId: GitabaseID, imagefiles: List<ImageFileItem>): Flow<Boolean>
 }
-
-
-

@@ -94,7 +94,8 @@ class ExtractGitabasesUseCase @Inject constructor(
             val msg = stringProvider.getString(
                 R.string.error_failed_to_extract_gitabase_file,
                 fileName,
-                e.message ?: "")
+                e.message ?: ""
+            )
             throw RuntimeException(
                 msg,
                 e

@@ -62,6 +62,4 @@ dependencies {
 
     // (optional but handy)
     androidTestImplementation(libs.kotlinx.coroutines.test)
-
-
 }

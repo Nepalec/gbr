@@ -17,7 +17,6 @@ data class BookDetail(
     val imageTabs: List<BookImageTab>? = null
 )
 
-
 data class ImageFileItem(
     val id: String,
     val format: ImageFormat,
@@ -38,7 +37,7 @@ data class ChapterContentsItem(
     val book: BookPreview,
     val number: Int,
     val title: String,
-    val intro: String?,
+    val intro: String?
 )
 
 /**
@@ -48,7 +47,7 @@ data class TextContentsItem(
     val id: Int,
     val book: BookPreview,
     val textNumber: String,
-    val title: String,
+    val title: String
 )
 
 data class TextItem(
@@ -57,5 +56,5 @@ data class TextItem(
     val chapterNumber: Int,
     val textNumber: String,
     val title: String,
-    val titleSanskrit: String,
+    val titleSanskrit: String
 )

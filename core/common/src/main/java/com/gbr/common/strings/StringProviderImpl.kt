@@ -17,5 +17,3 @@ class StringProviderImpl @Inject constructor(
         return context.getString(resId, *formatArgs)
     }
 }
-
-

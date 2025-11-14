@@ -78,17 +78,26 @@ class ScanGitabaseFilesUseCaseTest {
         assertTrue("Should find valid Gitabases", gitabases.size >= 3)
 
         // Verify that we have help gitabases
-        assertTrue("Should have help gitabases", gitabases.any {
-            it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.ENG
-        })
-        assertTrue("Should have help gitabases", gitabases.any {
-            it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.RUS
-        })
+        assertTrue(
+            "Should have help gitabases",
+            gitabases.any {
+                it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.ENG
+            }
+        )
+        assertTrue(
+            "Should have help gitabases",
+            gitabases.any {
+                it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.RUS
+            }
+        )
 
         // Verify that we have songs gitabase
-        assertTrue("Should have songs gitabase", gitabases.any {
-            it.id.type == GitabaseType("songs") && it.id.lang == GitabaseLang.RUS
-        })
+        assertTrue(
+            "Should have songs gitabase",
+            gitabases.any {
+                it.id.type == GitabaseType("songs") && it.id.lang == GitabaseLang.RUS
+            }
+        )
     }
 
     @Test
@@ -125,7 +134,8 @@ class ScanGitabaseFilesUseCaseTest {
         // Verify that invalid database is not included
         assertTrue(
             "Invalid database should not be included",
-            gitabases.none { it.title.contains("invaliddb") })
+            gitabases.none { it.title.contains("invaliddb") }
+        )
     }
 
     @Test
@@ -189,7 +199,8 @@ class ScanGitabaseFilesUseCaseTest {
             val gitabases = result.getOrThrow()
             assertEquals(
                 "Concurrent scans should return same number of Gitabases",
-                firstResult.size, gitabases.size
+                firstResult.size,
+                gitabases.size
             )
         }
     }

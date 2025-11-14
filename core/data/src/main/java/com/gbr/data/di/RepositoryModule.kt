@@ -22,7 +22,9 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindGitabasesDescRepository(gitabasesDescRepositoryImpl: GitabasesDescRepositoryImpl): GitabasesDescRepository
+    abstract fun bindGitabasesDescRepository(
+        gitabasesDescRepositoryImpl: GitabasesDescRepositoryImpl
+    ): GitabasesDescRepository
 
     @Binds
     @Singleton

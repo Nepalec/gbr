@@ -32,9 +32,7 @@ import androidx.compose.ui.unit.dp
  * @param modifier Modifier to be applied to the shimmer effect
  */
 @Composable
-fun ShimmerEffect(
-    modifier: Modifier = Modifier
-) {
+fun ShimmerEffect(modifier: Modifier = Modifier) {
     val infiniteTransition = rememberInfiniteTransition(label = "shimmer")
     val shimmerTranslate by infiniteTransition.animateFloat(
         initialValue = 0f,

@@ -24,5 +24,4 @@ object DataStoreModule {
             context.preferencesDataStoreFile("gitabase_preferences")
         }
     }
-
 }

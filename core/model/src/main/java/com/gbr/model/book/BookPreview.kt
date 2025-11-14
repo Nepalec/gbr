@@ -6,8 +6,8 @@ package com.gbr.model.book
  */
 data class BookPreview(
     val id: Int,
-    val sort: Int,//book sort if not multi-volume or volume (a.k.a. song) sort
-    val title: String, //book title if not multi-volume or volume (a.k.a. song) title
+    val sort: Int, // book sort if not multi-volume or volume (a.k.a. song) sort
+    val title: String, // book title if not multi-volume or volume (a.k.a. song) title
     val author: String,
     val description: String?,
     val type: String,
@@ -16,17 +16,17 @@ data class BookPreview(
     val colorBack: String?,
     val colorFore: String?,
 
-    //for multi-volume book (group of volumes)
-    val volumeGroupTitle: String?, //title for group of volumes
-    val volumeGroupAbbrev: String?, //abbreviation for group of volumes
-    val volumeGroupSort: Int?,   //sort for group of volumes
-    val volumeGroupId: Int?,     //id for group of volumes
+    // for multi-volume book (group of volumes)
+    val volumeGroupTitle: String?, // title for group of volumes
+    val volumeGroupAbbrev: String?, // abbreviation for group of volumes
+    val volumeGroupSort: Int?, // sort for group of volumes
+    val volumeGroupId: Int?, // id for group of volumes
 
-    val volumeNumber: Int?, //this book volume number in a group of volumes
+    val volumeNumber: Int?, // this book volume number in a group of volumes
 
     val hasSanskrit: Boolean = false,
     val isSimple: Boolean = false,
-    val code: String = "",
+    val code: String = ""
 ) {
     val isVolume: Boolean
         get() = volumeGroupId != null

@@ -10,10 +10,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
-
 @Composable
 fun OutlinedButtonView() {
-
     OutlinedButton(
         onClick = { }
     ) {

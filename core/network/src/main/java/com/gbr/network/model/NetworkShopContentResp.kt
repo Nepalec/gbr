@@ -1,6 +1,5 @@
 package com.gbr.network.model
 
-
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

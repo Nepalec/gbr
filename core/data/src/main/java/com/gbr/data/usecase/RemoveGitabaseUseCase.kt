@@ -28,7 +28,9 @@ class RemoveGitabaseUseCase @Inject constructor(
             val gitabasesFolder = File(context.getExternalFilesDir(null), "gitabases")
 
             if (!gitabasesFolder.exists()) {
-                return Result.failure(IllegalArgumentException(stringProvider.getString(R.string.error_gitabases_folder_not_exist)))
+                return Result.failure(
+                    IllegalArgumentException(stringProvider.getString(R.string.error_gitabases_folder_not_exist))
+                )
             }
 
             // Construct the expected filename based on gitabase ID

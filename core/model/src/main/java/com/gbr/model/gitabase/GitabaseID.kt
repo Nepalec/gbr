@@ -9,7 +9,7 @@ data class GitabaseID(val type: GitabaseType, val lang: GitabaseLang) : Parcelab
         get() = "${type.value}_${lang.value}"
 
     fun getFilePath(gitabaseFolderPath: String): String {
-        return "$gitabaseFolderPath/gitabase_${key}.db"
+        return "$gitabaseFolderPath/gitabase_$key.db"
     }
 }
 
@@ -45,5 +45,4 @@ data class GitabaseLang(val value: String) : Parcelable {
         val ENG = GitabaseLang("eng")
         val RUS = GitabaseLang("rus")
     }
-
 }

@@ -22,7 +22,6 @@ internal object CoroutineScopesModule {
     @Provides
     @Singleton
     @ApplicationScope
-    fun providesCoroutineScope(
-        @Dispatcher(GbrDispatchers.Default) dispatcher: CoroutineDispatcher,
-    ): CoroutineScope = CoroutineScope(SupervisorJob() + dispatcher)
+    fun providesCoroutineScope(@Dispatcher(GbrDispatchers.Default) dispatcher: CoroutineDispatcher): CoroutineScope =
+        CoroutineScope(SupervisorJob() + dispatcher)
 }

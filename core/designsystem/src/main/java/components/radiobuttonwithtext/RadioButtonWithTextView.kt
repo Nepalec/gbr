@@ -21,10 +21,8 @@ import androidx.compose.ui.unit.dp
 import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
-
 @Composable
 fun RadioButtonWithTextView() {
-
     var isChecked by remember { mutableStateOf(false) }
 
     Row(
@@ -37,23 +35,17 @@ fun RadioButtonWithTextView() {
                 isChecked = !isChecked
             }
     ) {
-
         RadioButton(
             selected = isChecked,
             onClick = { isChecked = !isChecked }
         )
 
         Text(text = stringResource(R.string.preview_allow_notifications))
-
     }
 }
 
 @Composable
-fun RadioButtonWithTextView(
-    text: String,
-    isSelected: Boolean,
-    onSelected: () -> Unit
-) {
+fun RadioButtonWithTextView(text: String, isSelected: Boolean, onSelected: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),

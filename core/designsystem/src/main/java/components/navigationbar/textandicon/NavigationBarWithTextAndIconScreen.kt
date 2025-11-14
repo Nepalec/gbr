@@ -17,8 +17,8 @@ import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
 //
-//@Composable
-//fun NavigationBarWithTextAndIconScreen() {
+// @Composable
+// fun NavigationBarWithTextAndIconScreen() {
 //
 //    SemestaUIKitTheme {
 //        Scaffold(
@@ -47,7 +47,7 @@ import com.gbr.designsystem.theme.SemestaUIKitTheme
 //    }
 //
 //
-//}
+// }
 
 @Composable
 fun NavigationBarWithTextAndIconView(
@@ -82,7 +82,6 @@ fun NavigationBarWithTextAndIconView(
                             MaterialTheme.colorScheme.onPrimaryContainer
                         }
                     )
-
                 },
                 label = {
                     Text(text = title)
@@ -91,7 +90,6 @@ fun NavigationBarWithTextAndIconView(
         }
     }
 }
-
 
 @Preview
 @Composable
@@ -102,12 +100,12 @@ private fun NavigationBarWithTextAndIconPreview() {
             icons = listOf(
                 R.drawable.home_24px,
                 R.drawable.news_24px,
-                R.drawable.bookmark_24px,
+                R.drawable.bookmark_24px
             ),
             selectedIcons = listOf(
                 R.drawable.home_filled_24px,
                 R.drawable.news_filled_24px,
-                R.drawable.bookmark_filled_24px,
+                R.drawable.bookmark_filled_24px
             )
         )
     }

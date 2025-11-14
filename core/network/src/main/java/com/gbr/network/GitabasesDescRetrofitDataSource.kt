@@ -40,7 +40,7 @@ public class GitabasesDescRetrofitDataSource @Inject constructor(
             // to prevent initializing OkHttp on the main thread.
             .callFactory { okhttpCallFactory.get().newCall(it) }
             .addConverterFactory(
-                networkJson.asConverterFactory("application/json".toMediaType()),
+                networkJson.asConverterFactory("application/json".toMediaType())
             )
             .build()
             .create(RetrofitGitabasesDescNetworkApi::class.java)

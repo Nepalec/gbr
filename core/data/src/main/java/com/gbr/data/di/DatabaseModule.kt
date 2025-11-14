@@ -35,7 +35,9 @@ object DatabaseModule {
         val gitabaseFolderPath = context.getExternalFilesDir(null)?.let {
             "${it.absolutePath}/gitabases"
         }
-            ?: throw IllegalStateException(stringProvider.getString(R.string.error_external_files_directory_not_available))
+            ?: throw IllegalStateException(
+                stringProvider.getString(R.string.error_external_files_directory_not_available)
+            )
 
         return GitabaseDatabaseManager(
             context = context,

@@ -10,19 +10,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
-
 @Composable
 fun FilledButtonView() {
-
     Button(
-        onClick = {},
+        onClick = {}
     ) {
         Text(
             text = stringResource(R.string.preview_save),
             style = MaterialTheme.typography.labelLarge
         )
     }
-
 }
 
 @Composable
@@ -41,7 +38,6 @@ fun FilledButtonView(
         )
     }
 }
-
 
 @Preview
 @Composable

@@ -23,10 +23,8 @@ import androidx.compose.ui.unit.dp
 import com.gbr.designsystem.R
 import com.gbr.designsystem.theme.SemestaUIKitTheme
 
-
 @Composable
 fun LargeAppBarScreen() {
-
     SemestaUIKitTheme {
         Scaffold(
             topBar = { LargeAppBarView() },
@@ -40,21 +38,16 @@ fun LargeAppBarScreen() {
                     .fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.potted_plant_24px),
                     contentDescription = "Plant",
                     tint = MaterialTheme.colorScheme.outlineVariant,
                     modifier = Modifier.size(160.dp)
                 )
-
             }
         }
     }
-
-
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,11 +94,10 @@ fun LargeAppBarView(title: String = "Headline Large") {
             scrolledContainerColor = MaterialTheme.colorScheme.primary,
             navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+        )
     )
 }
-
 
 @Preview
 @Composable

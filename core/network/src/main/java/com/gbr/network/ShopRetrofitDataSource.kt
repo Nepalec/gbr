@@ -17,10 +17,7 @@ import javax.inject.Singleton
  */
 private interface RetrofitShopNetworkApi {
     @GET(value = "get_shop_root.php")
-    suspend fun getShopRoot(
-        @Query("lang") lang: String,
-    ): NetworkShopContentResp
-
+    suspend fun getShopRoot(@Query("lang") lang: String): NetworkShopContentResp
 }
 
 private const val BASE_URL = BuildConfig.SHOP_BASE_URL
@@ -28,7 +25,7 @@ private const val BASE_URL = BuildConfig.SHOP_BASE_URL
 @Singleton
 public class ShopRetrofitDataSource @Inject constructor(
     networkJson: Json,
-    okhttpCallFactory: dagger.Lazy<Call.Factory>,
+    okhttpCallFactory: dagger.Lazy<Call.Factory>
 ) : IShopDataSource {
 
     private val networkApi = trace("RetrofitShopNetwork") {
@@ -38,12 +35,11 @@ public class ShopRetrofitDataSource @Inject constructor(
             // to prevent initializing OkHttp on the main thread.
             .callFactory { okhttpCallFactory.get().newCall(it) }
             .addConverterFactory(
-                networkJson.asConverterFactory("application/json".toMediaType()),
+                networkJson.asConverterFactory("application/json".toMediaType())
             )
             .build()
             .create(RetrofitShopNetworkApi::class.java)
     }
 
     override suspend fun getShopContents(lang: String): NetworkShopContentResp = networkApi.getShopRoot(lang)
-
 }

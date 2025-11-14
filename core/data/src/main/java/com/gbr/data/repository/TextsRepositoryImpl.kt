@@ -40,8 +40,8 @@ class TextsRepositoryImpl @Inject constructor(
     // The first entry is always the least recently used
     private val booksCache = LinkedHashMap<GitabaseID, List<BookPreview>>(
         MAX_CACHE_SIZE,
-        0.75f,  // load factor
-        true     // access-order mode (vs insertion-order)
+        0.75f, // load factor
+        true // access-order mode (vs insertion-order)
     )
 
     // Mutex for thread-safe cache access (allows suspending functions)
@@ -260,5 +260,4 @@ class TextsRepositoryImpl @Inject constructor(
             booksCache.clear()
         }
     }
-
 }

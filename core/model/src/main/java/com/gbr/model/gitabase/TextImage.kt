@@ -50,7 +50,6 @@ data class TextImage(
         return "$chapterId.$textNumber"
     }
 
-
     /**
      * Get display name for the image
      */
@@ -64,14 +63,13 @@ data class TextImage(
     fun hasContent(): Boolean {
         return content.isNotBlank()
     }
-
 }
 
 /**
  * Image type enumeration
  */
 enum class ImageType(
-    val value: Int,
+    val value: Int
 ) {
     PICTURE(1),
     CARD(2),
