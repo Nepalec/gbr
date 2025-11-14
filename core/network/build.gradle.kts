@@ -26,7 +26,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            buildConfigField("String", "BASE_URL", "\"https://gitabase.com/api/v2/\"")
+            buildConfigField("String", "BASE_URL", "\"https://gitabase.com/\"")
             buildConfigField("String", "SHOP_BASE_URL", "\"https://gitabase.com/shop/api/v2/\"")
         }
     }
