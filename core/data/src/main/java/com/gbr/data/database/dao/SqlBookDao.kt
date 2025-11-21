@@ -190,6 +190,7 @@ class SqlBookDao(
                     }
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 emptyList<BookPreview>()
             }
 

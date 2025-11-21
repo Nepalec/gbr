@@ -32,6 +32,11 @@ android {
         // Grant permissions for tests
         animationsDisabled = true
     }
+
+    // Enable testFixtures to share test utilities with other modules
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {
@@ -69,4 +74,19 @@ dependencies {
     // Hilt test dependencies
     kspAndroidTest(libs.hilt.compiler)
     kspTest(libs.hilt.compiler)
+
+    // Test fixtures dependencies - needed for testFixtures code
+    // testFixtures automatically inherits from api and implementation
+    // but we need to explicitly add test dependencies
+    testFixturesImplementation(libs.androidx.test.ext.junit)
+    testFixturesImplementation(libs.androidx.test.runner)
+    testFixturesImplementation(libs.androidx.test.core)
+    testFixturesImplementation(libs.kotlinx.coroutines.test)
+    // Add Kotlin stdlib for testFixtures (required for AGP 8.5.1+)
+    testFixturesCompileOnly(libs.kotlin.stdlib)
+    // Add core.common for StringProvider used in testFixtures
+    testFixturesImplementation(projects.core.common)
+    // Also need to expose api dependencies to testFixtures consumers
+    // This ensures that testFixtures consumers can see the model classes
+    testFixturesApi(projects.core.model)
 }

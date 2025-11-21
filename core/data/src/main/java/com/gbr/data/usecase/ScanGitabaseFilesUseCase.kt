@@ -19,7 +19,7 @@ import javax.inject.Inject
  */
 class ScanGitabaseFilesUseCase @Inject constructor(
     private val gitabasesRepository: GitabasesRepository,
-    private val gitabasesDescRepository: GitabasesDescRepository,
+    private val gitabasesDescRepository: GitabasesDescRepository?,
     private val stringProvider: StringProvider
 ) {
 
@@ -194,9 +194,9 @@ class ScanGitabaseFilesUseCase @Inject constructor(
     private suspend fun enrichGitabasesWithDescData(gitabases: Set<Gitabase>): Set<Gitabase> {
         return try {
             // Fetch GitabaseDescNetwork data
-            val descResponse = gitabasesDescRepository.getGitabasesDesc(false)
+            val descResponse = gitabasesDescRepository?.getGitabasesDesc(false)
 
-            if (descResponse.success != 1) {
+            if (descResponse?.success != 1) {
                 // If we can't get desc data, return original gitabases
                 return gitabases
             }

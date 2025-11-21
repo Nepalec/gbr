@@ -95,7 +95,7 @@ class ChapterViewModel @Inject constructor(
 }
 
 data class ChapterUiState(
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val bookDetail: BookDetail? = null,
     val chapter: ChapterContentsItem? = null,
     val chapterTexts: List<TextItem> = emptyList(),

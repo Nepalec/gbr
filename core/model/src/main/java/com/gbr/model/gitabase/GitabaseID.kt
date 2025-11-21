@@ -5,6 +5,12 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class GitabaseID(val type: GitabaseType, val lang: GitabaseLang) : Parcelable {
+
+    constructor(key: String) : this(
+        type = GitabaseType(key.substringBefore("_")),
+        lang = GitabaseLang(key.substringAfter("_"))
+    )
+
     val key: String
         get() = "${type.value}_${lang.value}"
 

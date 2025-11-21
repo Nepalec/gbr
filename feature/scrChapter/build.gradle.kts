@@ -19,6 +19,13 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/LICENSE*"
+            excludes += "/META-INF/NOTICE*"
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
@@ -37,4 +44,13 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     // Coil for image loading
     implementation(libs.coil.kt.compose)
+
+
+    // Test fixtures from core.data for integration tests
+    androidTestImplementation(testFixtures(projects.core.data))
+
+    // Test dependencies
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.turbine)
 }

@@ -122,7 +122,7 @@ class BookDetailViewModel @Inject constructor(
 }
 
 data class BookDetailUiState(
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val imageFilesExtracted: Boolean = false,
     val bookDetail: BookDetail? = null,
     val error: String? = null
