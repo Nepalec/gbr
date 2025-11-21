@@ -114,27 +114,6 @@ class GitabaseDatabaseManager @Inject constructor(
         }
     }
 
-    /**
-     * Manually closes and removes a specific database from the cache.
-     * Useful when a gitabase is deleted or needs to be refreshed.
-     *
-     * @param gitabaseId The ID of the gitabase to close
-     */
-    @Synchronized
-    fun closeDatabase(gitabaseId: GitabaseID) {
-        val database = databaseCache.remove(gitabaseId)
-
-        if (database != null) {
-            try {
-                database.close()
-                Log.d(TAG, "Manually closed database: ${gitabaseId.key}")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error closing database: ${gitabaseId.key}", e)
-            }
-        } else {
-            Log.d(TAG, "Database not in cache, nothing to close: ${gitabaseId.key}")
-        }
-    }
 
     /**
      * Closes all cached databases and clears the cache.
