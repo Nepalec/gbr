@@ -1,19 +1,32 @@
 package com.gbr.data.test
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.gbr.data.repository.TextsRepository
 import com.gbr.data.usecase.LoadBookDetailUseCase
 import com.gbr.model.gitabase.GitabaseID
-import org.junit.AfterClass
-import org.junit.BeforeClass
-import org.junit.runner.RunWith
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
 
 /**
  * Base class for ViewModel integration tests.
  * Provides common setup and teardown for all ViewModel tests.
  *
+ * Supports both Robolectric and instrumented tests.
+ * Subclasses should specify their own @RunWith annotation:
+ * - For Robolectric: @RunWith(RobolectricTestRunner::class) with @Config
+ * - For instrumented: @RunWith(AndroidJUnit4::class)
+ *
  * Usage:
- * ```kotlin
+ *
+ * @RunWith(RobolectricTestRunner::class)
+ * @Config(sdk = [28], manifest = Config.NONE)
  * class MyViewModelTest : BaseViewModelTest() {
  *     @Test
  *     fun testSomething() = runTest {
@@ -22,29 +35,51 @@ import org.junit.runner.RunWith
  *         // Use textsRepository, loadBookDetailUseCase, testGitabaseId
  *     }
  * }
- * ```
- */
-@RunWith(AndroidJUnit4::class)
+ *  */
 abstract class BaseViewModelTest {
 
     companion object {
-        @JvmStatic
-        lateinit var fixture: TestDatabaseFixture
+        @Volatile
+        private var fixtureInstance: TestDatabaseFixture? = null
 
-        @BeforeClass
         @JvmStatic
-        fun setupClass() {
-            fixture = TestDatabaseFixture.getInstance()
+        fun getOrCreateFixture(): TestDatabaseFixture {
+            return fixtureInstance ?: synchronized(this) {
+                fixtureInstance ?: TestDatabaseFixture.getInstance().also {
+                    fixtureInstance = it
+                }
+            }
         }
 
-        @AfterClass
         @JvmStatic
-        fun tearDownClass() {
-            TestDatabaseFixture.cleanup()
+        fun cleanupFixture() {
+            synchronized(this) {
+                fixtureInstance?.let {
+                    TestDatabaseFixture.cleanup()
+                    fixtureInstance = null
+                }
+            }
         }
     }
 
+    // Initialize fixture in @Before (works with both Robolectric and instrumented tests)
+    @Before
+    fun setUp() {
+        // Explicitly initialize fixture to ensure Robolectric is ready
+        // This ensures ApplicationProvider.getApplicationContext() works correctly
+        getOrCreateFixture()
+    }
+
+    @After
+    fun tearDown() {
+        // Don't cleanup here - let it be cleaned up after all tests
+        // Cleanup happens in companion object cleanup method
+    }
+
     // Convenience properties for subclasses
+    protected val fixture: TestDatabaseFixture
+        get() = getOrCreateFixture()
+
     protected val textsRepository: TextsRepository
         get() = fixture.textsRepository
 
@@ -59,16 +94,29 @@ abstract class BaseViewModelTest {
      * Call this in your test's runTest block before accessing gitabases.
      *
      * Example:
-     * ```kotlin
+     *
      * @Test
      * fun myTest() = runTest {
      *     initializeGitabases()
      *     // Now gitabases are available
      * }
-     * ```
-     */
+     *      */
     protected suspend fun initializeGitabases() {
         fixture.initializeGitabases()
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class MainCoroutineRule(
+    val dispatcher: TestDispatcher = UnconfinedTestDispatcher()
+) : TestWatcher() {
+
+    override fun starting(description: Description) {
+        Dispatchers.setMain(dispatcher)
+    }
+
+    override fun finished(description: Description) {
+        Dispatchers.resetMain()
     }
 }
 

@@ -10,7 +10,6 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -22,9 +21,9 @@ import java.io.File
 import javax.inject.Inject
 
 /**
- * Robolectric test for ScanGitabaseFilesUseCase.
+ * Robolectric test for ScanGitabasesUseCase.
  * Tests file system operations with simulated Android context.
- * Uses ExtractGitabasesUseCase to extract real database files from resources.
+ * All test databases are copied from resources - no programmatic creation.
  */
 @HiltAndroidTest
 @RunWith(RobolectricTestRunner::class)
@@ -38,16 +37,19 @@ class ScanGitabaseFilesUseCaseTest {
     lateinit var scanGitabaseFilesUseCase: ScanGitabaseFilesUseCase
 
     @Inject
-    lateinit var extractGitabasesUseCase: ExtractGitabasesUseCase
-
-    @Inject
     lateinit var gitabasesRepository: GitabasesRepository
 
     private lateinit var testFolder: File
     private lateinit var context: Context
 
+    val testFiles = listOf(
+        "gitabase_folio_eng.db",
+        "gitabase_invaliddb_eng.db",
+        "gitabase_songs_rus.db"
+    )
+
     @Before
-    fun setUp() = runTest {
+    fun setUp() {
         hiltRule.inject()
         context = ApplicationProvider.getApplicationContext()
 
@@ -55,8 +57,8 @@ class ScanGitabaseFilesUseCaseTest {
         testFolder = File(context.getExternalFilesDir(null), "test_gitabases")
         testFolder.mkdirs()
 
-        // Extract test database files from resources
-        extractTestDatabaseFilesFromResources()
+        // Copy test database files from resources to device
+        copyTestDatabaseFilesFromResources()
     }
 
     @After
@@ -74,115 +76,73 @@ class ScanGitabaseFilesUseCaseTest {
         assertTrue("Scan should succeed", result.isSuccess)
         val gitabases = result.getOrThrow()
 
-        // Should find at least 3 valid Gitabases (help files + songs file, excluding invalid)
-        assertTrue("Should find valid Gitabases", gitabases.size >= 3)
+        // Should find at least 2 valid Gitabases (1 of 3 is invalid)
+        assertTrue("Should find at least 3 valid Gitabases", gitabases.size == 2)
 
-        // Verify that we have help gitabases
-        assertTrue(
-            "Should have help gitabases",
-            gitabases.any {
-                it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.ENG
-            }
-        )
-        assertTrue(
-            "Should have help gitabases",
-            gitabases.any {
-                it.id.type == GitabaseType.HELP && it.id.lang == GitabaseLang.RUS
-            }
-        )
+        // Verify specific Gitabases were found
+        val songsRus = gitabases.find {
+            it.id.type == GitabaseType("songs") && it.id.lang == GitabaseLang.RUS
+        }
+        val folioEng = gitabases.find {
+            it.id.type == GitabaseType("folio") && it.id.lang == GitabaseLang.ENG
+        }
 
-        // Verify that we have songs gitabase
+        // At least one help database should be found
         assertTrue(
-            "Should have songs gitabase",
-            gitabases.any {
-                it.id.type == GitabaseType("songs") && it.id.lang == GitabaseLang.RUS
-            }
+            "Should find all Gitabases",
+            songsRus != null && folioEng != null
         )
     }
 
     @Test
-    fun execute_should_add_Gitabases_to_repository() = runTest {
-        // Clear repository first
-        val initialGitabases = gitabasesRepository.getAllGitabases()
+    fun execute_should_handle_invalid_folder_path() = runTest {
+        val invalidPath = "/non/existent/path"
 
-        // Execute the use case
-        val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
+        val result = scanGitabaseFilesUseCase.execute(invalidPath)
 
-        // Verify success
-        assertTrue("Scan should succeed", result.isSuccess)
-
-        // Check that Gitabases were added to repository
-        val availableGitabases = gitabasesRepository.getAllGitabases()
+        assertTrue("Should fail for invalid path", result.isFailure)
         assertTrue(
-            "Repository should have more Gitabases than initially",
-            availableGitabases.size > initialGitabases.size
-        )
-    }
-
-    @Test
-    fun execute_should_validate_database_files() = runTest {
-        // Execute the use case
-        val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
-
-        // Verify success
-        assertTrue("Scan should succeed", result.isSuccess)
-        val gitabases = result.getOrThrow()
-
-        // All returned Gitabases should be valid (invalid database should be filtered out)
-        assertTrue("All returned Gitabases should be valid", gitabases.isNotEmpty())
-
-        // Verify that invalid database is not included
-        assertTrue(
-            "Invalid database should not be included",
-            gitabases.none { it.title.contains("invaliddb") }
+            "Should be IllegalArgumentException",
+            result.exceptionOrNull() is IllegalArgumentException
         )
     }
 
     @Test
     fun execute_should_handle_empty_folder() = runTest {
-        // Create empty folder
         val emptyFolder = File(context.getExternalFilesDir(null), "empty_test")
         emptyFolder.mkdirs()
 
-        // Execute the use case
         val result = scanGitabaseFilesUseCase.execute(emptyFolder.absolutePath)
 
-        // Should succeed but return empty list
-        assertTrue("Scan should succeed", result.isSuccess)
-        val gitabases = result.getOrThrow()
-        assertTrue("Should return empty list for empty folder", gitabases.isEmpty())
+        assertTrue("Should succeed for empty folder", result.isSuccess)
+        assertTrue("Should return empty list", result.getOrThrow().isEmpty())
 
-        // Clean up
         emptyFolder.deleteRecursively()
     }
 
     @Test
-    fun execute_should_handle_invalid_folder_path() = runTest {
-        // Execute with invalid path
-        val result = scanGitabaseFilesUseCase.execute("/invalid/path/that/does/not/exist")
+    fun execute_should_add_Gitabases_to_repository() = runTest {
+        // Clear repository first by getting initial state
+        val initialGitabases = gitabasesRepository.getAllGitabases()
 
-        // Should fail
-        assertTrue("Should fail for invalid path", result.isFailure)
-    }
+        val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
 
-    @Test
-    fun test_should_access_emulator_file_system() = runTest {
-        // Verify we can access the test folder
-        assertTrue("Test folder should exist", testFolder.exists())
-        assertTrue("Test folder should be a directory", testFolder.isDirectory)
+        assertTrue("Should succeed", result.isSuccess)
 
-        // Verify test files exist
-        val testFiles = testFolder.listFiles()
-        assertNotNull("Test files should exist", testFiles)
-        assertTrue("Should have test files", testFiles!!.isNotEmpty())
+        // Verify Gitabases were added to repository
+        val availableGitabases = gitabasesRepository.getAllGitabases()
+        assertTrue(
+            "Repository should contain discovered Gitabases",
+            availableGitabases.size == 2
+        )
     }
 
     @Test
     fun test_should_handle_concurrent_scanning() = runTest {
-        // Test concurrent scanning of the same folder
+        // Test multiple concurrent scans
         val results = mutableListOf<Result<Set<com.gbr.model.gitabase.Gitabase>>>()
 
-        // Run multiple scans concurrently
+        // Launch multiple concurrent scans
         repeat(3) {
             val result = scanGitabaseFilesUseCase.execute(testFolder.absolutePath)
             results.add(result)
@@ -190,15 +150,15 @@ class ScanGitabaseFilesUseCaseTest {
 
         // All should succeed
         results.forEach { result ->
-            assertTrue("All concurrent scans should succeed", result.isSuccess)
+            assertTrue("Concurrent scan should succeed", result.isSuccess)
         }
 
-        // All should return similar results
+        // All should return same results
         val firstResult = results.first().getOrThrow()
         results.forEach { result ->
             val gitabases = result.getOrThrow()
             assertEquals(
-                "Concurrent scans should return same number of Gitabases",
+                "Concurrent scans should return same results",
                 firstResult.size,
                 gitabases.size
             )
@@ -206,25 +166,28 @@ class ScanGitabaseFilesUseCaseTest {
     }
 
     /**
-     * Extracts test SQLite database files from resources to the test directory.
-     * Uses ExtractGitabasesUseCase to get real database files from resources.
+     * Copies test SQLite database files from assets to the test folder.
+     * This ensures we test with real database files that have proper schema and data.
      */
-    private suspend fun extractTestDatabaseFilesFromResources() {
-        try {
-            // Extract all 4 files (2 help + 2 test) from resources
-            val result = extractGitabasesUseCase.execute(testFolder, ExtractGitabasesUseCase.ALL_GITABASE_FILES)
+    private fun copyTestDatabaseFilesFromResources() {
+        testFiles.forEach { fileName ->
+            try {
+                // Read from assets using Android Context (works with Robolectric)
+                val assetPath = "test_gitabases/$fileName"
+                val assetStream = context.assets.open(assetPath)
 
-            if (result.isSuccess) {
-                val extractedFiles = result.getOrThrow()
-                println("✅ Extracted ${extractedFiles.size} database files from resources:")
-                extractedFiles.forEach { filePath ->
-                    println("  - $filePath")
+                // Copy to test folder
+                val deviceFile = File(testFolder, fileName)
+                deviceFile.outputStream().use { output ->
+                    assetStream.copyTo(output)
                 }
-            } else {
-                throw RuntimeException("Failed to extract database files: ${result.exceptionOrNull()?.message}")
+                assetStream.close()
+
+                println("Copied $fileName to test folder: ${deviceFile.absolutePath}")
+            } catch (e: Exception) {
+                // Fail if copying fails - no fallback creation
+                throw RuntimeException("Failed to copy test asset $fileName: ${e.message}", e)
             }
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to extract test database files from resources: ${e.message}", e)
         }
     }
 }

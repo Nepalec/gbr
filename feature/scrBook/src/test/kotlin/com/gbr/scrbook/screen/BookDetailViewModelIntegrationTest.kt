@@ -3,6 +3,7 @@ package com.gbr.scrbook.screen
 import app.cash.turbine.test
 import com.gbr.data.repository.UserPreferencesRepository
 import com.gbr.data.test.BaseViewModelTest
+import com.gbr.data.test.MainCoroutineRule
 import com.gbr.model.book.BookContentsTabOptions
 import com.gbr.model.book.BookPreview
 import com.gbr.model.gitabase.ImageType
@@ -17,16 +18,26 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /**
- * Integration test for BookDetailViewModel.
+ * Integration test for BookDetailViewModel using Robolectric.
  * Tests the full flow: ViewModel -> UseCase -> Repository -> Database
  * Uses real test databases from assets.
  */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [28], manifest = Config.NONE)
 class BookDetailViewModelIntegrationTest : BaseViewModelTest() {
+    @get:Rule
+    val mainRule = MainCoroutineRule()
+
     lateinit var viewModel: BookDetailViewModel
     lateinit var bookPreview: BookPreview
+    lateinit var userPreferencesRepository: UserPreferencesRepository
 
     @Before
     fun setup() = runTest {
@@ -41,21 +52,20 @@ class BookDetailViewModelIntegrationTest : BaseViewModelTest() {
         bookPreview = books.first()
 
         // Create mock UserPreferencesRepository
-        val userPreferencesRepository: UserPreferencesRepository = mockk(relaxed = true) {
+        userPreferencesRepository = mockk(relaxed = true) {
             coEvery { bookContentsTabOptions } returns flowOf(
                 com.gbr.model.book.BookContentsTabOptions()
             )
         }
-
-        // Create ViewModel with real UseCase and mock UserPreferencesRepository
-        viewModel = BookDetailViewModel(
-            userPreferencesRepository = userPreferencesRepository,
-            loadBookDetailUseCase = loadBookDetailUseCase
-        )
     }
 
     @Test
     fun loadBook_loadsBookDetailSuccessfullyFromTestDatabase() = runTest {
+
+        viewModel = BookDetailViewModel(
+            userPreferencesRepository = userPreferencesRepository,
+            loadBookDetailUseCase = loadBookDetailUseCase
+        )
 
         viewModel.loadBook(testGitabaseId, bookPreview)
 
@@ -78,6 +88,10 @@ class BookDetailViewModelIntegrationTest : BaseViewModelTest() {
 
     @Test
     fun loadBook_handlesLoadingStateCorrectly() = runTest {
+        viewModel = BookDetailViewModel(
+            userPreferencesRepository = userPreferencesRepository,
+            loadBookDetailUseCase = loadBookDetailUseCase
+        )
         viewModel.uiState.test {
             viewModel.loadBook(testGitabaseId, bookPreview)
 

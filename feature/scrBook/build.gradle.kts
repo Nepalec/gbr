@@ -27,6 +27,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -53,10 +59,11 @@ dependencies {
 
     // Test fixtures from core.data for integration tests
     androidTestImplementation(testFixtures(projects.core.data))
+    testImplementation(testFixtures(projects.core.data)) // For Robolectric tests
 
-    // Test dependencies
-    androidTestImplementation(libs.mockk.android)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.turbine)
-    //androidTestImplementation(libs.androidx.test.ext.junit)
+    // Unit test dependencies (Robolectric)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.mockk) // Use regular mockk for unit tests
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }
