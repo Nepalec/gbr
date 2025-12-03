@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import java.util.UUID
 import javax.inject.Inject
 
 /**
@@ -35,6 +36,7 @@ class GbrPreferencesDataSource @Inject constructor(
         private val LAST_USED_GITABASE_KEY = stringPreferencesKey("last_used_gitabase")
         private val BOOK_CONTENTS_TEXT_SIZE_KEY = intPreferencesKey("book_contents_text_size")
         private val BOOK_CONTENTS_COLUMNS_KEY = intPreferencesKey("book_contents_columns")
+        private val DOWNLOAD_WORK_ID_KEY = stringPreferencesKey("download_work_id")
     }
 
     /**
@@ -248,6 +250,48 @@ class GbrPreferencesDataSource @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse GitabaseID from key: $key", e)
+            null
+        }
+    }
+
+    /**
+     * Sets the current download work ID.
+     *
+     * @param workId The UUID of the download work, or null to clear it
+     */
+    suspend fun setCurrentDownloadWorkId(workId: UUID?) {
+        try {
+            userPreferences.edit { preferences ->
+                if (workId != null) {
+                    preferences[DOWNLOAD_WORK_ID_KEY] = workId.toString()
+                } else {
+                    preferences.remove(DOWNLOAD_WORK_ID_KEY)
+                }
+            }
+        } catch (ioException: IOException) {
+            Log.e(TAG, "Failed to update download work ID", ioException)
+        }
+    }
+
+    /**
+     * Gets the current download work ID.
+     *
+     * @return The UUID of the current download work, or null if none exists
+     */
+    suspend fun getCurrentDownloadWorkId(): UUID? {
+        return try {
+            userPreferences.data.map { preferences ->
+                preferences[DOWNLOAD_WORK_ID_KEY]?.let { workIdString ->
+                    try {
+                        UUID.fromString(workIdString)
+                    } catch (e: IllegalArgumentException) {
+                        Log.w(TAG, "Invalid UUID format: $workIdString", e)
+                        null
+                    }
+                }
+            }.firstOrNull() ?: null
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get download work ID", e)
             null
         }
     }

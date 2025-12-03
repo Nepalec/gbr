@@ -4,6 +4,7 @@ data class GitabaseDescNetwork(
     val gbname: String,
     val gbalias: String,
     val gblang: String,
+    val downloadURL: String,
     val lastModified: String
 )
 

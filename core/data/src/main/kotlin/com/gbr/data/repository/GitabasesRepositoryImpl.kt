@@ -3,7 +3,9 @@ package com.gbr.data.repository
 import com.gbr.model.gitabase.Gitabase
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseType
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,6 +19,12 @@ class GitabasesRepositoryImpl @Inject constructor() : GitabasesRepository {
     override fun getAllGitabases(): Set<Gitabase> {
         val gitabases = _availableGitabases.value
         return gitabases.sortedWith(compareBy<Gitabase> { it.id.type == GitabaseType.HELP }.thenBy { it.title }).toSet()
+    }
+
+    override fun getAllGitabasesFlow(): Flow<Set<Gitabase>> {
+        return _availableGitabases.map { gitabases ->
+            gitabases.sortedWith(compareBy<Gitabase> { it.id.type == GitabaseType.HELP }.thenBy { it.title }).toSet()
+        }
     }
 
     override fun getCurrentGitabase(): Gitabase? = _currentGitabase.value

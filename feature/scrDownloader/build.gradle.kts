@@ -26,6 +26,9 @@ dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.model)
     implementation(projects.core.data)
+    implementation(projects.core.datastore)
+    implementation(projects.core.ui)
+    implementation(projects.core.work)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeKtx)
     implementation(libs.androidx.lifecycle.viewModelCompose)
@@ -33,6 +36,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Compose UI Tooling for previews
     debugImplementation(libs.androidx.compose.ui.tooling)

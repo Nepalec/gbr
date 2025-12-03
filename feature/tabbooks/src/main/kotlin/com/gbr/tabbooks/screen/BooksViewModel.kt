@@ -38,22 +38,16 @@ class BooksViewModel @Inject constructor(
     val uiState: StateFlow<BooksUiState> = _uiState.asStateFlow()
 
     init {
-        loadGitabases()
+        observeGitabases()
         observeCurrentGitabase()
     }
 
-    private fun loadGitabases() {
+    private fun observeGitabases() {
         viewModelScope.launch {
-            try {
-                val gitabases = gitabasesRepository.getAllGitabases()
+            gitabasesRepository.getAllGitabasesFlow().collect { gitabases ->
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     gitabases = linkedSetOf(*gitabases.toTypedArray())
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.message ?: stringProvider.getString(R.string.error_failed_to_load_gitabases)
                 )
             }
         }
@@ -146,11 +140,6 @@ class BooksViewModel @Inject constructor(
                 is BookDisplayItem.VolumeGroup -> item.sortOrder
             }
         }
-    }
-
-    fun refreshGitabases() {
-        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
-        loadGitabases()
     }
 
     fun selectGitabase(gitabase: Gitabase) {
@@ -309,9 +298,7 @@ class BooksViewModel @Inject constructor(
                 if (removeResult.isSuccess) {
                     // Remove from repository
                     gitabasesRepository.removeGitabase(gitabase)
-
-                    // Refresh the list
-                    refreshGitabases()
+                    _uiState.value = _uiState.value.copy(gitabases = gitabasesRepository.getAllGitabases() as LinkedHashSet<Gitabase>)
                 } else {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,

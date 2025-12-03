@@ -43,6 +43,7 @@ dependencies {
     api(projects.core.model)
     implementation(projects.core.network)
     implementation(projects.core.datastore)
+    implementation(projects.core.datasource)
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
@@ -55,6 +56,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    // WorkManager for background downloads
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Test dependencies
     testImplementation(libs.junit)

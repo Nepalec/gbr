@@ -26,6 +26,7 @@ object GitabaseDescMapper {
             title = gitabaseDescNetwork.gbname,
             version = 1, // Default version
             filePath = "${gitabaseDescNetwork.gbalias}_${gitabaseDescNetwork.gblang}",
+            downloadURL = gitabaseDescNetwork.downloadURL,
             lastModified = gitabaseDescNetwork.lastModified
         )
     }

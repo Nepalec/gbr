@@ -8,7 +8,9 @@ import com.gbr.data.repository.ImageFilesRepository
 import com.gbr.data.repository.TextsRepository
 import com.gbr.data.repository.UserPreferencesRepository
 import com.gbr.data.repository.UserPreferencesRepositoryImpl
+import com.gbr.data.repository.FileRepository
 import com.gbr.data.usecase.CopyGitabaseUseCase
+import com.gbr.data.usecase.DownloadAndUnzipUseCase
 import com.gbr.data.usecase.ExtractGitabasesUseCase
 import com.gbr.data.usecase.InitializeGitabasesUseCase
 import com.gbr.data.usecase.LoadBookDetailUseCase
@@ -110,5 +112,13 @@ object UseCaseModule {
         stringProvider: StringProvider
     ): LoadBookDetailUseCase {
         return LoadBookDetailUseCase(textsRepository, imageFilesRepository, stringProvider)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDownloadAndUnzipUseCase(
+        fileRepository: FileRepository
+    ): DownloadAndUnzipUseCase {
+        return DownloadAndUnzipUseCase(fileRepository)
     }
 }

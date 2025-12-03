@@ -1,5 +1,7 @@
 package com.gbr.data.di
 
+import com.gbr.data.repository.FileRepository
+import com.gbr.data.repository.FileRepositoryImpl
 import com.gbr.data.repository.GitabasesDescRepository
 import com.gbr.data.repository.GitabasesDescRepositoryImpl
 import com.gbr.data.repository.GitabasesRepository
@@ -29,4 +31,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindImageFilesRepository(imageFilesRepositoryImpl: ImageFilesRepositoryImpl): ImageFilesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFileRepository(fileRepositoryImpl: FileRepositoryImpl): FileRepository
 }

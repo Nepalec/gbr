@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -29,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -136,6 +138,8 @@ fun DownloaderScreen(
                         },
                         downloadingGitabase = uiState.downloadingGitabase,
                         downloadedGitabases = uiState.downloadedGitabases,
+                        progress = viewModel.progress.collectAsState().value,
+                        stage = viewModel.stage.collectAsState().value,
                         onDownloadClick = viewModel::downloadGitabase
                     )
                 }
@@ -202,6 +206,8 @@ private fun GitabaseList(
     gitabases: List<Gitabase>,
     downloadingGitabase: Gitabase?,
     downloadedGitabases: Set<Gitabase>,
+    progress: Int,
+    stage: com.gbr.model.download.DownloadStage,
     onDownloadClick: (Gitabase) -> Unit
 ) {
     Column(
@@ -222,6 +228,8 @@ private fun GitabaseList(
                     gitabase = gitabase,
                     isDownloading = gitabase == downloadingGitabase,
                     isDownloaded = gitabase in downloadedGitabases,
+                    progress = if (gitabase == downloadingGitabase) progress else 0,
+                    stage = if (gitabase == downloadingGitabase) stage else com.gbr.model.download.DownloadStage.STARTING,
                     onDownloadClick = { onDownloadClick(gitabase) }
                 )
             }
@@ -234,10 +242,14 @@ private fun GitabaseItem(
     gitabase: Gitabase,
     isDownloading: Boolean,
     isDownloaded: Boolean,
+    progress: Int,
+    stage: com.gbr.model.download.DownloadStage,
     onDownloadClick: () -> Unit
 ) {
     Card(
-        onClick = { onDownloadClick() },
+        onClick = {
+            onDownloadClick()
+                  },
         modifier = Modifier
             .fillMaxWidth()
             .background(
@@ -278,13 +290,43 @@ private fun GitabaseItem(
                         else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
+                if (isDownloading) {
+                    Column(
+                        modifier = Modifier.padding(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "${stage.name.lowercase().replaceFirstChar { it.uppercase() }}: $progress%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        // Custom progress bar
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp)
+                                .clip(RoundedCornerShape(2.dp))
+                                .background(
+                                    MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.2f)
+                                )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(progress / 100f)
+                                    .fillMaxHeight()
+                                    .clip(RoundedCornerShape(2.dp))
+                                    .background(MaterialTheme.colorScheme.onSecondaryContainer)
+                            )
+                        }
+                    }
+                }
             }
 
             if (isDownloading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
+//                CircularProgressIndicator(
+//                    modifier = Modifier.size(24.dp),
+//                    color = MaterialTheme.colorScheme.onSecondaryContainer
+//                )
             } else if (isDownloaded) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.check_24px),

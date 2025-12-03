@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface GitabasesRepository {
     fun getAllGitabases(): Set<Gitabase>
+    fun getAllGitabasesFlow(): Flow<Set<Gitabase>>
     fun getCurrentGitabase(): Gitabase?
     fun getCurrentGitabaseFlow(): Flow<Gitabase?>
     fun setCurrentGitabase(gitabaseId: GitabaseID)

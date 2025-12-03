@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -21,7 +23,8 @@ import com.gbr.designsystem.components.navigationbar.textandicon.NavigationBarWi
 
 @Composable
 internal fun GbrNavHost(
-    defaultNavigator: DefaultNavigator
+    defaultNavigator: DefaultNavigator,
+    snackbarHostState: SnackbarHostState
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
@@ -70,6 +73,9 @@ internal fun GbrNavHost(
                     }
                 )
             }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     ) { innerPadding ->

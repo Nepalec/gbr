@@ -80,6 +80,7 @@ class GitabasesDescRepositoryImpl @Inject constructor(
             gbname = gbname,
             gbalias = gbalias,
             gblang = gblang,
+            downloadURL = downloadURL.orEmpty(),
             lastModified = lastModified
         )
     }
@@ -89,6 +90,7 @@ class GitabasesDescRepositoryImpl @Inject constructor(
             gbname = gbname,
             gbalias = gbalias,
             gblang = gblang,
+            downloadURL = downloadURL.orEmpty(),
             lastModified = lastModified
         )
     }
@@ -98,6 +100,7 @@ class GitabasesDescRepositoryImpl @Inject constructor(
             gbname = gbname,
             gbalias = gbalias,
             gblang = gblang,
+            downloadURL = downloadURL,
             lastModified = lastModified
         )
     }

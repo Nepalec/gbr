@@ -20,6 +20,8 @@ data class NetworkGitabasesDescResp(
         val gbalias: String,
         @SerialName("gblang")
         val gblang: String,
+        @SerialName("downloadURL")
+        val downloadURL: String? = null,
         @SerialName("last_modified")
         val lastModified: String
     )
