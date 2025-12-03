@@ -20,6 +20,9 @@ class GitabaseDatabaseManager @Inject constructor(
     private val gitabaseFolderPath: String,
     private val maxCacheSize: Int = 3
 ) {
+    val gitabasesPath: String
+        get() = gitabaseFolderPath
+
     companion object {
         private const val TAG = "GitabaseDatabaseManager"
     }

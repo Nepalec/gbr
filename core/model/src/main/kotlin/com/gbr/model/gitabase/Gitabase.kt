@@ -11,7 +11,8 @@ data class Gitabase(
     val filePath: String,
     val isShopDatabase: Boolean = false,
     val hasTranslation: Boolean = false,
-    val lastModified: String
+    val lastModified: String,
+    val downloadURL:String? = null,
 ) : Parcelable {
     val canDelete: Boolean
         get() = id.type != GitabaseType.HELP && id.type != GitabaseType.MY_BOOKS

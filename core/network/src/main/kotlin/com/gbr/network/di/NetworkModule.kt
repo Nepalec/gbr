@@ -32,7 +32,7 @@ public object NetworkModule {
 
     @Provides
     @Singleton
-    fun okHttpCallFactory(): Call.Factory {
+    fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(
                 HttpLoggingInterceptor()
@@ -41,6 +41,12 @@ public object NetworkModule {
                     }
             )
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun okHttpCallFactory(okHttpClient: OkHttpClient): Call.Factory {
+        return okHttpClient
     }
 
     @Provides

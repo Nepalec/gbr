@@ -19,6 +19,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -136,6 +137,8 @@ fun DownloaderScreen(
                         },
                         downloadingGitabase = uiState.downloadingGitabase,
                         downloadedGitabases = uiState.downloadedGitabases,
+                        progress = viewModel.progress.collectAsState().value,
+                        stage = viewModel.stage.collectAsState().value,
                         onDownloadClick = viewModel::downloadGitabase
                     )
                 }
@@ -202,6 +205,8 @@ private fun GitabaseList(
     gitabases: List<Gitabase>,
     downloadingGitabase: Gitabase?,
     downloadedGitabases: Set<Gitabase>,
+    progress: Int,
+    stage: com.gbr.model.download.DownloadStage,
     onDownloadClick: (Gitabase) -> Unit
 ) {
     Column(
@@ -222,6 +227,8 @@ private fun GitabaseList(
                     gitabase = gitabase,
                     isDownloading = gitabase == downloadingGitabase,
                     isDownloaded = gitabase in downloadedGitabases,
+                    progress = if (gitabase == downloadingGitabase) progress else 0,
+                    stage = if (gitabase == downloadingGitabase) stage else com.gbr.model.download.DownloadStage.STARTING,
                     onDownloadClick = { onDownloadClick(gitabase) }
                 )
             }
@@ -234,6 +241,8 @@ private fun GitabaseItem(
     gitabase: Gitabase,
     isDownloading: Boolean,
     isDownloaded: Boolean,
+    progress: Int,
+    stage: com.gbr.model.download.DownloadStage,
     onDownloadClick: () -> Unit
 ) {
     Card(
@@ -278,6 +287,23 @@ private fun GitabaseItem(
                         else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                 )
+                if (isDownloading) {
+                    Column(
+                        modifier = Modifier.padding(top = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "${stage.name.lowercase().replaceFirstChar { it.uppercase() }}: $progress%",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        LinearProgressIndicator(
+                            progress = progress / 100f,
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                }
             }
 
             if (isDownloading) {

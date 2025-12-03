@@ -11,5 +11,6 @@ data class CachedGitabase(
     val gbname: String,
     val gbalias: String,
     val gblang: String,
+    val downloadURL: String,
     val lastModified: String
 )

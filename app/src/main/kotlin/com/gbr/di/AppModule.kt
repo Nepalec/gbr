@@ -1,5 +1,7 @@
 package com.gbr.di
 
+import android.content.Context
+import androidx.work.WorkManager
 import com.gbr.navigation.DefaultNavigator
 import com.gbr.navigation.FullscreenContent
 import com.gbr.scrDownloader.navigation.DownloaderFeature
@@ -12,6 +14,7 @@ import com.gbr.tabreading.navigation.ReadingFeature
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -42,5 +45,13 @@ object AppModule {
             settingsFeature = settingsFeature,
             fullscreenContent = fullscreenContent
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(
+        @ApplicationContext context: Context
+    ): WorkManager {
+        return WorkManager.getInstance(context)
     }
 }

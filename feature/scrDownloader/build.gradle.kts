@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Compose UI Tooling for previews
     debugImplementation(libs.androidx.compose.ui.tooling)
