@@ -24,11 +24,13 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.designsystem)
     implementation(projects.core.model)
+    implementation(projects.core.data)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeKtx)
     implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
 }

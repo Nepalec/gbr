@@ -8,6 +8,8 @@ import com.gbr.data.repository.GitabasesRepository
 import com.gbr.data.repository.GitabasesRepositoryImpl
 import com.gbr.data.repository.ImageFilesRepository
 import com.gbr.data.repository.ImageFilesRepositoryImpl
+import com.gbr.data.repository.SqliteNotesRepository
+import com.gbr.data.repository.SqliteNotesRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -35,4 +37,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindFileRepository(fileRepositoryImpl: FileRepositoryImpl): FileRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSqliteNotesRepository(
+        sqliteNotesRepositoryImpl: SqliteNotesRepositoryImpl
+    ): SqliteNotesRepository
 }

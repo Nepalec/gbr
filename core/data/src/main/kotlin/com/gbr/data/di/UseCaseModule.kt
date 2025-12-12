@@ -12,11 +12,14 @@ import com.gbr.data.repository.FileRepository
 import com.gbr.data.usecase.CopyGitabaseUseCase
 import com.gbr.data.usecase.DownloadAndUnzipUseCase
 import com.gbr.data.usecase.ExtractGitabasesUseCase
+import com.gbr.data.usecase.ImportSqliteNotesUseCase
 import com.gbr.data.usecase.InitializeGitabasesUseCase
 import com.gbr.data.usecase.LoadBookDetailUseCase
 import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import com.gbr.data.usecase.SetCurrentGitabaseUseCase
+import com.gbr.data.repository.SqliteNotesRepository
+import com.gbr.network.INotesBackupImportDataSource
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
 import dagger.Module
 import dagger.Provides
@@ -120,5 +123,14 @@ object UseCaseModule {
         fileRepository: FileRepository
     ): DownloadAndUnzipUseCase {
         return DownloadAndUnzipUseCase(fileRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideImportSqliteNotesUseCase(
+        notesBackupImportDataSource: INotesBackupImportDataSource,
+        sqliteNotesRepository: SqliteNotesRepository
+    ): ImportSqliteNotesUseCase {
+        return ImportSqliteNotesUseCase(notesBackupImportDataSource, sqliteNotesRepository)
     }
 }

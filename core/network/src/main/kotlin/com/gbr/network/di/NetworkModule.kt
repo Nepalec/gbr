@@ -6,7 +6,9 @@ import coil.ImageLoader
 import coil.util.DebugLogger
 import com.gbr.network.GitabasesDescRetrofitDataSource
 import com.gbr.network.IGitabasesDescDataSource
+import com.gbr.network.INotesBackupImportDataSource
 import com.gbr.network.IShopDataSource
+import com.gbr.network.NotesBackupImportDataSource
 import com.gbr.network.ShopRetrofitDataSource
 import dagger.Binds
 import dagger.Module
@@ -81,4 +83,10 @@ public abstract class NetworkBindingsModule {
     abstract fun bindGitabasesDescDataSource(
         gitabasesDescRetrofitDataSource: GitabasesDescRetrofitDataSource
     ): IGitabasesDescDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindNotesBackupImportDataSource(
+        notesBackupImportDataSource: NotesBackupImportDataSource
+    ): INotesBackupImportDataSource
 }
