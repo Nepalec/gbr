@@ -19,5 +19,6 @@ class FullscreenContentImpl @Inject constructor(
     ) {
         navGraphBuilder.BookDetail(navHostController, textsRepository)
         navGraphBuilder.ChapterDetail(navHostController, textsRepository)
+        navGraphBuilder.Login(navHostController)
     }
 }

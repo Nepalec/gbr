@@ -3,10 +3,14 @@ package com.gbr.tabprofile.screen
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,8 +25,18 @@ import com.gbr.tabprofile.viewmodel.ProfileViewModel
 fun ProfileScreen(
     onNavigateBack: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {},
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    // Navigate to login if user is not logged in
+    LaunchedEffect(uiState.isLoggedIn, uiState.isLoading) {
+        if (!uiState.isLoading && !uiState.isLoggedIn) {
+            onNavigateToLogin()
+        }
+    }
+
     Scaffold(
         topBar = {
             CustomAppBar(
@@ -39,12 +53,27 @@ fun ProfileScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = stringResource(R.string.profile_content),
-                style = MaterialTheme.typography.headlineLarge,
-                textAlign = TextAlign.Center,
-                fontSize = 24.sp
-            )
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator()
+                }
+                uiState.isLoggedIn && uiState.username != null -> {
+                    Text(
+                        text = "Hello, ${uiState.username}",
+                        style = MaterialTheme.typography.headlineLarge,
+                        textAlign = TextAlign.Center,
+                        fontSize = 24.sp
+                    )
+                }
+                else -> {
+                    Text(
+                        text = stringResource(R.string.profile_content),
+                        style = MaterialTheme.typography.headlineLarge,
+                        textAlign = TextAlign.Center,
+                        fontSize = 24.sp
+                    )
+                }
+            }
         }
     }
 }

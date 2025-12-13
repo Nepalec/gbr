@@ -52,6 +52,9 @@ internal fun GbrNavHost(
             booksFeature.setFullscreenNavigationCallback { dest ->
                 fullscreenNavController.navigate(dest)
             }
+            profileFeature.setFullscreenNavigationCallback { dest ->
+                fullscreenNavController.navigate(dest)
+            }
         }
     }
 

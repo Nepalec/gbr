@@ -2,6 +2,8 @@ package com.gbr.tabprofile.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gbr.data.auth.AuthRepository
+import com.gbr.model.auth.AuthData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +12,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor() : ViewModel() {
+class ProfileViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -20,12 +24,19 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loadProfile() {
+        // Observe auth state changes
         viewModelScope.launch {
-            // TODO: Load profile from repository
-            _uiState.value = _uiState.value.copy(
-                isLoading = false,
-                profile = null
-            )
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
+            authRepository.observeAuthState().collect { authData: AuthData ->
+                val username = authData.email ?: "User"
+                
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isLoggedIn = authData.isLoggedIn,
+                    username = if (authData.isLoggedIn) username else null
+                )
+            }
         }
     }
 
@@ -37,6 +48,8 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
 
 data class ProfileUiState(
     val isLoading: Boolean = true,
+    val isLoggedIn: Boolean = false,
+    val username: String? = null,
     val profile: String? = null,
     val error: String? = null
 )

@@ -1,11 +1,14 @@
 package com.gbr.data.auth
 
+import com.gbr.model.auth.AuthData
+import com.gbr.model.auth.AuthResultData
 import com.gbr.network.AuthResult
 import com.gbr.network.AuthState
 import com.gbr.network.AuthUser
 import com.gbr.network.IAuthDataSource
 import com.gbr.network.IAuthStatusDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,20 +18,48 @@ class AuthRepositoryImpl @Inject constructor(
     private val authStatusDataSource: IAuthStatusDataSource
 ) : AuthRepository {
 
-    override suspend fun signInWithEmail(email: String, password: String): Result<AuthResult> {
-        return authDataSource.signInWithEmail(email, password)
+    override suspend fun signInWithEmail(email: String, password: String): Result<AuthResultData> {
+        return authDataSource.signInWithEmail(email, password).map { authResult ->
+            AuthResultData(
+                success = authResult.success,
+                userId = authResult.userId,
+                email = authResult.email,
+                error = authResult.error
+            )
+        }
     }
 
-    override suspend fun signUpWithEmail(email: String, password: String): Result<AuthResult> {
-        return authDataSource.signUpWithEmail(email, password)
+    override suspend fun signUpWithEmail(email: String, password: String): Result<AuthResultData> {
+        return authDataSource.signUpWithEmail(email, password).map { authResult ->
+            AuthResultData(
+                success = authResult.success,
+                userId = authResult.userId,
+                email = authResult.email,
+                error = authResult.error
+            )
+        }
     }
 
-    override suspend fun signInWithGoogle(idToken: String): Result<AuthResult> {
-        return authDataSource.signInWithGoogle(idToken)
+    override suspend fun signInWithGoogle(idToken: String): Result<AuthResultData> {
+        return authDataSource.signInWithGoogle(idToken).map { authResult ->
+            AuthResultData(
+                success = authResult.success,
+                userId = authResult.userId,
+                email = authResult.email,
+                error = authResult.error
+            )
+        }
     }
 
-    override suspend fun signInWithFacebook(accessToken: String): Result<AuthResult> {
-        return authDataSource.signInWithFacebook(accessToken)
+    override suspend fun signInWithFacebook(accessToken: String): Result<AuthResultData> {
+        return authDataSource.signInWithFacebook(accessToken).map { authResult ->
+            AuthResultData(
+                success = authResult.success,
+                userId = authResult.userId,
+                email = authResult.email,
+                error = authResult.error
+            )
+        }
     }
 
     override suspend fun signOut(): Result<Unit> {
@@ -43,8 +74,14 @@ class AuthRepositoryImpl @Inject constructor(
         return authStatusDataSource.isUserLoggedIn()
     }
 
-    override fun observeAuthState(): Flow<AuthState> {
-        return authStatusDataSource.observeAuthState()
+    override fun observeAuthState(): Flow<AuthData> {
+        return authStatusDataSource.observeAuthState().map { authState: AuthState ->
+            AuthData(
+                isLoggedIn = authState.isLoggedIn,
+                userId = authState.userId,
+                email = authState.email
+            )
+        }
     }
 }
 

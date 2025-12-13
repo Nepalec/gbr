@@ -91,4 +91,7 @@ sealed class FullscreenDest {
         val bookId: Int, // BookPreview.id
         val chapterNumber: Int // Chapter number
     ) : FullscreenDest()
+
+    @Serializable
+    data object Login : FullscreenDest()
 }
