@@ -41,6 +41,7 @@ androidxTestRules = "1.5.0"
 androidxTestCore = "1.7.0"
 turbine = "1.1.0"
 robolectric = "4.10.3"
+firebaseBom = "33.9.0"
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -102,6 +103,9 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "daggerHilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "daggerHilt" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

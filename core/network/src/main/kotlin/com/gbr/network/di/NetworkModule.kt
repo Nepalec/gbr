@@ -4,11 +4,17 @@ import android.content.Context
 import androidx.tracing.trace
 import coil.ImageLoader
 import coil.util.DebugLogger
+import com.gbr.network.AuthFirestoreDataSource
+import com.gbr.network.AuthStatusFirestoreDataSource
 import com.gbr.network.GitabasesDescRetrofitDataSource
+import com.gbr.network.IAuthDataSource
+import com.gbr.network.IAuthStatusDataSource
 import com.gbr.network.IGitabasesDescDataSource
 import com.gbr.network.INotesBackupImportDataSource
+import com.gbr.network.INotesCloudDataSource
 import com.gbr.network.IShopDataSource
 import com.gbr.network.NotesBackupImportDataSource
+import com.gbr.network.NotesFirestoreDataSource
 import com.gbr.network.ShopRetrofitDataSource
 import dagger.Binds
 import dagger.Module
@@ -16,6 +22,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.OkHttpClient
@@ -69,6 +77,18 @@ public object NetworkModule {
             }
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
 }
 
 @Module
@@ -89,4 +109,22 @@ public abstract class NetworkBindingsModule {
     abstract fun bindNotesBackupImportDataSource(
         notesBackupImportDataSource: NotesBackupImportDataSource
     ): INotesBackupImportDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindNotesCloudDataSource(
+        notesFirestoreDataSource: NotesFirestoreDataSource
+    ): INotesCloudDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthStatusDataSource(
+        authStatusFirestoreDataSource: AuthStatusFirestoreDataSource
+    ): IAuthStatusDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthDataSource(
+        authFirestoreDataSource: AuthFirestoreDataSource
+    ): IAuthDataSource
 }

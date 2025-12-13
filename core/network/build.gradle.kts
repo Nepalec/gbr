@@ -45,6 +45,11 @@ dependencies {
     implementation(libs.retrofit.kotlin.serialization)
     implementation(libs.androidx.tracing.ktx)
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
+
     testImplementation(libs.junit4)
     testImplementation(libs.okhttp.logging)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
-import androidx.work.await
 import com.gbr.common.strings.StringProvider
 import com.gbr.data.database.GitabaseDatabaseManager
 import com.gbr.data.repository.GitabasesDescRepository
@@ -26,6 +25,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.io.File
@@ -109,7 +109,7 @@ class DownloaderViewModel @Inject constructor(
             val savedWorkId = gbrPreferencesDataSource.getCurrentDownloadWorkId()
             if (savedWorkId != null) {
                 // Check the current state of the work first
-                val workInfo = workManager.getWorkInfoById(savedWorkId).await()
+                val workInfo = workManager.getWorkInfoByIdFlow(savedWorkId).first()
 
                 when (workInfo?.state) {
                     androidx.work.WorkInfo.State.SUCCEEDED,
