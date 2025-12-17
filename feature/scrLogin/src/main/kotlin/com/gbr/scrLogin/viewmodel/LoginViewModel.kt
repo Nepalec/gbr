@@ -33,6 +33,80 @@ class LoginViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(isPasswordVisible = !_uiState.value.isPasswordVisible)
     }
 
+    fun showForgotPasswordDialog() {
+        // Pre-fill email from login form if available
+        val emailToUse = if (_uiState.value.forgotPasswordEmail.isBlank()) {
+            _uiState.value.email
+        } else {
+            _uiState.value.forgotPasswordEmail
+        }
+        _uiState.value = _uiState.value.copy(
+            showForgotPasswordDialog = true,
+            forgotPasswordEmail = emailToUse
+        )
+    }
+
+    fun dismissForgotPasswordDialog() {
+        _uiState.value = _uiState.value.copy(
+            showForgotPasswordDialog = false,
+            forgotPasswordEmail = "",
+            forgotPasswordError = null,
+            isSendingResetEmail = false,
+            forgotPasswordEmailSent = false
+        )
+    }
+
+    fun updateForgotPasswordEmail(email: String) {
+        _uiState.value = _uiState.value.copy(
+            forgotPasswordEmail = email,
+            forgotPasswordError = null
+        )
+    }
+
+    fun sendPasswordResetEmail() {
+        val email = _uiState.value.forgotPasswordEmail.trim()
+
+        if (email.isBlank()) {
+            viewModelScope.launch {
+                snackbarHelper.showMessage("Please enter your email address")
+            }
+            return
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            viewModelScope.launch {
+                snackbarHelper.showMessage("Please enter a valid email address")
+            }
+            _uiState.value = _uiState.value.copy(forgotPasswordError = "Invalid email format")
+            return
+        }
+
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isSendingResetEmail = true,
+                forgotPasswordError = null
+            )
+
+            val result = authRepository.sendPasswordResetEmail(email)
+            result.fold(
+                onSuccess = {
+                    _uiState.value = _uiState.value.copy(
+                        isSendingResetEmail = false,
+                        forgotPasswordEmailSent = true
+                    )
+                    snackbarHelper.showMessage("Password reset email sent! Check your inbox.")
+                },
+                onFailure = { e ->
+                    _uiState.value = _uiState.value.copy(
+                        isSendingResetEmail = false,
+                        forgotPasswordError = e.message ?: "Failed to send reset email"
+                    )
+                    snackbarHelper.showMessage(e.message ?: "Failed to send reset email")
+                }
+            )
+        }
+    }
+
     fun signInWithEmail() {
         val email = _uiState.value.email
         val password = _uiState.value.password
@@ -172,6 +246,11 @@ data class LoginUiState(
     val isPasswordVisible: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isSuccess: Boolean = false
+    val isSuccess: Boolean = false,
+    val showForgotPasswordDialog: Boolean = false,
+    val forgotPasswordEmail: String = "",
+    val forgotPasswordError: String? = null,
+    val isSendingResetEmail: Boolean = false,
+    val forgotPasswordEmailSent: Boolean = false
 )
 

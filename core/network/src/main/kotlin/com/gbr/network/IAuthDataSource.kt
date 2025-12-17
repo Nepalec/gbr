@@ -5,6 +5,7 @@ interface IAuthDataSource {
     suspend fun signUpWithEmail(email: String, password: String): Result<AuthResult>
     suspend fun signInWithGoogle(idToken: String): Result<AuthResult>
     suspend fun signInWithFacebook(accessToken: String): Result<AuthResult>
+    suspend fun sendPasswordResetEmail(email: String): Result<Unit>
     suspend fun signOut(): Result<Unit>
     suspend fun getCurrentUser(): AuthUser?
 }

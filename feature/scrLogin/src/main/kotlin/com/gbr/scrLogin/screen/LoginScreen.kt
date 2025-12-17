@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -167,9 +168,7 @@ fun LoginScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     TextButton(
-                        onClick = {
-                            // TODO: Implement forgot password
-                        },
+                        onClick = { viewModel.showForgotPasswordDialog() },
                         enabled = !uiState.isLoading
                     ) {
                         Text(text = "Forgot Password?")
@@ -285,6 +284,133 @@ fun LoginScreen(
                 }
             }
         }
+    }
+
+    // Forgot Password Dialog
+    if (uiState.showForgotPasswordDialog) {
+        ForgotPasswordDialog(
+            email = uiState.forgotPasswordEmail,
+            onEmailChange = { viewModel.updateForgotPasswordEmail(it) },
+            onDismiss = { viewModel.dismissForgotPasswordDialog() },
+            onSendResetEmail = { viewModel.sendPasswordResetEmail() },
+            isLoading = uiState.isSendingResetEmail,
+            error = uiState.forgotPasswordError,
+            emailSent = uiState.forgotPasswordEmailSent,
+            onEmailSentDismiss = { viewModel.dismissForgotPasswordDialog() }
+        )
+    }
+}
+
+@Composable
+fun ForgotPasswordDialog(
+    email: String,
+    onEmailChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onSendResetEmail: () -> Unit,
+    isLoading: Boolean,
+    error: String?,
+    emailSent: Boolean,
+    onEmailSentDismiss: () -> Unit
+) {
+    if (emailSent) {
+        AlertDialog(
+            onDismissRequest = onEmailSentDismiss,
+            title = {
+                Text(
+                    text = "Check Your Email",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "We've sent a password reset link to:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = email,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "\nPlease check your email and follow the instructions to reset your password.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = onEmailSentDismiss) {
+                    Text("OK")
+                }
+            }
+        )
+    } else {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(
+                    text = "Reset Password",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = "Enter your email address and we'll send you a link to reset your password.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = onEmailChange,
+                        label = { Text("Email") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.mail_24px),
+                                contentDescription = "Email"
+                            )
+                        },
+                        isError = error != null,
+                        supportingText = if (error != null) {
+                            { Text(error) }
+                        } else null,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isLoading,
+                        singleLine = true
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = onSendResetEmail,
+                    enabled = !isLoading && email.isNotBlank()
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text("Send Reset Link")
+                    }
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = onDismiss,
+                    enabled = !isLoading
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 
