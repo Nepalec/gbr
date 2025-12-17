@@ -3,9 +3,11 @@ package com.gbr.settings.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gbr.common.strings.StringProvider
+import com.gbr.data.auth.AuthRepository
 import com.gbr.data.repository.UserPreferencesRepository
 import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.settings.R
+import com.gbr.ui.SnackbarHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +19,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val stringProvider: StringProvider
+    private val stringProvider: StringProvider,
+    private val authRepository: AuthRepository,
+    private val snackbarHelper: SnackbarHelper
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -25,6 +29,15 @@ class SettingsViewModel @Inject constructor(
 
     init {
         loadSettings()
+        observeAuthStatus()
+    }
+
+    private fun observeAuthStatus() {
+        viewModelScope.launch {
+            authRepository.observeAuthState().collect { authData ->
+                _uiState.value = _uiState.value.copy(isLoggedIn = authData.isLoggedIn)
+            }
+        }
     }
 
     private fun loadSettings() {
@@ -77,6 +90,25 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                val result = authRepository.signOut()
+                result.fold(
+                    onSuccess = {
+                        _uiState.value = _uiState.value.copy(isLoggedIn = false)
+                        snackbarHelper.showMessage("Logged out successfully")
+                    },
+                    onFailure = { e ->
+                        snackbarHelper.showMessage("Failed to log out: ${e.message}")
+                    }
+                )
+            } catch (e: Exception) {
+                snackbarHelper.showMessage("Failed to log out: ${e.message}")
+            }
+        }
+    }
 }
 
 enum class ThemeOption {
@@ -88,7 +120,8 @@ enum class ThemeOption {
 data class SettingsUiState(
     val isLoading: Boolean = true,
     val selectedTheme: ThemeOption = ThemeOption.SYSTEM,
-    val error: String? = null
+    val error: String? = null,
+    val isLoggedIn: Boolean = false
 )
 
 

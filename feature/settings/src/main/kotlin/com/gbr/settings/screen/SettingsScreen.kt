@@ -4,7 +4,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -75,6 +77,18 @@ fun SettingsScreen(
                     isSelected = uiState.selectedTheme == ThemeOption.SYSTEM,
                     onSelected = { viewModel.selectTheme(ThemeOption.SYSTEM) }
                 )
+            }
+
+            // Logout Button (only show if user is logged in)
+            if (uiState.isLoggedIn) {
+                Button(
+                    onClick = { viewModel.logout() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
+                    Text(text = stringResource(R.string.logout))
+                }
             }
         }
     }

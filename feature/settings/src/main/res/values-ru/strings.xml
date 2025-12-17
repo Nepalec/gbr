@@ -7,6 +7,7 @@
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
     <string name="theme_system">Системная</string>
+    <string name="logout">Выйти</string>
     <string name="cd_back">Назад</string>
     <string name="cd_settings">Настройки</string>
 </resources>
