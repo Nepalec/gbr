@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,9 +32,15 @@ import components.buttons.FilledButtonView
 fun NotesScreen(
     onNavigateBack: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {},
     viewModel: NotesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Set navigation callback in ViewModel
+    LaunchedEffect(onNavigateToLogin) {
+        viewModel.setNavigateToLoginCallback(onNavigateToLogin)
+    }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -111,6 +118,10 @@ fun NotesScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 textAlign = TextAlign.Center
                             )
+                            FilledButtonView(
+                                text = "Import from .db file",
+                                onClick = { filePickerLauncher.launch(arrayOf("application/x-sqlite3", "application/octet-stream")) }
+                            )
                         } else {
                             Text(
                                 text = "Notes: ${uiState.notes.size}",
@@ -125,10 +136,7 @@ fun NotesScreen(
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }
-                        FilledButtonView(
-                            text = "Import from .db file",
-                            onClick = { filePickerLauncher.launch(arrayOf("application/x-sqlite3", "application/octet-stream")) }
-                        )
+
                     }
                 }
             }

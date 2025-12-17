@@ -19,6 +19,7 @@ import com.gbr.data.usecase.LoadBookDetailUseCase
 import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import com.gbr.data.usecase.SetCurrentGitabaseUseCase
+import com.gbr.data.auth.AuthRepository
 import com.gbr.data.repository.NotesCloudRepository
 import com.gbr.data.repository.SqliteNotesRepository
 import com.gbr.network.INotesBackupImportDataSource
@@ -131,9 +132,10 @@ object UseCaseModule {
     @Singleton
     fun provideImportSqliteNotesUseCase(
         notesBackupImportDataSource: INotesBackupImportDataSource,
-        sqliteNotesRepository: SqliteNotesRepository
+        notesCloudRepository: NotesCloudRepository,
+        authRepository: AuthRepository
     ): ImportSqliteNotesUseCase {
-        return ImportSqliteNotesUseCase(notesBackupImportDataSource, sqliteNotesRepository)
+        return ImportSqliteNotesUseCase(notesBackupImportDataSource, notesCloudRepository, authRepository)
     }
 
     @Provides

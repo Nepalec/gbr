@@ -55,6 +55,9 @@ internal fun GbrNavHost(
             profileFeature.setFullscreenNavigationCallback { dest ->
                 fullscreenNavController.navigate(dest)
             }
+            notesFeature.setFullscreenNavigationCallback { dest ->
+                fullscreenNavController.navigate(dest)
+            }
         }
     }
 
