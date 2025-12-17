@@ -41,9 +41,28 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.common.api.ApiException
 import com.gbr.designsystem.R
+import com.gbr.scrLogin.R as LoginR
 import com.gbr.scrLogin.viewmodel.LoginViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface GoogleSignInClientEntryPoint {
+    fun googleSignInClient(): GoogleSignInClient
+}
 
 @Composable
 fun LoginScreen(
@@ -51,6 +70,40 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // Get GoogleSignInClient via Hilt EntryPoint
+    val context = LocalContext.current
+    val applicationContext = context.applicationContext
+    val entryPoint = EntryPointAccessors.fromApplication(
+        applicationContext,
+        GoogleSignInClientEntryPoint::class.java
+    )
+    val googleSignInClient = entryPoint.googleSignInClient()
+
+    // Google Sign-In launcher
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        try {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            val account = task.getResult(ApiException::class.java)
+            account?.idToken?.let { idToken ->
+                viewModel.signInWithGoogle(idToken)
+            } ?: run {
+                viewModel.handleGoogleSignInError(context.getString(LoginR.string.error_failed_to_get_id_token))
+            }
+        } catch (e: ApiException) {
+            val errorMessage = when (e.statusCode) {
+                12501 -> context.getString(LoginR.string.error_google_sign_in_cancelled)
+                10 -> context.getString(LoginR.string.error_google_sign_in_developer_error)
+                7 -> context.getString(LoginR.string.error_google_sign_in_network_error)
+                else -> context.getString(LoginR.string.error_google_sign_in_unknown)
+            }
+            viewModel.handleGoogleSignInError(errorMessage)
+        } catch (e: Exception) {
+            viewModel.handleGoogleSignInError(context.getString(LoginR.string.error_google_sign_in_unknown))
+        }
+    }
 
     // Navigate back on successful login
     LaunchedEffect(uiState.isSuccess) {
@@ -76,7 +129,7 @@ fun LoginScreen(
                 // App Logo placeholder - using existing icon
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.login_24px),
-                    contentDescription = "App Logo",
+                    contentDescription = stringResource(LoginR.string.cd_app_logo),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .padding(top = 48.dp)
@@ -85,7 +138,7 @@ fun LoginScreen(
                 )
 
                 Text(
-                    text = "Hi, Welcome Back!",
+                    text = stringResource(LoginR.string.login_welcome_title),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
@@ -96,7 +149,7 @@ fun LoginScreen(
                 )
 
                 Text(
-                    text = "Log in to stay connected and explore more",
+                    text = stringResource(LoginR.string.login_welcome_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     textAlign = TextAlign.Center,
@@ -109,12 +162,12 @@ fun LoginScreen(
                     value = uiState.email,
                     onValueChange = { viewModel.updateEmail(it) },
                     label = {
-                        Text(text = "Email")
+                        Text(text = stringResource(LoginR.string.login_email))
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.mail_24px),
-                            contentDescription = "Email"
+                            contentDescription = stringResource(LoginR.string.cd_email)
                         )
                     },
                     shape = RoundedCornerShape(16.dp),
@@ -131,12 +184,12 @@ fun LoginScreen(
                         PasswordVisualTransformation()
                     },
                     label = {
-                        Text(text = "Password")
+                        Text(text = stringResource(LoginR.string.login_password))
                     },
                     leadingIcon = {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.key_24px),
-                            contentDescription = "Password"
+                            contentDescription = stringResource(LoginR.string.cd_password)
                         )
                     },
                     trailingIcon = {
@@ -151,7 +204,11 @@ fun LoginScreen(
                                         R.drawable.visibility_24px
                                     }
                                 ),
-                                contentDescription = if (uiState.isPasswordVisible) "Hide Password" else "Show Password"
+                                contentDescription = if (uiState.isPasswordVisible) {
+                                    stringResource(LoginR.string.login_hide_password)
+                                } else {
+                                    stringResource(LoginR.string.login_show_password)
+                                }
                             )
                         }
                     },
@@ -171,7 +228,7 @@ fun LoginScreen(
                         onClick = { viewModel.showForgotPasswordDialog() },
                         enabled = !uiState.isLoading
                     ) {
-                        Text(text = "Forgot Password?")
+                        Text(text = stringResource(LoginR.string.login_forgot_password))
                     }
                 }
 
@@ -188,7 +245,7 @@ fun LoginScreen(
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        Text(text = "Log In")
+                        Text(text = stringResource(LoginR.string.login_button))
                     }
                 }
 
@@ -198,7 +255,7 @@ fun LoginScreen(
                 ) {
                     HorizontalDivider()
                     Text(
-                        text = "or continue with",
+                        text = stringResource(LoginR.string.login_or_continue_with),
                         style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier
                             .background(color = MaterialTheme.colorScheme.surface)
@@ -208,8 +265,8 @@ fun LoginScreen(
 
                 OutlinedButton(
                     onClick = {
-                        // TODO: Implement Google Sign-In
-                        // For now, this is a placeholder
+                        val signInIntent = googleSignInClient.signInIntent
+                        googleSignInLauncher.launch(signInIntent)
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surface,
@@ -224,12 +281,12 @@ fun LoginScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.google_g_logo_24px),
-                        contentDescription = "Google",
+                        contentDescription = stringResource(LoginR.string.cd_google),
                         tint = Color.Unspecified,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "Continue with Google",
+                        text = stringResource(LoginR.string.login_continue_with_google),
                         modifier = Modifier.padding(start = 16.dp)
                     )
                 }
@@ -254,12 +311,12 @@ fun LoginScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.facebook_logo_24px),
-                        contentDescription = "Facebook",
+                        contentDescription = stringResource(LoginR.string.cd_facebook),
                         tint = Color.Unspecified,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "Continue with Facebook",
+                        text = stringResource(LoginR.string.login_continue_with_facebook),
                         modifier = Modifier.padding(start = 16.dp)
                     )
                 }
@@ -273,14 +330,14 @@ fun LoginScreen(
                     .padding(bottom = 16.dp)
             ) {
                 Text(
-                    text = "Don't have an account?",
+                    text = stringResource(LoginR.string.login_no_account),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 TextButton(
                     onClick = { viewModel.signUpWithEmail() },
                     enabled = !uiState.isLoading
                 ) {
-                    Text(text = "Create Account")
+                    Text(text = stringResource(LoginR.string.login_create_account))
                 }
             }
         }
@@ -317,7 +374,7 @@ fun ForgotPasswordDialog(
             onDismissRequest = onEmailSentDismiss,
             title = {
                 Text(
-                    text = "Check Your Email",
+                    text = stringResource(LoginR.string.forgot_password_check_email_title),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -325,7 +382,7 @@ fun ForgotPasswordDialog(
             text = {
                 Column {
                     Text(
-                        text = "We've sent a password reset link to:",
+                        text = stringResource(LoginR.string.forgot_password_email_sent),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
@@ -336,7 +393,7 @@ fun ForgotPasswordDialog(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "\nPlease check your email and follow the instructions to reset your password.",
+                        text = stringResource(LoginR.string.forgot_password_check_instructions),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 8.dp)
@@ -345,7 +402,7 @@ fun ForgotPasswordDialog(
             },
             confirmButton = {
                 Button(onClick = onEmailSentDismiss) {
-                    Text("OK")
+                    Text(stringResource(LoginR.string.forgot_password_ok))
                 }
             }
         )
@@ -354,7 +411,7 @@ fun ForgotPasswordDialog(
             onDismissRequest = onDismiss,
             title = {
                 Text(
-                    text = "Reset Password",
+                    text = stringResource(LoginR.string.forgot_password_title),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -362,18 +419,18 @@ fun ForgotPasswordDialog(
             text = {
                 Column {
                     Text(
-                        text = "Enter your email address and we'll send you a link to reset your password.",
+                        text = stringResource(LoginR.string.forgot_password_message),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     OutlinedTextField(
                         value = email,
                         onValueChange = onEmailChange,
-                        label = { Text("Email") },
+                        label = { Text(stringResource(LoginR.string.login_email)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = ImageVector.vectorResource(R.drawable.mail_24px),
-                                contentDescription = "Email"
+                                contentDescription = stringResource(LoginR.string.cd_email)
                             )
                         },
                         isError = error != null,
@@ -398,7 +455,7 @@ fun ForgotPasswordDialog(
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
-                        Text("Send Reset Link")
+                        Text(stringResource(LoginR.string.forgot_password_send_link))
                     }
                 }
             },
@@ -407,7 +464,7 @@ fun ForgotPasswordDialog(
                     onClick = onDismiss,
                     enabled = !isLoading
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(LoginR.string.forgot_password_cancel))
                 }
             }
         )

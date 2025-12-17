@@ -2,8 +2,10 @@ package com.gbr.scrLogin.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gbr.common.strings.StringProvider
 import com.gbr.data.auth.AuthRepository
 import com.gbr.model.auth.AuthResultData
+import com.gbr.scrLogin.R
 import com.gbr.ui.SnackbarHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val snackbarHelper: SnackbarHelper
+    private val snackbarHelper: SnackbarHelper,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -68,16 +71,16 @@ class LoginViewModel @Inject constructor(
 
         if (email.isBlank()) {
             viewModelScope.launch {
-                snackbarHelper.showMessage("Please enter your email address")
+                snackbarHelper.showMessage(stringProvider.getString(R.string.error_please_enter_email))
             }
             return
         }
 
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             viewModelScope.launch {
-                snackbarHelper.showMessage("Please enter a valid email address")
+                snackbarHelper.showMessage(stringProvider.getString(R.string.error_please_enter_valid_email))
             }
-            _uiState.value = _uiState.value.copy(forgotPasswordError = "Invalid email format")
+            _uiState.value = _uiState.value.copy(forgotPasswordError = stringProvider.getString(R.string.error_invalid_email_format))
             return
         }
 
@@ -94,14 +97,14 @@ class LoginViewModel @Inject constructor(
                         isSendingResetEmail = false,
                         forgotPasswordEmailSent = true
                     )
-                    snackbarHelper.showMessage("Password reset email sent! Check your inbox.")
+                    snackbarHelper.showMessage(stringProvider.getString(R.string.success_password_reset_sent))
                 },
                 onFailure = { e ->
                     _uiState.value = _uiState.value.copy(
                         isSendingResetEmail = false,
-                        forgotPasswordError = e.message ?: "Failed to send reset email"
+                        forgotPasswordError = e.message ?: stringProvider.getString(R.string.error_failed_to_send_reset_email)
                     )
-                    snackbarHelper.showMessage(e.message ?: "Failed to send reset email")
+                    snackbarHelper.showMessage(e.message ?: stringProvider.getString(R.string.error_failed_to_send_reset_email))
                 }
             )
         }
@@ -113,7 +116,7 @@ class LoginViewModel @Inject constructor(
 
         if (email.isBlank() || password.isBlank()) {
             viewModelScope.launch {
-                snackbarHelper.showMessage("Please enter email and password")
+                snackbarHelper.showMessage(stringProvider.getString(R.string.error_please_enter_email_and_password))
             }
             return
         }
@@ -125,21 +128,21 @@ class LoginViewModel @Inject constructor(
                 onSuccess = { authResult: AuthResultData ->
                     if (authResult.success) {
                         _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
-                        snackbarHelper.showMessage("Login successful")
+                        snackbarHelper.showMessage(stringProvider.getString(R.string.success_login))
                     } else {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            error = authResult.error ?: "Login failed"
+                            error = authResult.error ?: stringProvider.getString(R.string.error_login_failed)
                         )
-                        snackbarHelper.showMessage(authResult.error ?: "Login failed")
+                        snackbarHelper.showMessage(authResult.error ?: stringProvider.getString(R.string.error_login_failed))
                     }
                 },
                 onFailure = { e ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = e.message ?: "Login failed"
+                        error = e.message ?: stringProvider.getString(R.string.error_login_failed)
                     )
-                    snackbarHelper.showMessage(e.message ?: "Login failed")
+                    snackbarHelper.showMessage(e.message ?: stringProvider.getString(R.string.error_login_failed))
                 }
             )
         }
@@ -151,7 +154,7 @@ class LoginViewModel @Inject constructor(
 
         if (email.isBlank() || password.isBlank()) {
             viewModelScope.launch {
-                snackbarHelper.showMessage("Please enter email and password")
+                snackbarHelper.showMessage(stringProvider.getString(R.string.error_please_enter_email_and_password))
             }
             return
         }
@@ -163,21 +166,21 @@ class LoginViewModel @Inject constructor(
                 onSuccess = { authResult: AuthResultData ->
                     if (authResult.success) {
                         _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
-                        snackbarHelper.showMessage("Account created successfully")
+                        snackbarHelper.showMessage(stringProvider.getString(R.string.success_account_created))
                     } else {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            error = authResult.error ?: "Sign up failed"
+                            error = authResult.error ?: stringProvider.getString(R.string.error_sign_up_failed)
                         )
-                        snackbarHelper.showMessage(authResult.error ?: "Sign up failed")
+                        snackbarHelper.showMessage(authResult.error ?: stringProvider.getString(R.string.error_sign_up_failed))
                     }
                 },
                 onFailure = { e ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = e.message ?: "Sign up failed"
+                        error = e.message ?: stringProvider.getString(R.string.error_sign_up_failed)
                     )
-                    snackbarHelper.showMessage(e.message ?: "Sign up failed")
+                    snackbarHelper.showMessage(e.message ?: stringProvider.getString(R.string.error_sign_up_failed))
                 }
             )
         }
@@ -191,23 +194,33 @@ class LoginViewModel @Inject constructor(
                 onSuccess = { authResult: AuthResultData ->
                     if (authResult.success) {
                         _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
-                        snackbarHelper.showMessage("Google sign in successful")
+                        snackbarHelper.showMessage(stringProvider.getString(R.string.success_google_sign_in))
                     } else {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            error = authResult.error ?: "Google sign in failed"
+                            error = authResult.error ?: stringProvider.getString(R.string.error_google_sign_in_failed)
                         )
-                        snackbarHelper.showMessage(authResult.error ?: "Google sign in failed")
+                        snackbarHelper.showMessage(authResult.error ?: stringProvider.getString(R.string.error_google_sign_in_failed))
                     }
                 },
                 onFailure = { e ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = e.message ?: "Google sign in failed"
+                        error = e.message ?: stringProvider.getString(R.string.error_google_sign_in_failed)
                     )
-                    snackbarHelper.showMessage(e.message ?: "Google sign in failed")
+                    snackbarHelper.showMessage(e.message ?: stringProvider.getString(R.string.error_google_sign_in_failed))
                 }
             )
+        }
+    }
+
+    fun handleGoogleSignInError(errorMessage: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                error = errorMessage
+            )
+            snackbarHelper.showMessage(errorMessage)
         }
     }
 
@@ -219,21 +232,21 @@ class LoginViewModel @Inject constructor(
                 onSuccess = { authResult: AuthResultData ->
                     if (authResult.success) {
                         _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
-                        snackbarHelper.showMessage("Facebook sign in successful")
+                        snackbarHelper.showMessage(stringProvider.getString(R.string.success_facebook_sign_in))
                     } else {
                         _uiState.value = _uiState.value.copy(
                             isLoading = false,
-                            error = authResult.error ?: "Facebook sign in failed"
+                            error = authResult.error ?: stringProvider.getString(R.string.error_facebook_sign_in_failed)
                         )
-                        snackbarHelper.showMessage(authResult.error ?: "Facebook sign in failed")
+                        snackbarHelper.showMessage(authResult.error ?: stringProvider.getString(R.string.error_facebook_sign_in_failed))
                     }
                 },
                 onFailure = { e ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = e.message ?: "Facebook sign in failed"
+                        error = e.message ?: stringProvider.getString(R.string.error_facebook_sign_in_failed)
                     )
-                    snackbarHelper.showMessage(e.message ?: "Facebook sign in failed")
+                    snackbarHelper.showMessage(e.message ?: stringProvider.getString(R.string.error_facebook_sign_in_failed))
                 }
             )
         }

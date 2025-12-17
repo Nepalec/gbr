@@ -7,6 +7,7 @@ import coil.util.DebugLogger
 import com.gbr.network.AuthFirestoreDataSource
 import com.gbr.network.AuthStatusFirestoreDataSource
 import com.gbr.network.GitabasesDescRetrofitDataSource
+import com.gbr.network.GoogleSignInProvider
 import com.gbr.network.IAuthDataSource
 import com.gbr.network.IAuthStatusDataSource
 import com.gbr.network.IGitabasesDescDataSource
@@ -16,6 +17,7 @@ import com.gbr.network.IShopDataSource
 import com.gbr.network.NotesBackupImportDataSource
 import com.gbr.network.NotesFirestoreDataSource
 import com.gbr.network.ShopRetrofitDataSource
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -88,6 +90,14 @@ public object NetworkModule {
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth {
         return FirebaseAuth.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGoogleSignInClient(
+        @ApplicationContext context: Context
+    ): GoogleSignInClient {
+        return GoogleSignInProvider.getClient(context)
     }
 }
 

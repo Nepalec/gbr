@@ -43,6 +43,7 @@ turbine = "1.1.0"
 robolectric = "4.10.3"
 firebaseBom = "33.9.0"
 googleServices = "4.4.2"
+playServicesAuth = "21.2.0"
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -107,6 +108,7 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
+google-signin = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

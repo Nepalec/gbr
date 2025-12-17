@@ -50,6 +50,9 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
 
+    // Google Sign-In
+    implementation(libs.google.signin)
+
     testImplementation(libs.junit4)
     testImplementation(libs.okhttp.logging)
     testImplementation(libs.kotlinx.coroutines.test)

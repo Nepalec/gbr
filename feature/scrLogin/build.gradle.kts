@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.google.signin)
 
     // Compose UI Tooling for previews
     debugImplementation(libs.androidx.compose.ui.tooling)
