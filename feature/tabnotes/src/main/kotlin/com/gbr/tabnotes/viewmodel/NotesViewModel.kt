@@ -3,11 +3,12 @@ package com.gbr.tabnotes.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gbr.data.auth.AuthRepository
-import com.gbr.data.repository.NotesCloudRepository
-import com.gbr.data.repository.SqliteNotesRepository
+import com.gbr.data.repository.UserNotesRepository
+import com.gbr.data.repository.UserPreferencesRepository
 import com.gbr.data.usecase.ImportSqliteNotesUseCase
 import com.gbr.data.usecase.LoginRequiredException
 import com.gbr.model.notes.NoteTag
+import com.gbr.model.notes.NotesStorageMode
 import com.gbr.model.notes.Reading
 import com.gbr.model.notes.Tag
 import com.gbr.model.notes.TextNote
@@ -17,38 +18,33 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NotesViewModel @Inject constructor(
-    private val importSqliteNotesUseCase: ImportSqliteNotesUseCase,
-    private val sqliteNotesRepository: SqliteNotesRepository,
+    private val userNotesRepository: UserNotesRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     private val authRepository: AuthRepository,
-    private val notesCloudRepository: NotesCloudRepository
+    private val importSqliteNotesUseCase: ImportSqliteNotesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NotesUiState())
     val uiState: StateFlow<NotesUiState> = _uiState.asStateFlow()
 
-    private var onNavigateToLogin: (() -> Unit)? = null
-
-    fun setNavigateToLoginCallback(callback: () -> Unit) {
-        onNavigateToLogin = callback
-    }
-
     init {
-        observeNotesFromCloud()
-        observeAuthState()
+        observeNotes()
     }
 
-    private fun observeNotesFromCloud() {
-        // Combine notes with tags and tags flows to get all data
+    private fun observeNotes() {
+        // Combine notes with tags, storage mode, and auth state flows
         combine(
-            notesCloudRepository.observeNotesWithTags(),
-            notesCloudRepository.observeTags()
-        ) { notesWithTags, allTags ->
+            userNotesRepository.observeNotesWithTags(),
+            userNotesRepository.observeTags(),
+            userPreferencesRepository.notesStorageMode,
+            authRepository.observeAuthState().map { it.isLoggedIn }
+        ) { notesWithTags, allTags, storageMode, isLoggedIn ->
             // Extract notes from TextNoteWithTags
             val notes = notesWithTags.map { it.note }
 
@@ -59,7 +55,7 @@ class NotesViewModel @Inject constructor(
             val noteTags = notesWithTags.flatMap { noteWithTags ->
                 noteWithTags.tags.map { tag ->
                     NoteTag(
-                        id=0,
+                        id = 0,
                         noteId = noteWithTags.note.id,
                         tagId = tag.id
                     )
@@ -69,9 +65,10 @@ class NotesViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
                 notes = notes,
-                readings = emptyList(), // Readings are not stored in cloud, only in local SQLite
                 tags = tags,
-                noteTags = noteTags
+                noteTags = noteTags,
+                notesStorageMode = storageMode,
+                isLoggedIn = isLoggedIn
             )
         }.launchIn(viewModelScope)
     }
@@ -81,54 +78,37 @@ class NotesViewModel @Inject constructor(
         // Data will automatically update via the flow observers
     }
 
-    private fun observeAuthState() {
-        authRepository.observeAuthState()
-            .onEach { authData ->
-                // If user just logged in and there's a pending import, retry it
-                if (authData.isLoggedIn && _uiState.value.pendingImportFileUri != null) {
-                    val pendingUri = _uiState.value.pendingImportFileUri
-                    _uiState.value = _uiState.value.copy(pendingImportFileUri = null)
-                    if (pendingUri != null) {
-                        importNotes(pendingUri)
-                    }
-                }
-            }
-            .launchIn(viewModelScope)
-    }
-
     fun importNotes(fileUri: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isImporting = true,
-                error = null
+                importError = null
             )
 
             val result = importSqliteNotesUseCase.execute(fileUri)
 
-            if (result.isSuccess) {
-                // Import successful - clear pending import and reload data from cloud
-                _uiState.value = _uiState.value.copy(
-                    isImporting = false,
-                    pendingImportFileUri = null
-                )
-                // Notes are now in cloud, so we don't need to reload from sqlite repository
-                // The cloud repository will emit updates via observeNotesWithTags() if needed
-            } else {
-                val exception = result.exceptionOrNull()
-                if (exception is LoginRequiredException) {
-                    // Store file URI and trigger navigation to login
+            result.fold(
+                onSuccess = {
                     _uiState.value = _uiState.value.copy(
-                        isImporting = false,
-                        pendingImportFileUri = fileUri
+                        isImporting = false
                     )
-                    onNavigateToLogin?.invoke()
-                } else {
-                    _uiState.value = _uiState.value.copy(
-                        isImporting = false,
-                        error = exception?.message ?: "Import failed"
-                    )
+                    // Data will automatically refresh via observe flows
+                },
+                onFailure = { e ->
+                    if (e is LoginRequiredException) {
+                        // Signal that login is needed
+                        _uiState.value = _uiState.value.copy(
+                            isImporting = false,
+                            importError = "LOGIN_REQUIRED"
+                        )
+                    } else {
+                        _uiState.value = _uiState.value.copy(
+                            isImporting = false,
+                            importError = e.message ?: "Import failed"
+                        )
+                    }
                 }
-            }
+            )
         }
     }
 }
@@ -136,14 +116,10 @@ class NotesViewModel @Inject constructor(
 data class NotesUiState(
     val isLoading: Boolean = true,
     val notes: List<TextNote> = emptyList(),
-    val readings: List<Reading> = emptyList(),
     val tags: List<Tag> = emptyList(),
     val noteTags: List<NoteTag> = emptyList(),
-    val error: String? = null,
+    val notesStorageMode: NotesStorageMode = NotesStorageMode.LOCAL,
+    val isLoggedIn: Boolean = false,
     val isImporting: Boolean = false,
-    val pendingImportFileUri: String? = null
+    val importError: String? = null
 )
-
-
-
-

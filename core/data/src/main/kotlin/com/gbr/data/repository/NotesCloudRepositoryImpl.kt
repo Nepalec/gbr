@@ -2,6 +2,7 @@ package com.gbr.data.repository
 
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.notes.NoteTag
+import com.gbr.model.notes.Reading
 import com.gbr.model.notes.Tag
 import com.gbr.model.notes.TextNote
 import com.gbr.model.notes.TextNoteWithTags
@@ -18,7 +19,7 @@ import javax.inject.Singleton
 class NotesCloudRepositoryImpl @Inject constructor(
     private val notesCloudDataSource: INotesCloudDataSource,
     private val authStatusDataSource: IAuthStatusDataSource
-) : NotesCloudRepository {
+) : UserNotesRepository {
 
     override suspend fun createNote(note: TextNote): Result<Unit> {
         val userId = authStatusDataSource.getCurrentUserId()
@@ -173,6 +174,11 @@ class NotesCloudRepositoryImpl @Inject constructor(
             }
     }
 
+    override fun observeReadings(): Flow<List<Reading>> {
+        // Cloud storage doesn't support readings, return empty list
+        return flowOf(emptyList())
+    }
+
     override suspend fun importFromSqlite(
         notes: List<TextNote>,
         tags: List<Tag>,
@@ -180,7 +186,7 @@ class NotesCloudRepositoryImpl @Inject constructor(
     ): Result<Unit> {
         val userId = authStatusDataSource.getCurrentUserId()
             ?: return Result.failure(IllegalStateException("User not logged in"))
-        
+
         return runCatching {
             notesCloudDataSource.importNotesFromSqlite(userId, notes).getOrThrow()
             notesCloudDataSource.importTagsFromSqlite(userId, tags).getOrThrow()
@@ -206,7 +212,7 @@ class NotesCloudRepositoryImpl @Inject constructor(
                         tags.find { it.id == noteTag.tagId }
                     }
                 }
-            
+
             // Объединяем заметки с их тегами
             notes.map { note ->
                 TextNoteWithTags(
@@ -217,4 +223,3 @@ class NotesCloudRepositoryImpl @Inject constructor(
         }
     }
 }
-

@@ -8,9 +8,9 @@
     <string name="theme_dark">Тёмная</string>
     <string name="theme_system">Системная</string>
     <string name="logout">Выйти</string>
+    <string name="notes_storage">Хранилище заметок</string>
+    <string name="storage_local">Локальное</string>
+    <string name="storage_cloud">Облачное</string>
     <string name="cd_back">Назад</string>
     <string name="cd_settings">Настройки</string>
 </resources>
-
-
-

@@ -37,6 +37,11 @@ dependencies {
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
 
+    // Room dependencies
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
     // Test dependencies
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -8,7 +8,9 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System</string>
     <string name="logout">Logout</string>
+    <string name="notes_storage">Notes Storage</string>
+    <string name="storage_local">Local</string>
+    <string name="storage_cloud">Cloud</string>
     <string name="cd_back">Back</string>
     <string name="cd_settings">Settings</string>
 </resources>
-

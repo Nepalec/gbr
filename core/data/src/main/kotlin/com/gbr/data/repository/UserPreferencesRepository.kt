@@ -4,6 +4,7 @@ import com.gbr.model.book.BookContentsTabOptions
 import com.gbr.model.book.BookImagesTabOptions
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.ImageType
+import com.gbr.model.notes.NotesStorageMode
 import com.gbr.model.theme.DarkThemeConfig
 import kotlinx.coroutines.flow.Flow
 
@@ -20,4 +21,7 @@ interface UserPreferencesRepository {
     suspend fun setBookImagesTabOptions(imageType: ImageType, options: BookImagesTabOptions)
 
     fun getBookImagesTabOptionsFlow(imageType: ImageType): Flow<BookImagesTabOptions>
+
+    suspend fun setNotesStorageMode(mode: NotesStorageMode)
+    val notesStorageMode: Flow<NotesStorageMode>
 }

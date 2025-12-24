@@ -1,19 +1,20 @@
 package com.gbr.data.usecase
 
-import com.gbr.data.repository.NotesCloudRepository
-import com.gbr.data.repository.SqliteNotesRepository
+import com.gbr.data.repository.SqliteNotesRepositoryImpl
+import com.gbr.data.repository.UserNotesRepository
 import javax.inject.Inject
 
 class ImportNotesFromSqliteUseCase @Inject constructor(
-    private val notesCloudRepository: NotesCloudRepository,
-    private val sqliteNotesRepository: SqliteNotesRepository
+    private val userNotesRepository: UserNotesRepository,
+    private val sqliteNotesRepositoryImpl: SqliteNotesRepositoryImpl
 ) {
     suspend fun execute(): Result<Unit> {
-        val notes = sqliteNotesRepository.getNotes()
-        val tags = sqliteNotesRepository.getTags()
-        val noteTags = sqliteNotesRepository.getNoteTags()
-        
-        return notesCloudRepository.importFromSqlite(notes, tags, noteTags)
+        // Read from local SQLite (using legacy methods)
+        val notes = sqliteNotesRepositoryImpl.getNotes()
+        val tags = sqliteNotesRepositoryImpl.getTags()
+        val noteTags = sqliteNotesRepositoryImpl.getNoteTags()
+
+        // Import to the current storage repository (cloud or local based on preference)
+        return userNotesRepository.importFromSqlite(notes, tags, noteTags)
     }
 }
-

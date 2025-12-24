@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.gbr.common.strings.StringProvider
 import com.gbr.data.auth.AuthRepository
 import com.gbr.data.repository.UserPreferencesRepository
+import com.gbr.model.notes.NotesStorageMode
 import com.gbr.model.theme.DarkThemeConfig
 import com.gbr.settings.R
 import com.gbr.ui.SnackbarHelper
@@ -50,15 +51,19 @@ class SettingsViewModel @Inject constructor(
                     DarkThemeConfig.FOLLOW_SYSTEM -> ThemeOption.SYSTEM
                 }
 
+                val currentStorageMode = userPreferencesRepository.notesStorageMode.firstOrNull() ?: NotesStorageMode.LOCAL
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    selectedTheme = themeOption
+                    selectedTheme = themeOption,
+                    notesStorageMode = currentStorageMode
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     error = stringProvider.getString(R.string.error_failed_to_load_settings, e.message ?: ""),
-                    selectedTheme = ThemeOption.SYSTEM
+                    selectedTheme = ThemeOption.SYSTEM,
+                    notesStorageMode = NotesStorageMode.LOCAL
                 )
             }
         }
@@ -87,6 +92,17 @@ class SettingsViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     error = stringProvider.getString(R.string.error_failed_to_save_theme, e.message ?: "")
                 )
+            }
+        }
+    }
+
+    fun selectNotesStorageMode(mode: NotesStorageMode) {
+        viewModelScope.launch {
+            try {
+                userPreferencesRepository.setNotesStorageMode(mode)
+                _uiState.value = _uiState.value.copy(notesStorageMode = mode)
+            } catch (e: Exception) {
+                snackbarHelper.showMessage("Failed to save storage mode: ${e.message}")
             }
         }
     }
@@ -120,10 +136,7 @@ enum class ThemeOption {
 data class SettingsUiState(
     val isLoading: Boolean = true,
     val selectedTheme: ThemeOption = ThemeOption.SYSTEM,
+    val notesStorageMode: NotesStorageMode = NotesStorageMode.LOCAL,
     val error: String? = null,
     val isLoggedIn: Boolean = false
 )
-
-
-
-

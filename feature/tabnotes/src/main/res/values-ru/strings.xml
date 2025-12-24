@@ -2,8 +2,14 @@
 <resources>
     <string name="notes">Заметки</string>
     <string name="notes_content">Содержимое заметок</string>
+    <string name="local_notes">Локальные заметки</string>
+    <string name="cloud_notes">Облачные заметки</string>
+    <string name="login">Войти</string>
     <string name="cd_settings">Настройки</string>
+    <string name="import_from_backup">Импортировать из резервной копии</string>
+    <string name="settings">Настройки</string>
+    <string name="importing_notes">Импорт заметок…</string>
+    <string name="import_success">Заметки успешно импортированы</string>
+    <string name="import_failed">Не удалось импортировать заметки: %1$s</string>
+    <string name="cd_more_options">Дополнительные параметры</string>
 </resources>
-
-
-

@@ -14,6 +14,7 @@ import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.GitabaseLang
 import com.gbr.model.gitabase.GitabaseType
 import com.gbr.model.gitabase.ImageType
+import com.gbr.model.notes.NotesStorageMode
 import com.gbr.model.theme.DarkThemeConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -37,6 +38,7 @@ class GbrPreferencesDataSource @Inject constructor(
         private val BOOK_CONTENTS_TEXT_SIZE_KEY = intPreferencesKey("book_contents_text_size")
         private val BOOK_CONTENTS_COLUMNS_KEY = intPreferencesKey("book_contents_columns")
         private val DOWNLOAD_WORK_ID_KEY = stringPreferencesKey("download_work_id")
+        private val NOTES_STORAGE_MODE_KEY = stringPreferencesKey("notes_storage_mode")
     }
 
     /**
@@ -293,6 +295,52 @@ class GbrPreferencesDataSource @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "Failed to get download work ID", e)
             null
+        }
+    }
+
+    /**
+     * Flow of notes storage mode that emits whenever the preference changes.
+     * Defaults to LOCAL.
+     */
+    val notesStorageMode: Flow<NotesStorageMode> = userPreferences.data.map { preferences ->
+        getNotesStorageMode(preferences)
+    }
+
+    /**
+     * Gets the notes storage mode preference.
+     * Defaults to LOCAL.
+     */
+    suspend fun getNotesStorageMode(): NotesStorageMode {
+        return try {
+            userPreferences.data.map { preferences ->
+                getNotesStorageMode(preferences)
+            }.firstOrNull() ?: NotesStorageMode.LOCAL
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get notes storage mode", e)
+            NotesStorageMode.LOCAL
+        }
+    }
+
+    /**
+     * Sets the notes storage mode preference.
+     */
+    suspend fun setNotesStorageMode(mode: NotesStorageMode) {
+        try {
+            userPreferences.edit { preferences ->
+                preferences[NOTES_STORAGE_MODE_KEY] = mode.name
+            }
+        } catch (ioException: IOException) {
+            Log.e(TAG, "Failed to update notes storage mode", ioException)
+        }
+    }
+
+    private fun getNotesStorageMode(preferences: Preferences): NotesStorageMode {
+        val modeString = preferences[NOTES_STORAGE_MODE_KEY] ?: NotesStorageMode.LOCAL.name
+        return try {
+            NotesStorageMode.valueOf(modeString)
+        } catch (e: IllegalArgumentException) {
+            Log.w(TAG, "Invalid notes storage mode: $modeString, using default LOCAL")
+            NotesStorageMode.LOCAL
         }
     }
 }

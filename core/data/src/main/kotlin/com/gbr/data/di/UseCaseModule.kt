@@ -20,8 +20,8 @@ import com.gbr.data.usecase.RemoveGitabaseUseCase
 import com.gbr.data.usecase.ScanGitabaseFilesUseCase
 import com.gbr.data.usecase.SetCurrentGitabaseUseCase
 import com.gbr.data.auth.AuthRepository
-import com.gbr.data.repository.NotesCloudRepository
-import com.gbr.data.repository.SqliteNotesRepository
+import com.gbr.data.repository.SqliteNotesRepositoryImpl
+import com.gbr.data.repository.UserNotesRepository
 import com.gbr.network.INotesBackupImportDataSource
 import com.gbr.datastore.datasource.GbrPreferencesDataSource
 import dagger.Module
@@ -132,18 +132,19 @@ object UseCaseModule {
     @Singleton
     fun provideImportSqliteNotesUseCase(
         notesBackupImportDataSource: INotesBackupImportDataSource,
-        notesCloudRepository: NotesCloudRepository,
-        authRepository: AuthRepository
+        userNotesRepository: UserNotesRepository,
+        authRepository: AuthRepository,
+        userPreferencesRepository: UserPreferencesRepository
     ): ImportSqliteNotesUseCase {
-        return ImportSqliteNotesUseCase(notesBackupImportDataSource, notesCloudRepository, authRepository)
+        return ImportSqliteNotesUseCase(notesBackupImportDataSource, userNotesRepository, authRepository, userPreferencesRepository)
     }
 
     @Provides
     @Singleton
     fun provideImportNotesFromSqliteUseCase(
-        notesCloudRepository: NotesCloudRepository,
-        sqliteNotesRepository: SqliteNotesRepository
+        userNotesRepository: UserNotesRepository,
+        sqliteNotesRepositoryImpl: SqliteNotesRepositoryImpl
     ): ImportNotesFromSqliteUseCase {
-        return ImportNotesFromSqliteUseCase(notesCloudRepository, sqliteNotesRepository)
+        return ImportNotesFromSqliteUseCase(userNotesRepository, sqliteNotesRepositoryImpl)
     }
 }

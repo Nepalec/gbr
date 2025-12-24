@@ -6,6 +6,7 @@ import com.gbr.model.book.BookContentsTabOptions
 import com.gbr.model.book.BookImagesTabOptions
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.ImageType
+import com.gbr.model.notes.NotesStorageMode
 import com.gbr.model.theme.DarkThemeConfig
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -55,4 +56,15 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     override fun getBookImagesTabOptionsFlow(imageType: ImageType): Flow<BookImagesTabOptions> {
         return gbrPreferencesDataSource.getBookImagesTabOptionsFlow(imageType)
     }
+
+    override suspend fun setNotesStorageMode(mode: NotesStorageMode) {
+        try {
+            gbrPreferencesDataSource.setNotesStorageMode(mode)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to save notes storage mode", e)
+            throw e
+        }
+    }
+
+    override val notesStorageMode: Flow<NotesStorageMode> = gbrPreferencesDataSource.notesStorageMode
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.designsystem.components.radiobuttonwithtext.RadioButtonWithTextView
+import com.gbr.model.notes.NotesStorageMode
 import com.gbr.settings.R
 import com.gbr.settings.components.SettingsAppBar
 import com.gbr.settings.viewmodel.SettingsViewModel
@@ -79,6 +80,30 @@ fun SettingsScreen(
                 )
             }
 
+            // Notes Storage Section
+            Text(
+                text = stringResource(R.string.notes_storage),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp, top = 16.dp)
+            )
+
+            // Storage Mode Options
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                RadioButtonWithTextView(
+                    text = stringResource(R.string.storage_local),
+                    isSelected = uiState.notesStorageMode == NotesStorageMode.LOCAL,
+                    onSelected = { viewModel.selectNotesStorageMode(NotesStorageMode.LOCAL) }
+                )
+
+                RadioButtonWithTextView(
+                    text = stringResource(R.string.storage_cloud),
+                    isSelected = uiState.notesStorageMode == NotesStorageMode.CLOUD,
+                    onSelected = { viewModel.selectNotesStorageMode(NotesStorageMode.CLOUD) }
+                )
+            }
+
             // Logout Button (only show if user is logged in)
             if (uiState.isLoggedIn) {
                 Button(
@@ -93,7 +118,3 @@ fun SettingsScreen(
         }
     }
 }
-
-
-
-

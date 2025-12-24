@@ -20,9 +20,9 @@ import com.gbr.tabnotes.R as NotesR
 fun CustomAppBar(
     title: String,
     onNavigationClick: () -> Unit = {},
-    onActionClick: () -> Unit = {},
+    onMenuClick: () -> Unit = {},
     navigationIcon: Int = R.drawable.menu_24px,
-    actionIcon: Int = R.drawable.settings_24px
+    actionIcon: Int = R.drawable.more_vert_24px
 ) {
     TopAppBar(
         title = {
@@ -33,10 +33,10 @@ fun CustomAppBar(
         },
         navigationIcon = { }, // Remove hamburger icon for Notes tab
         actions = {
-            IconButton(onClick = onActionClick) {
+            IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = ImageVector.vectorResource(actionIcon),
-                    contentDescription = stringResource(NotesR.string.cd_settings)
+                    contentDescription = stringResource(NotesR.string.cd_more_options)
                 )
             }
         },
@@ -50,7 +50,3 @@ fun CustomAppBar(
         windowInsets = WindowInsets(0),
     )
 }
-
-
-
-
