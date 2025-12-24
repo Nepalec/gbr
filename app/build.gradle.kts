@@ -5,7 +5,7 @@ plugins {
 
 // Conditionally apply google-services plugin only if google-services.json exists
 // This allows the build to work in CI environments where the file might not be present
-val googleServicesFile = file("${projectDir}/google-services.json")
+val googleServicesFile = file("$projectDir/google-services.json")
 if (googleServicesFile.exists()) {
     apply(plugin = "com.google.gms.google-services")
 }

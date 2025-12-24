@@ -6,4 +6,3 @@ enum class DownloadStage {
     UNZIPPING,
     COMPLETED
 }
-

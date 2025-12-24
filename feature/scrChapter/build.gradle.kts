@@ -51,9 +51,7 @@ dependencies {
     // Coil for image loading
     implementation(libs.coil.kt.compose)
 
-
     testImplementation(testFixtures(projects.core.data)) // For Robolectric tests
-
 
     // Unit test dependencies (Robolectric)
     testImplementation(libs.robolectric)

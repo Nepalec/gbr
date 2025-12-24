@@ -23,9 +23,9 @@ android {
 
 dependencies {
     api(projects.core.model)
-    
+
     implementation(projects.core.network)
-    
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
@@ -43,4 +43,3 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.truth)
 }
-

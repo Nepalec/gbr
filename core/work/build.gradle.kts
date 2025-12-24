@@ -23,10 +23,10 @@ android {
 
 dependencies {
     api(projects.core.model)
-    
+
     implementation(projects.core.data)
     implementation(projects.core.datasource)
-    
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.kotlinx.coroutines.core)
@@ -39,7 +39,7 @@ dependencies {
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
-    
+
     // Assisted injection for @AssistedInject in Hilt Workers
     implementation("com.squareup.inject:assisted-inject-annotations-dagger2:0.8.1")
     ksp("com.squareup.inject:assisted-inject-processor-dagger2:0.8.1")
@@ -50,4 +50,3 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.truth)
 }
-
