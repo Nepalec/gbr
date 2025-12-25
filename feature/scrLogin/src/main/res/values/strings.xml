@@ -14,14 +14,14 @@
     <string name="login_continue_with_facebook">Continue with Facebook</string>
     <string name="login_no_account">Don\'t have an account?</string>
     <string name="login_create_account">Create Account</string>
-    
+
     <!-- Content Descriptions -->
     <string name="cd_app_logo">App Logo</string>
     <string name="cd_email">Email</string>
     <string name="cd_password">Password</string>
     <string name="cd_google">Google</string>
     <string name="cd_facebook">Facebook</string>
-    
+
     <!-- Forgot Password Dialog -->
     <string name="forgot_password_title">Reset Password</string>
     <string name="forgot_password_message">Enter your email address and we\'ll send you a link to reset your password.</string>
@@ -31,7 +31,7 @@
     <string name="forgot_password_email_sent">We\'ve sent a password reset link to:</string>
     <string name="forgot_password_check_instructions">Please check your email and follow the instructions to reset your password.</string>
     <string name="forgot_password_ok">OK</string>
-    
+
     <!-- Error Messages -->
     <string name="error_please_enter_email">Please enter your email address</string>
     <string name="error_please_enter_valid_email">Please enter a valid email address</string>
@@ -47,7 +47,7 @@
     <string name="error_failed_to_get_id_token">Failed to get ID token from Google account</string>
     <string name="error_facebook_sign_in_failed">Facebook sign in failed</string>
     <string name="error_failed_to_send_reset_email">Failed to send reset email</string>
-    
+
     <!-- Success Messages -->
     <string name="success_login">Login successful</string>
     <string name="success_account_created">Account created successfully</string>

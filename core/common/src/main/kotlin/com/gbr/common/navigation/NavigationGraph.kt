@@ -93,5 +93,13 @@ sealed class FullscreenDest {
     ) : FullscreenDest()
 
     @Serializable
+    data class TextDetail(
+        val gitabaseIdKey: String, // GitabaseID.key
+        val bookId: Int, // BookPreview.id
+        val chapterNumber: Int? = null, // null for non-chapter books
+        val textNumber: String // Current text identifier
+    ) : FullscreenDest()
+
+    @Serializable
     data object Login : FullscreenDest()
 }

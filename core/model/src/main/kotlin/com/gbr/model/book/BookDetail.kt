@@ -50,11 +50,26 @@ data class TextContentsItem(
     val title: String
 )
 
-data class TextItem(
+data class TextPreviewItem(
     val id: Int,
     val book: BookPreview,
     val chapterNumber: Int,
     val textNumber: String,
     val title: String,
-    val titleSanskrit: String
+    val textId: String,
 )
+
+data class TextDetailItem(
+    val preview: TextPreviewItem,
+    val sanskrit: String,
+    val translit: String,
+    val wordByword: String,
+    val comment: String,
+    val textSeqNo: Int,
+    val textOffset: Int,
+    val textSize: Int,
+    val numberOfImages: Int
+){
+    val translation: String
+        get() = preview.title
+}

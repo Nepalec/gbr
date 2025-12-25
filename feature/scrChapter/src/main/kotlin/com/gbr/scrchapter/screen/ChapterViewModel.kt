@@ -7,7 +7,7 @@ import com.gbr.data.repository.TextsRepository
 import com.gbr.model.book.BookDetail
 import com.gbr.model.book.BookPreview
 import com.gbr.model.book.ChapterContentsItem
-import com.gbr.model.book.TextItem
+import com.gbr.model.book.TextPreviewItem
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.scrchapter.R
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -98,7 +98,6 @@ data class ChapterUiState(
     val isLoading: Boolean = true,
     val bookDetail: BookDetail? = null,
     val chapter: ChapterContentsItem? = null,
-    val chapterTexts: List<TextItem> = emptyList(),
+    val chapterTexts: List<TextPreviewItem> = emptyList(),
     val error: String? = null
 )
-

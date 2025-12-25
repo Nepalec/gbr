@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gbr.model.book.BookPreview
+import com.gbr.model.book.TextPreviewItem
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.scrchapter.R
 import com.gbr.scrchapter.screen.components.ChapterBottomSheet
@@ -38,6 +39,7 @@ fun ChapterScreen(
     chapterNumber: Int,
     onNavigateBack: () -> Unit = {},
     onSearchClick: () -> Unit = {},
+    onNavigateToText: (TextPreviewItem) -> Unit = {},
     viewModel: ChapterViewModel = hiltViewModel()
 ) {
     // Load chapter data when screen is composed
@@ -127,6 +129,7 @@ fun ChapterScreen(
                 chapterNumber = currentChapterNumber,
                 savedScrollPosition = savedScrollPosition,
                 onListStateReady = onListStateReady,
+                onTextClick = onNavigateToText,
                 modifier = Modifier.padding(
                     top = innerPadding.calculateTopPadding()
                 )

@@ -13,15 +13,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.gbr.model.book.TextItem
+import com.gbr.model.book.TextPreviewItem
 import com.gbr.scrchapter.R
 
 
 @Composable
-fun ChapterTextItem(textItem: TextItem) {
+fun ChapterTextItem(
+    textItem: TextPreviewItem,
+    onClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier

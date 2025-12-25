@@ -7,7 +7,8 @@ import com.gbr.model.book.BookStructure
 import com.gbr.model.book.ChapterContentsItem
 import com.gbr.model.book.ImageFileItem
 import com.gbr.model.book.TextContentsItem
-import com.gbr.model.book.TextItem
+import com.gbr.model.book.TextDetailItem
+import com.gbr.model.book.TextPreviewItem
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.ImageFormat
 import com.gbr.model.gitabase.ImageType
@@ -108,9 +109,9 @@ class SqlBookDao(
         emit(texts)
     }
 
-    fun getChapterTexts(book: BookPreview, chapterNumber: Int): Flow<List<TextItem>> = flow {
+    fun getChapterTexts(book: BookPreview, chapterNumber: Int): Flow<List<TextPreviewItem>> = flow {
         val texts = withContext(Dispatchers.IO) {
-            val textList = mutableListOf<TextItem>()
+            val textList = mutableListOf<TextPreviewItem>()
 
             try {
                 val debugQuery = if (book.isVolume) {
@@ -137,13 +138,13 @@ class SqlBookDao(
                 cursor?.use { c ->
                     while (c.moveToNext()) {
                         try {
-                            val textItem = TextItem(
+                            val textItem = TextPreviewItem(
                                 id = c.getIntOrNull("_id") ?: 0,
                                 book = book,
                                 chapterNumber = c.getIntOrNull("ch_no") ?: chapterNumber,
                                 textNumber = c.getStringOrNull("txt_no").orEmpty(),
                                 title = c.getStringOrNull("preview").orEmpty(),
-                                titleSanskrit = c.getStringOrNull("title_sanskrit").orEmpty()
+                                textId = c.getStringOrNull("text_id").orEmpty()
                             )
                             textList.add(textItem)
                         } catch (e: Exception) {
@@ -158,6 +159,219 @@ class SqlBookDao(
             textList
         }
         emit(texts)
+    }
+
+    suspend fun getBookTextsCount(book: BookPreview): Int {
+        return withContext(Dispatchers.IO) {
+            try {
+                val query = if (book.isVolume) {
+                    """
+                        SELECT COUNT(*) as count
+                        FROM textnums t
+                        WHERE t.book_id = ${book.volumeGroupId}
+                        AND t.song = ${book.volumeNumber}
+                    """.trimIndent()
+                } else {
+                    """
+                        SELECT COUNT(*) as count
+                        FROM textnums t
+                        WHERE t.book_id = ${book.id}
+                    """.trimIndent()
+                }
+
+                val cursor: Cursor? = database.rawQuery(query, null)
+                cursor?.use { c ->
+                    if (c.moveToFirst()) {
+                        val columnIndex = c.getColumnIndex("count")
+                        if (columnIndex >= 0) {
+                            return@withContext c.getInt(columnIndex)
+                        }
+                    }
+                }
+                0
+            } catch (e: Exception) {
+                0
+            }
+        }
+    }
+
+    suspend fun getTextByIndex(book: BookPreview, textIndex: Int): TextDetailItem? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val query = if (book.isVolume) {
+                    """
+                        SELECT *
+                        FROM texts txts
+                        LEFT JOIN textnums nums ON nums._id = txts._id
+                        WHERE nums._id = $textIndex
+                        AND nums.book_id = ${book.volumeGroupId}
+                        AND nums.song = ${book.volumeNumber}
+                    """.trimIndent()
+                } else {
+                    """
+                        SELECT *
+                        FROM texts txts
+                        LEFT JOIN textnums nums ON nums._id = txts._id
+                        WHERE nums._id = $textIndex
+                        AND nums.book_id = ${book.id}
+                    """.trimIndent()
+                }
+
+                val cursor: Cursor? = database.rawQuery(query, null)
+                cursor?.use { c ->
+                    if (c.moveToFirst()) {
+                        val preview = TextPreviewItem(
+                            id = c.getIntOrNull("_id") ?: 0,
+                            book = book,
+                            chapterNumber = c.getIntOrNull("ch_no") ?: 0,
+                            textNumber = c.getStringOrNull("txt_no").orEmpty(),
+                            title = c.getStringOrNull("preview").orEmpty(),
+                            textId = c.getStringOrNull("text_id").orEmpty()
+                        )
+                        return@withContext TextDetailItem(
+                            preview = preview,
+                            sanskrit = c.getStringOrNull("sanskrit").orEmpty(),
+                            translit = c.getStringOrNull("translit").orEmpty(),
+                            wordByword = c.getStringOrNull("transl1").orEmpty(),
+                            comment = c.getStringOrNull("comment").orEmpty(),
+                            textSeqNo = c.getIntOrNull("text_seq_no") ?: 0,
+                            textOffset = c.getIntOrNull("text_offset") ?: 0,
+                            textSize = c.getIntOrNull("text_size") ?: 0,
+                            numberOfImages = c.getIntOrNull("images") ?: 0
+                        )
+                    }
+                }
+                null
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    suspend fun getTextsByIndexRange(book: BookPreview, startIndex: Int, endIndex: Int): List<TextDetailItem> {
+        return withContext(Dispatchers.IO) {
+            val textList = mutableListOf<TextDetailItem>()
+
+            try {
+                val query = if (book.isVolume) {
+                    """
+                        SELECT *
+                        FROM texts txts
+                        LEFT JOIN textnums nums ON nums._id = txts._id
+                        WHERE nums._id >= $startIndex
+                        AND nums._id <= $endIndex
+                        AND nums.book_id = ${book.volumeGroupId}
+                        AND nums.song = ${book.volumeNumber}
+                        ORDER BY nums._id
+                    """.trimIndent()
+                } else {
+                    """
+                        SELECT *
+                        FROM texts txts
+                        LEFT JOIN textnums nums ON nums._id = txts._id
+                        WHERE nums._id >= $startIndex
+                        AND nums._id <= $endIndex
+                        AND nums.book_id = ${book.id}
+                        ORDER BY nums._id
+                    """.trimIndent()
+                }
+
+                val cursor: Cursor? = database.rawQuery(query, null)
+                cursor?.use { c ->
+                    while (c.moveToNext()) {
+                        try {
+                            val preview = TextPreviewItem(
+                                id = c.getIntOrNull("_id") ?: 0,
+                                book = book,
+                                chapterNumber = c.getIntOrNull("ch_no") ?: 0,
+                                textNumber = c.getStringOrNull("txt_no").orEmpty(),
+                                title = c.getStringOrNull("preview").orEmpty(),
+                                textId = c.getStringOrNull("text_id").orEmpty()
+                            )
+                            val textItem = TextDetailItem(
+                                preview = preview,
+                                sanskrit = c.getStringOrNull("sanskrit").orEmpty(),
+                                translit = c.getStringOrNull("translit").orEmpty(),
+                                wordByword = c.getStringOrNull("transl1").orEmpty(),
+                                comment = c.getStringOrNull("comment").orEmpty(),
+                                textSeqNo = c.getIntOrNull("text_seq_no") ?: 0,
+                                textOffset = c.getIntOrNull("text_offset") ?: 0,
+                                textSize = c.getIntOrNull("text_size") ?: 0,
+                                numberOfImages = c.getIntOrNull("images") ?: 0
+                            )
+                            textList.add(textItem)
+                        } catch (e: Exception) {
+                            // Skip invalid rows, continue processing
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                // Return empty list on database errors
+            }
+
+            textList
+        }
+    }
+
+    suspend fun findTextIndexByTextNumber(book: BookPreview, chapterNumber: Int?, textNumber: String): Int? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val query = if (book.isVolume) {
+                    if (chapterNumber != null) {
+                        """
+                            SELECT t._id
+                            FROM textnums t
+                            WHERE t.book_id = ${book.volumeGroupId}
+                            AND t.song = ${book.volumeNumber}
+                            AND t.ch_no = $chapterNumber
+                            AND t.txt_no = '$textNumber'
+                            LIMIT 1
+                        """.trimIndent()
+                    } else {
+                        """
+                            SELECT t._id
+                            FROM textnums t
+                            WHERE t.book_id = ${book.volumeGroupId}
+                            AND t.song = ${book.volumeNumber}
+                            AND t.txt_no = '$textNumber'
+                            LIMIT 1
+                        """.trimIndent()
+                    }
+                } else {
+                    if (chapterNumber != null) {
+                        """
+                            SELECT t._id
+                            FROM textnums t
+                            WHERE t.book_id = ${book.id}
+                            AND t.ch_no = $chapterNumber
+                            AND t.txt_no = '$textNumber'
+                            LIMIT 1
+                        """.trimIndent()
+                    } else {
+                        """
+                            SELECT t._id
+                            FROM textnums t
+                            WHERE t.book_id = ${book.id}
+                            AND t.txt_no = '$textNumber'
+                            LIMIT 1
+                        """.trimIndent()
+                    }
+                }
+
+                val cursor: Cursor? = database.rawQuery(query, null)
+                cursor?.use { c ->
+                    if (c.moveToFirst()) {
+                        val columnIndex = c.getColumnIndex("_id")
+                        if (columnIndex >= 0 && !c.isNull(columnIndex)) {
+                            return@withContext c.getInt(columnIndex)
+                        }
+                    }
+                }
+                null
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     fun getAllBookPreviews(): Flow<List<BookPreview>> = flow {
@@ -227,7 +441,7 @@ class SqlBookDao(
     }
 
 //    fun getBookChapters(book: BookPreview): Flow<List<Chapter>> = flow {}
-//    fun getBookTexts(book: BookPreview): Flow<List<TextItem>> = flow {}
+//    fun getBookTexts(book: BookPreview): Flow<List<TextPreviewItem>> = flow {}
 //    fun getBookImagesFileNames(book: BookPreview): Flow<List<TextImage>> = flow {}
 
     /**

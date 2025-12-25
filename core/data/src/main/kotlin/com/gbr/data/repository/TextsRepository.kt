@@ -2,7 +2,8 @@ package com.gbr.data.repository
 
 import com.gbr.model.book.BookDetail
 import com.gbr.model.book.BookPreview
-import com.gbr.model.book.TextItem
+import com.gbr.model.book.TextDetailItem
+import com.gbr.model.book.TextPreviewItem
 import com.gbr.model.gitabase.GitabaseID
 
 interface TextsRepository {
@@ -18,5 +19,30 @@ interface TextsRepository {
         gitabaseId: GitabaseID,
         bookPreview: BookPreview,
         chapterNumber: Int
-    ): Result<List<TextItem>>
+    ): Result<List<TextPreviewItem>>
+
+    suspend fun getBookTextsCount(
+        gitabaseId: GitabaseID,
+        bookPreview: BookPreview
+    ): Result<Int>
+
+    suspend fun getTextByIndex(
+        gitabaseId: GitabaseID,
+        bookPreview: BookPreview,
+        textIndex: Int
+    ): Result<TextDetailItem>
+
+    suspend fun getTextsByIndexRange(
+        gitabaseId: GitabaseID,
+        bookPreview: BookPreview,
+        startIndex: Int,
+        endIndex: Int
+    ): Result<List<TextDetailItem>>
+
+    suspend fun findTextIndexByTextNumber(
+        gitabaseId: GitabaseID,
+        bookPreview: BookPreview,
+        chapterNumber: Int?,
+        textNumber: String
+    ): Result<Int>
 }

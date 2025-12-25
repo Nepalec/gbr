@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.gbr.model.book.BookDetail
 import com.gbr.model.book.ChapterContentsItem
-import com.gbr.model.book.TextItem
+import com.gbr.model.book.TextPreviewItem
 import com.gbr.model.gitabase.ImageType
 import com.gbr.scrchapter.screen.ScrollPosition
 
@@ -30,10 +30,11 @@ fun ChapterContents(
     error: String?,
     chapter: ChapterContentsItem?,
     bookDetail: BookDetail?,
-    chapterTexts: List<TextItem>,
+    chapterTexts: List<TextPreviewItem>,
     chapterNumber: Int,
     savedScrollPosition: ScrollPosition?,
     onListStateReady: (LazyListState) -> Unit,
+    onTextClick: (TextPreviewItem) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -115,7 +116,10 @@ fun ChapterContents(
                     // Chapter texts - display as individual items
                     if (chapterTexts.isNotEmpty()) {
                         items(chapterTexts) { textItem ->
-                            ChapterTextItem(textItem)
+                            ChapterTextItem(
+                                textItem = textItem,
+                                onClick = { onTextClick(textItem) }
+                            )
                         }
                     }
                 }
@@ -123,6 +127,3 @@ fun ChapterContents(
         }
     }
 }
-
-
-

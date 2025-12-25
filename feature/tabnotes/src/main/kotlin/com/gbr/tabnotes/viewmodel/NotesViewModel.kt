@@ -98,16 +98,16 @@ class NotesViewModel @Inject constructor(
                     if (e is LoginRequiredException) {
                         // Signal that login is needed
                         _uiState.value = _uiState.value.copy(
-                            isImporting = false,
+                        isImporting = false,
                             importError = "LOGIN_REQUIRED"
-                        )
-                    } else {
-                        _uiState.value = _uiState.value.copy(
-                            isImporting = false,
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        isImporting = false,
                             importError = e.message ?: "Import failed"
-                        )
-                    }
+                    )
                 }
+            }
             )
         }
     }

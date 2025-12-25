@@ -14,6 +14,7 @@ import androidx.navigation.toRoute
 import com.gbr.common.navigation.FullscreenDest
 import com.gbr.data.repository.TextsRepository
 import com.gbr.model.book.BookPreview
+import com.gbr.model.book.TextPreviewItem
 import com.gbr.model.gitabase.parseGitabaseID
 import com.gbr.scrchapter.screen.ChapterScreen
 
@@ -67,10 +68,19 @@ fun NavGraphBuilder.ChapterDetail(
                 gitabaseId = gitabaseId,
                 bookPreview = bookPreview!!,
                 chapterNumber = route.chapterNumber,
-                onNavigateBack = { navHostController.popBackStack() }
+                onNavigateBack = { navHostController.popBackStack() },
+                onNavigateToText = { textItem: TextPreviewItem ->
+                    navHostController.navigate(
+                        FullscreenDest.TextDetail(
+                            gitabaseIdKey = route.gitabaseIdKey,
+                            bookId = route.bookId,
+                            chapterNumber = textItem.chapterNumber,
+                            textNumber = textItem.textNumber
+                        )
+                    )
+                }
             )
         }
         // Show nothing while loading or if there's an error
     }
 }
-

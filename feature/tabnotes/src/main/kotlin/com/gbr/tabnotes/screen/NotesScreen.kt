@@ -148,10 +148,10 @@ fun NotesScreen(
                     ) {
                         CircularProgressIndicator()
                         if (uiState.isImporting) {
-                            Text(
+                        Text(
                                 text = stringResource(NotesR.string.importing_notes),
                                 style = MaterialTheme.typography.bodyMedium
-                            )
+                        )
                         }
                     }
                 }
@@ -171,14 +171,14 @@ fun NotesScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        Text(
-                            text = "Notes: ${uiState.notes.size}",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Text(
+                            Text(
+                                text = "Notes: ${uiState.notes.size}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
                             text = "Tags: ${uiState.tags.size}",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         // Show error message if import failed
                         uiState.importError?.takeIf { it != "LOGIN_REQUIRED" }?.let { error ->
                             Text(

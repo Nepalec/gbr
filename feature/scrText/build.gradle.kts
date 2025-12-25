@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.gbr.navigation"
+    namespace = "com.gbr.scrtext"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -19,21 +19,40 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/LICENSE*"
+            excludes += "/META-INF/NOTICE*"
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
     implementation(projects.core.common)
-    implementation(projects.core.data)
+    implementation(projects.core.designsystem)
     implementation(projects.core.model)
-    implementation(projects.feature.scrBook)
-    implementation(projects.feature.scrChapter)
-    implementation(projects.feature.scrText)
-    implementation(projects.feature.scrLogin)
+    implementation(projects.core.data)
+    implementation(projects.core.network)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtimeKtx)
+    implementation(libs.androidx.lifecycle.viewModelCompose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+
+    testImplementation(testFixtures(projects.core.data)) // For Robolectric tests
+
+    // Unit test dependencies (Robolectric)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.mockk) // Use regular mockk for unit tests
+    testImplementation(libs.kotlinx.coroutines.test)
 }

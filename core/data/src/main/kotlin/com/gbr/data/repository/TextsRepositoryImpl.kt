@@ -8,7 +8,8 @@ import com.gbr.model.book.BookDetail
 import com.gbr.model.book.BookImageTab
 import com.gbr.model.book.BookPreview
 import com.gbr.model.book.BookStructure
-import com.gbr.model.book.TextItem
+import com.gbr.model.book.TextDetailItem
+import com.gbr.model.book.TextPreviewItem
 import com.gbr.model.gitabase.GitabaseID
 import com.gbr.model.gitabase.ImageType
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -210,12 +211,85 @@ class TextsRepositoryImpl @Inject constructor(
         gitabaseId: GitabaseID,
         bookPreview: BookPreview,
         chapterNumber: Int
-    ): Result<List<TextItem>> {
+    ): Result<List<TextPreviewItem>> {
         return withContext(Dispatchers.IO) {
             try {
                 val database = databaseManager.getDatabase(gitabaseId)
                 val texts = database.bookDao().getChapterTexts(bookPreview, chapterNumber).first()
                 Result.success(texts)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    override suspend fun getBookTextsCount(
+        gitabaseId: GitabaseID,
+        bookPreview: BookPreview
+    ): Result<Int> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val database = databaseManager.getDatabase(gitabaseId)
+                val count = database.bookDao().getBookTextsCount(bookPreview)
+                Result.success(count)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    override suspend fun getTextByIndex(
+        gitabaseId: GitabaseID,
+        bookPreview: BookPreview,
+        textIndex: Int
+    ): Result<TextDetailItem> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val database = databaseManager.getDatabase(gitabaseId)
+                val text = database.bookDao().getTextByIndex(bookPreview, textIndex)
+                if (text != null) {
+                    Result.success(text)
+                } else {
+                    Result.failure(IllegalArgumentException("Text at index $textIndex not found"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    override suspend fun getTextsByIndexRange(
+        gitabaseId: GitabaseID,
+        bookPreview: BookPreview,
+        startIndex: Int,
+        endIndex: Int
+    ): Result<List<TextDetailItem>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val database = databaseManager.getDatabase(gitabaseId)
+                val texts = database.bookDao().getTextsByIndexRange(bookPreview, startIndex, endIndex)
+                Result.success(texts)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    }
+
+    override suspend fun findTextIndexByTextNumber(
+        gitabaseId: GitabaseID,
+        bookPreview: BookPreview,
+        chapterNumber: Int?,
+        textNumber: String
+    ): Result<Int> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val database = databaseManager.getDatabase(gitabaseId)
+                val index = database.bookDao().findTextIndexByTextNumber(bookPreview, chapterNumber, textNumber)
+                if (index != null) {
+                    Result.success(index)
+                } else {
+                    Result.failure(IllegalArgumentException("Text with number $textNumber not found"))
+                }
             } catch (e: Exception) {
                 Result.failure(e)
             }
